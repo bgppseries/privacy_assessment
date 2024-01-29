@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>this is a production present page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../static/css/blueprint.css">
+    <!--引入echart-->
+    <script type="text/javascript" src="../static/js/echarts.min.js"></script>
+</head>
+<script type="text/javascript" src="../static/js/loading.js"></script>
+<!-- 定义样式 -->
+<style>
+/*body的样式*/
+body {
+    background-color: #272b30;   /*背景颜色*/
+    padding-bottom: 30px, 40px;
+    text-align: center;
+    font-family: OpenSans-Light, PingFang SC, Hiragino Sans GB, Microsoft Yahei, Microsoft Jhenghei, sans-serif;
+}
+
+/*之前在js代码里面定义了classes，这边就给这些写样式*/
+.links line {
+    stroke: rgb(240, 240, 240); /*线的颜色*/
+    stroke-opacity: 0.2;        /*线的透明度*/
+}
+.links line.inactive {
+    /*display: none !important;*/
+    stroke-opacity: 0;
+}
+
+.linetexts {
+    fill-opacity: 0;
+    font-size: 8px ;
+    font-family: SimSun;
+    fill:#fff;
+}
+.linetexts.inactive {
+    display: none !important;
+}
+
+.nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;        /*圆的描边宽度*/
+}
+.nodes circle:hover {
+    cursor: pointer;
+}
+.nodes circle.inactive {
+    display: none !important;
+}
+
+
+
+/*indicator的样式*/
+#indicator {
+    position: absolute;
+    left: 30px;
+    bottom: 90px;
+    text-align: left;
+    color: #f2f2f2;
+    font-size: 16px;
+}
+
+/*indicator中每一个小的div/色块/图例的样式*/
+#indicator>div {
+    margin-bottom: 10px;
+}
+
+#indicator span {
+    display: inline-block;
+    width: 35px;
+    height: 20px;
+    position: relative;
+    top: 2px;
+    margin-right: 8px;
+}
+
+/*mode-模式切换的style*/
+#mode {
+    position: absolute;
+    top: 100px;
+    left: 30px;
+}
+
+#mode span {
+    display: inline-block;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: color, background-color .3s; /*CSS3中的渐变*/
+    -o-transition: color, background-color .3s;
+    -ms-transition: color, background-color .3s;
+    -moz-transition: color, background-color .3s;
+    -webkit-transition: color, background-color .3s;
+}
+
+/*当按键处于激活状态的时候*/
+#mode span.active {
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+}
+
+/*当按键处于鼠标悬浮状态的时候*/
+#mode span:hover {
+    background-color: #aaa;
+    color: #333;
+    cursor: pointer;
+}
+/*按钮三选一*/
+#switch{
+    position:absolute;
+    top:200px;
+
+}
+#switch span{
+    display:inline-block;
+    border:1px solid #fff;
+    color:#fff;
+    padding:3px 10px;
+    border-radius:4px;
+    font-size: 12px;
+    transition: color, background-color .3s; /*CSS3中的渐变*/
+    -o-transition: color, background-color .3s;
+    -ms-transition: color, background-color .3s;
+    -moz-transition: color, background-color .3s;
+    -webkit-transition: color, background-color .3s;
+}
+/*当按键处于激活或者鼠标悬浮状态的时候*/
+#switch span.active, #switch span:hover {
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+}
+/*switch1-菜品大类实体显示开关切换的style*/
+#switch1 {
+    position: absolute;
+    top: 225px;
+    left: 170px;
+}
+
+#switch1 span {
+    display: inline-block;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: color, background-color .3s; /*CSS3中的渐变*/
+    -o-transition: color, background-color .3s;
+    -ms-transition: color, background-color .3s;
+    -moz-transition: color, background-color .3s;
+    -webkit-transition: color, background-color .3s;
+}
+
+
+
+/*info的样式*/
+#info {
+    position: absolute;
+    top: 0px;			/*10px*/
+    /*bottom: 40px;*/
+    right: 10px;   		/*20px*/
+    text-align: right;		/*right*/
+    width: 253px;  		/*255px*/
+}
+
+#info p {
+    color: #fff;
+    font-size: 12px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+#info p span {
+    color: #888;
+    margin-right: 0px;
+}
+
+/*tips的样式*/
+#tips {
+    position: absolute;
+    left: 20px;
+    right: 10px;
+    top: 350px;
+    text-align: left;
+    color: #f2f2f2;
+    font-size: 12px;
+    width:230px;
+}
+
+/*indicator中每一个小的div/色块/图例的样式*/
+#tips>div {
+    margin-bottom: 5px;
+}
+
+#tips span {
+    display: inline-block;
+    width: 60px;
+    height: 20px;
+    position: relative;
+    top: 2px;
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/*搜索框的样式*/
+#search input {
+    position: absolute;
+    top: 150px;
+    left: 30px;
+    color: #fff;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 200px;
+    background-color: #666;
+}
+
+</style>
+<body>
+
+<!--这是一个动态的粒子效果图，设置了透明度为0.2-->
+<div class="canva" style="opacity: 0.9">
+    <iframe frameborder="0" src="../static/js/index.html" style="width: 100%; height: 100%"></iframe>
+</div>
+
+<!--这是一个在正式页面加载进来之前显示的加载小动画，文字可以修改-->
+<div class="loading">
+    <div class="loadbox"><img src="../static/picture/loading.gif"> 正在加载中...</div>
+</div>
+
+
+<!--            导航栏                     -->
+<div class="navigation">
+    <ul>
+          <li ><a href="index.html">首页</a></li>
+          <li class="current"><a href="tmp.html">知识图谱</a></li>
+          <li><a href="#">服务介绍</a></li>
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">联系我们</a></li>
+          <div class="slider"></div>
+    </ul>
+</div>
+<!--标题-->
+<h1 style="font-size: 32px;margin-bottom: 10px;margin-top: 10px; text-align: center;margin-left: 40px">隐私评估效果知识图谱</h1>
+        <!-- NOTE: 父元素采用相对定位，里面的元素采用绝对定位 -->
+<div style="text-align: center;position: relative;height:100%;display:flex;">
+
+        <!-- control模块 -->
+    <div class="control"style="flex:1;margin-left:2.425rem;">
+
+            <!-- 模式 -->
+    <div id="mode">
+        <span class="active" style="margin-left:2.2rem;border-top-right-radius: 0;border-bottom-right-radius: 0;">Circles</span>
+        <span style="border-top-left-radius: 0;border-bottom-left-radius: 0;position: relative;left: -5px;">Texts</span>
+    </div>
+            <!--场景切换-->
+        <div id="switch">
+            <span class="active" style="border-top-right-radius:0;border-gbottom-right-radius:0;">数据层</span>
+            <span style="border-top-left-radius:0;border-bottom-left-radius:0;position:relative;left:-5px;">指标体系</span>
+            <span style="border-top-left-radius:0;border-bottom-left-radius:0;position:relative;left:-10px;">历史图谱</span>
+        </div>
+            <!--隐藏栏-->
+        <div id="sort1" style="">
+            <span class="active" style=""></span>
+
+        </div>
+        <div id="sort2">
+
+        </div>
+        <div id="sort3">
+
+        </div>
+            <!-- 搜索框 -->
+    <div id="search">
+        <input type="text" autocomplete="off" class="form-control" style="margin-left: 2.2rem;">
+    </div>
+        <div id="tips" style="margin-left: 2.2rem;"></div>
+    </div>
+
+    <div style="height:1000px;width:1500px;position:relative;margin-bottom: -150px;flex:9;" id="svg1"></div>
+    <div style="height:1000px;width:1500px;display:none;position:relative;margin-bottom: -150px;flex:9;" id="metric"></div>
+        <!-- 每个结点的信息 -->
+    <div id="info" style="flex:1;">
+        <h4>info</h4>
+    </div>
+
+</div>
+
+<script src="../static/js/d3.js"></script>
+<script>
+    $(document).ready(function(){
+
+        //1.2定义一些节点配置
+        var names=['指标','任务'];
+        var label=['指标体系','隐私数据'];
+        var size={
+
+        }
+        var help=['小助手', '1.开始如果没有节点和边的网状可视化显示，刷新便可出现', '2.鼠标放置在任意节点上，出现和此节点相关的所有节点及之间的关系，右侧自动呈现该节点相关信息', '3.搜索框中输入相关信息，呈现此信息所有相关节点，并且此时鼠标位于某个节点上方时移开鼠标能够保持知识图谱当前状态', '4.模式切换按钮可切换对节点的不同可视化表示，Circles为点，Texts为文字', '5.左侧不同颜色的条形表示不同类型的节点，On/Off切换开关可打开或关闭同样类型所有节点的可视化显示'];
+        $('#tips').append("<div><span>" + help[0] + "</span></div>")
+        for (var i = 1; i < help.length; i++) {
+            $('#tips').append("<div>" + help[i] +"</div>")
+        }
+        //1.5 数据画图 向后端获取json格式数据，后端需要将查询结果格式化为json
+        var chartsvg = document.getElementById('svg1');
+        var myChartd = echarts.init(chartsvg, null, {
+            renderer: 'svg'
+        });
+        var option1;
+        myChartd.showLoading();
+        $.get('http://127.0.0.1:5000/api/show/data', function (graph) {
+          myChartd.hideLoading();
+          graph.nodes.forEach(function (node) {
+            node.symbolSize = 15;
+          });
+          option1 = {
+            title: {
+              text: '隐私数据图谱',
+              subtext: '隐私数据可视化展示',
+              top: 'bottom',
+              left: 'right'
+              // backgroundColor: "transparent",            //标题背景色
+              // borderColor: "#ccc",                         //边框颜色
+              // borderWidth: 0,                               //边框线宽
+              // shadowColor: "red",                          //阴影颜色
+              // shadowOffsetX: 0,                            //阴影水平方向上的偏移距离
+              // shadowOffsetY: 0,                            //阴影垂直方向上的偏移距离
+              // shadowBlur: 10,                               //阴影的模糊大小
+            },
+            tooltip: {
+              show: true,
+              trigger: 'item',
+              triggerOn: 'mousemove',
+              formatter: function(params) {
+                    let tooltip_position_left=false;
+                        //return '<div id="metricinfo">'+params.name + '<br>'  + '<br>' + ' ' + params.data.type+'</div>';
+                    let style_text = tooltip_position_left?"right:-8px;border-left-color:rgba(0,0,0,.5)":"left:-8px;border-right-color:rgba(0,0,0,.5)";
+                    return `<div style="padding:0 12px;min-width:130px;font-size:12px;line-height:18px;font-weight:400;">
+                        <br>${params.dataType}: ${params.name}<br>
+                        <br> ${params.data.type} <br>
+                    </div>
+                    <div style="width:0;height:0;position:absolute;top:calc(50% - 2px);border:4px solid transparent;${style_text}"></div>`
+                    }
+            },
+            legend: [
+              {
+                itemHeight:25,
+                orient: 'vertical',
+                left: 25,
+                top:25,
+                textStyle:{
+                    color:'white',
+                    fontStyle:'normal',
+                    fontsize:24,
+                    },
+                data: graph.categories.map(function (a) {
+                  return a.name;
+                })
+              }
+            ],
+            series: [
+              {
+                name: '节点',
+                type: 'graph',
+                layout: 'force',
+                //draggable:'true',
+                focusNodeAdjacency: true, //悬浮时突出显示与该节点相连的边和点
+                data: graph.nodes,
+                links: graph.links,
+                categories: graph.categories,
+                roam: true,
+                // 关系边的公用线条样式。其中 lineStyle.color 支持设置为'source'或者'target'特殊值，此时边会自动取源节点或目标节点的颜色作为自己的颜色。
+                  lineStyle: {
+                    // 线的颜色[ default: '#aaa' ]
+                    color: 'target',
+                    // 线宽[ default: 1 ]
+                    width: 1,
+                    // 线的类型[ default: solid实线 ]   'dashed'虚线    'dotted'
+                    type: 'solid',
+                    // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。[ default: 0.5 ]
+                    opacity: 0.2,
+                    // 边的曲度，支持从 0 到 1 的值，值越大曲度越大。[ default: 0 ]
+                    curveness: 0.5
+                },
+                // 节点上的标签
+                label: {
+                  normal: {
+                    // 是否显示标签
+                    show: false,
+                    // 标签位置:'top''left''right''bottom''inside''insideLeft''insideRight''insideTop''insideBottom''insideTopLeft''insideBottomLeft''insideTopRight''insideBottomRight'
+                    position: 'inside',
+                    // 文本样式
+                    textStyle: {
+                      fontSize: 16,
+                      color: 'black'
+                    }
+                  }
+                },
+                // 连接两个关系对象的线上的标签
+                edgeLabel: {
+                  normal: {
+                    show: false,
+                    textStyle: {
+                      fontSize: 14,
+                      color: 'target'
+                    },
+                    // 标签内容
+                    formatter: function(params){
+                        return params.data.type;
+                        }
+                  }
+                },
+                itemStyle: {},
+                force: {
+                  repulsion: 100
+                }
+              }
+            ]
+          };
+          myChartd.setOption(option1);
+        });//get函数结束
+
+        option1 && myChartd.setOption(option1);
+        //window.addEventListener('resize', myChartd.resize);
+        $(window).resize(myChartd.resize);
+
+
+
+        //1.7指标体系画图
+        var dom = document.getElementById('metric');
+        var myChart = echarts.init(dom, null, {
+          renderer: 'svg',
+          //useDirtyRect: true
+        });
+        var option2;
+        myChart.showLoading();
+        $.get('http://127.0.0.1:5000/api/show/metric', function (data) {
+            myChart.hideLoading();
+            data.children.forEach(function (datum, index) {
+                index % 2 === 0 && (datum.collapsed = true);
+            });
+        myChart.setOption(
+            (option2 = {
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove',
+                    formatter: function(params) {
+                        return '<div id="metricinfo">'+params.name + '<br>'  + '<br>' + ' ' + params.data.desc+'</div>';
+                    }
+                },
+                textStyle:{
+                    fontSize:24
+                },
+            series: [
+            {
+                roam:true,
+                type: 'tree',
+                data: [data],
+                layout:'orthogonal',
+                symbolSize: 7,
+                edgeShape: 'polyline',
+                initialTreeDepth:4,
+                //orient: 'vertical',
+                lineStyle:{
+                    width: 3,
+                },
+                //设置节点样式，用以区分叶子节点和飞叶子节点
+                itemStyle:{
+                    normal:{
+                        color:'#06c',
+                        borderColor:'#06c'
+                        },
+                    emphasis:{
+                        color:'#fffff',
+                        borderColor:'#06c'
+                        }
+                },
+                label: {
+                    position: 'right',
+                    fotFamily:'KaiTi',
+                    //verticalAlign: 'middle',
+                    //align: 'right',
+                    overflow:'hidden',
+                    margin: [2, 4],
+                    borderWidth: 1,  //文字添加边框
+                    borderColor: '',   //边框颜色
+                    backgroundColor: '#8FD5F3',   //节点模块背景色
+                    borderRadius: 2,   //圆角
+                    padding: [5, 4],
+                    rich: {
+                        keywords: {
+                            color: "red",
+                            fontSize: 12,
+                        },
+                        index: {
+                            fontSize: 12,
+                            color: '#F2CC76',
+                            position: '10%'
+                        },
+                    },
+                    heigth:50,
+                    width:200,   //定义矩形框长度
+                    fontSize: 28,  //文字大小
+                    color: '#FFFFFF', //文字颜色
+                    align:'center',  //文字的位置
+                    //文本省略
+                    formatter:function (value){
+                        if(value.data.name.length>6){
+                            value.data.name = value.data.name.substring(0,5) + '..'   //如果超出6个字符，显示5个+..
+                        }
+                        return value.data.name
+
+                    },
+                },
+                leaves: {
+                    label: {
+                        position: 'right',
+                        verticalAlign: 'middle',
+                        //align: 'left'
+                }
+                },
+                emphasis: {
+                    focus: 'descendant'
+                },
+                expandAndCollapse: true,
+                animationDuration: 550,
+                animationDurationUpdate: 750
+            }
+            ]
+    }));
+});//get函数结束
+
+        if (option2 && typeof option2 === 'object') {
+            myChart.setOption(option2);
+        }
+        //window.addEventListener('resize', myChart.resize);
+        //$(window).resize(myChart.resize);
+
+
+        //1.8处理三个分类的按钮的点击事件函数
+        $('#switch span').click(function(event){
+            //先把三个span的active全部去掉,再把点击的设置为active
+            $('#switch span').removeClass('active')
+            $(this).addClass('active')
+            //之后进行可视化的切换:将部分元素隐藏,将部分元素显示 调用hide和show函数就可以
+            //this.text表示这个按钮的名字
+            if ($(this).text()=='数据层'){
+
+                $('#svg1').show()
+                $('#metric').hide()
+                //$(window).trigger('resize');
+            }else if($(this).text()=='指标体系'){
+                $('#svg1').hide()
+                $('#metric').show()
+                //$(window).trigger('resize');
+            }else if($(this).text()=='历史图谱'){
+                $('#svg1').hide()
+                $('#metric').hide()
+            }
+        });
+
+        //两种显示模式
+        $('#mode span').click(function(event){
+            //先把三个span的active全部去掉,再把点击的设置为active
+            $('#mode span').removeClass('active')
+            $(this).addClass('active')
+            //this.text表示这个按钮的名字
+            if ($(this).text()=='Circles'){
+                console.log("hello")
+                option1.series[0].label.normal.show = false;
+                option1.series[0].edgeLabel.normal.show = false;
+                console.log( option1.series[0].edgeLabel.normal.show)
+                myChartd.setOption(option1);
+
+            }else if($(this).text()=='Texts'){
+                console.log("hello")
+                //option1.series[0].label.normal.show = true;
+                option1.series[0].edgeLabel.normal.show = true;
+                myChartd.setOption(option1);
+            }
+        });
+
+        //1.9 选中节点后显示 info
+        //为#svg1中所有的'.node circle'元素，绑定'mouseenter'事件
+        $('#svg1').on('mouseenter','.nodes circle',function(evevt){
+            //拖动时不允许触发mouseenter
+            if (!dragging) {
+                var name=$(this).attr('name');
+                // 把info标题的颜色改为结点所属类别的颜色
+                $('#info h4').css('color', $(this).attr('fill')).text(name);
+                // 去掉旧的<p></p>
+                $('#info p').remove();
+
+            }
+        })
+        //1.10 info指标体系
+        $('#metric').on('mouseenter','g text',function(evevt){
+            //拖动时不允许触发mouseenter
+
+                var name=$(this).attr('name');
+                // 把info标题的颜色改为结点所属类别的颜色
+                $('#info h4').css('color', $(this).attr('fill')).text(name);
+                // 去掉旧的<p></p>
+                $('#info p').remove();
+                $('#info h4').remove();
+                var divText = document.getElementById("metricinfo").textContent;
+                console.log(divText)
+                $('#info').append('<p><span>'+divText+'</span></p>')
+        })
+
+
+})//ready函数结束
+
+</script>
+</body>
+</html>
