@@ -5,6 +5,21 @@ from celery import Task, Celery
 from . import config
 from .Indicator_K_Json2 import Config
 import uuid
+
+
+import logging
+from logging.handlers import TimedRotatingFileHandler
+from celery.utils.log import get_task_logger
+
+# 配置日志
+logger = get_task_logger(__name__)
+file_handler = TimedRotatingFileHandler('celery.log', when='midnight')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
+
 celery=Celery()
 celery.config_from_object(config)
 
@@ -23,15 +38,23 @@ class MyTask(Task): # celery 基类
         return super(MyTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
 
+""""
+    执行逻辑：针对不同的API接口
+        任务
+"""
 
-@celery.task(bind=True, base=MyTask)
-def apptask(self):
-    #print(current_app.config)
-    print("==============%s " % current_app.config["SQLALCHEMY_DATABASE_URI"])
-    print("++++++++++++++%s " % os.getenv("DATABASE_URL"))
-    print('it is the first step')
-    time.sleep(5)
-    return 'success'
+from .config import Config
+############## 任务接收API接口设计
+@celery.task(bind=True,base=MyTask)
+def Recv_api(Config):
+    
+
+
+
+
+
+
+
 
 # 执行导入指令
 @celery.task(bind=True,base=MyTask)
@@ -46,23 +69,4 @@ def start_evaluate(url,k,l,t):
     work_uuid = str(uuid.uuid4())  ##定义uuid
     print("评估任务uuid为：", work_uuid)
     Config(k,l,t,url,work_uuid).Run()
-
-
-
-
-# @celery.task(bind=True,base=MyTask)
-# def utli(self):
-#     print(time.time())
-#     time.sleep(5)
-#     get_time.delay()
-#     apptask.delay()
-#     return 'it is the final step'
-
-
-
-# @celery.task(bind=True,base=MyTask)
-# def start(self,url):
-#     strat_evaluate(url)
-#     return '任务已提交，正在执行中...'
-
 
