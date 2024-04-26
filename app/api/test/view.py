@@ -1,5 +1,4 @@
 from flask import jsonify
-from celery_task.task import apptask,get_time
 from app.api.test import api_test
 #from flask import current_app
 from celery import current_app

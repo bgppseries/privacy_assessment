@@ -1,1 +1,130 @@
-2024-04-12 20:05:56,825 - celery_task.celery - INFO - 1
+2024-04-25 13:41:32,718 - celery_task.celery - INFO - 1
+2024-04-25 14:03:06,416 - celery_task.celery - INFO - json评估任务启动，任务配置：celery@dell-Precision-7920-Tower ['hotel_name']
+2024-04-25 14:08:17,677 - celery_task.celery - INFO - json评估任务启动，任务配置：celery@dell-Precision-7920-Tower ['hotel_name']
+2024-04-25 14:08:17,703 - celery_task.celery - INFO - 风险评估已启动，子进程id是：deb83ffc-fa78-41e0-9865-d1d5768e349f 
+2024-04-25 14:17:14,123 - celery_task.celery - INFO - json评估任务启动，任务配置：fe855f96-0ceb-4aec-b59e-db3826b3d2e9 ['hotel_name']
+2024-04-25 14:17:14,150 - celery_task.celery - INFO - 风险评估已启动，子进程id是：888577ac-3bd8-4d78-befe-4466e841cb89
+2024-04-25 14:17:17,711 - celery_task.celery - INFO - json评估任务启动，任务配置：0ad1777c-0208-44b3-a422-44bb2be4af30 ['hotel_name']
+2024-04-25 14:17:17,712 - celery_task.celery - INFO - 风险评估已启动，子进程id是：7d7d5ecf-975f-4ee9-9aab-19a2b94b46e0
+2024-04-25 14:17:21,014 - celery_task.celery - INFO - json评估任务启动，任务配置：81ca348d-33d5-4f81-ab79-0b01adc9336f ['hotel_name']
+2024-04-25 14:17:21,038 - celery_task.celery - INFO - 风险评估已启动，子进程id是：18f94a00-1a12-4480-aab5-4169c892802a
+2024-04-25 14:23:28,256 - celery_task.celery - INFO - json评估任务启动，任务配置：d118a6d0-11f3-48c8-976c-78e9ec05835e ['hotel_name']
+2024-04-25 14:23:28,282 - celery_task.celery - INFO - 风险评估已启动，子进程id是：8d2c7ac0-e749-4bbc-bd4d-9c9415f6e60e
+2024-04-25 14:24:26,663 - celery_task.celery - INFO - 评估任务id: d118a6d0-11f3-48c8-976c-78e9ec05835e,风险评估结果：0.0
+2024-04-25 14:24:26,663 - celery_task.celery - INFO - 评估任务id: d118a6d0-11f3-48c8-976c-78e9ec05835e,统计推断攻击结果: 0.0125
+2024-04-25 15:13:26,968 - celery_task.celery - INFO - json评估任务启动，任务配置：8ffeadba-89f9-4aad-930f-46e993eba9d3 ['hotel_name']
+2024-04-25 15:13:26,995 - celery_task.celery - INFO - 风险评估已启动，子进程id是：3dcb4904-616a-4e93-be20-f4fdc81b2971
+2024-04-25 15:13:26,996 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：f285a366-1136-4977-830a-b1264f98916a
+2024-04-25 15:13:26,997 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：cfd173b3-e30e-4ffb-aba9-e658e74a800e
+2024-04-25 15:13:26,998 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：a28dcb6e-5c70-43bd-b5ed-61f65f86e8e2
+2024-04-25 15:14:23,220 - celery_task.celery - INFO - 评估任务id: 8ffeadba-89f9-4aad-930f-46e993eba9d3,风险评估结果：0.0
+2024-04-25 15:14:23,220 - celery_task.celery - INFO - 评估任务id: 8ffeadba-89f9-4aad-930f-46e993eba9d3,统计推断攻击结果: 0.0
+2024-04-25 15:23:42,990 - celery_task.celery - INFO - json评估任务启动，任务配置：f1f5ed96-aaf9-479f-aa2f-db6462234fe1 ['hotel_name']
+2024-04-25 15:23:43,016 - celery_task.celery - INFO - 风险评估已启动，子进程id是：2dcff6f2-0540-41a4-931f-b01302fa6387
+2024-04-25 15:23:43,017 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：eb8feb15-cb34-48f3-9fe5-7fde9b34eee1
+2024-04-25 15:23:43,018 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：e60c805e-6de2-4904-95ff-aa880a7d5001
+2024-04-25 15:23:43,020 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：436791c3-67cc-4251-b9cf-72e8fd7fd663
+2024-04-25 15:23:43,020 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：1ecbdc5a-6c91-4a07-9eb6-d4276f04bee6
+2024-04-25 15:23:43,021 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：dc59a6c5-5406-4b14-a8ac-b24820b333e4
+2024-04-25 15:24:46,195 - celery_task.celery - INFO - 评估任务id: f1f5ed96-aaf9-479f-aa2f-db6462234fe1,风险评估结果：0.025
+2024-04-25 15:24:46,196 - celery_task.celery - INFO - 评估任务id: f1f5ed96-aaf9-479f-aa2f-db6462234fe1,统计推断攻击结果: 0.0
+2024-04-25 15:32:23,784 - celery_task.celery - INFO - json评估任务启动，任务配置：d3f93df2-bbcc-4df0-9b4d-f5a87ac58563 ['hotel_name']
+2024-04-25 15:32:23,811 - celery_task.celery - INFO - 风险评估已启动，子进程id是：2f3e9952-f379-4c58-841f-e514843c990b
+2024-04-25 15:32:23,813 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：111a5077-ba6e-47e6-82f9-4135acad7970
+2024-04-25 15:32:23,816 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：a44056e7-3d4a-4278-a940-8a31928fa25b
+2024-04-25 15:32:23,817 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：54bfda69-3fa2-4ec3-bf92-97edb8aaa689
+2024-04-25 15:32:23,818 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：3a8b1e3e-83b5-4fad-a5ff-18ce2b5a4803
+2024-04-25 15:32:23,819 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：54de6f33-4a64-470b-a3a0-2ae484c7c391
+2024-04-25 15:33:25,071 - celery_task.celery - INFO - 评估任务id: d3f93df2-bbcc-4df0-9b4d-f5a87ac58563,风险评估结果：0.0
+2024-04-25 15:33:25,072 - celery_task.celery - INFO - 评估任务id: d3f93df2-bbcc-4df0-9b4d-f5a87ac58563,统计推断攻击结果: 0.025
+2024-04-25 15:35:24,004 - celery_task.celery - INFO - d3f93df2-bbcc-4df0-9b4d-f5a87ac58563所有评估任务均已成功执行！
+2024-04-25 16:25:06,075 - celery_task.celery - INFO - json评估任务启动，任务配置：1b364d73-9a96-4a91-8248-00b124c84757 ['hotel_name']
+2024-04-25 16:25:06,076 - celery_task.celery - INFO - 风险评估已启动，子进程id是：c8daacb1-b3da-4aa3-967a-eeec39ccaf36
+2024-04-25 16:25:06,078 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：ed82c70a-20f3-4086-8e58-9df602df4541
+2024-04-25 16:25:06,080 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：bb751e8f-2a52-4961-865b-a494d83fa6de
+2024-04-25 16:25:06,082 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：eaf34566-ce97-4db2-b399-ab9b53a7e089
+2024-04-25 16:25:06,084 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：e21f2779-8747-4125-bbb5-781cf4ce79d3
+2024-04-25 16:25:06,085 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：719628a1-ed8a-4922-b76b-0b746a941452
+2024-04-25 16:26:06,062 - celery_task.celery - INFO - 评估任务id: 1b364d73-9a96-4a91-8248-00b124c84757,风险评估结果：0.025
+2024-04-25 16:26:06,063 - celery_task.celery - INFO - 评估任务id: 1b364d73-9a96-4a91-8248-00b124c84757,统计推断攻击结果: 0.0
+2024-04-25 16:26:06,152 - celery_task.celery - INFO - 1b364d73-9a96-4a91-8248-00b124c84757所有评估任务均已成功执行！
+2024-04-25 16:28:30,908 - celery_task.celery - INFO - json评估任务启动，任务配置：dfeaa1a6-4743-476a-9a6c-471c93079581 ['hotel_name']
+2024-04-25 16:28:30,910 - celery_task.celery - INFO - 风险评估已启动，子进程id是：275144f6-d4da-4a46-bd7d-231de4ae484e
+2024-04-25 16:28:30,912 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：48016f5c-25e2-4944-bc8a-d43cf2ea90a2
+2024-04-25 16:28:30,914 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：ead5cf1c-a015-46cd-a5e7-97a5d2ea38f0
+2024-04-25 16:28:30,916 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：1db14e77-d713-4a4b-87bb-39dcb196c250
+2024-04-25 16:28:30,917 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：89c24e22-6b31-4c18-bc5f-a111134e7967
+2024-04-25 16:28:30,919 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：b88684cb-d238-4abf-bcb5-060415419e92
+2024-04-25 16:28:45,917 - celery_task.celery - INFO - json评估任务启动，任务配置：e92b9e5c-a651-467c-98e1-915a49cfe492 ['hotel_name']
+2024-04-25 16:28:45,945 - celery_task.celery - INFO - 风险评估已启动，子进程id是：87f528bf-b400-40c4-9faa-ac9ca0fe85ec
+2024-04-25 16:28:45,947 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：3796dc9b-bcf4-4211-a379-cd6bdd601a35
+2024-04-25 16:28:45,949 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：342bb727-8887-4cf6-bd8e-277096abd87c
+2024-04-25 16:28:45,951 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：d54a59ec-1c9f-43d1-9c6b-8fb5c509fa73
+2024-04-25 16:28:45,952 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：46689e69-2858-471e-85f9-60aa4db66daf
+2024-04-25 16:28:45,954 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：9a501075-1071-4526-9455-6d6e4ce343fe
+2024-04-25 16:28:46,757 - celery_task.celery - INFO - json评估任务启动，任务配置：a345fc6d-3329-4935-9732-a137346369a1 ['hotel_name']
+2024-04-25 16:28:46,785 - celery_task.celery - INFO - 风险评估已启动，子进程id是：dabebe4d-5b54-42c0-b8b8-b6d3a790307e
+2024-04-25 16:28:46,786 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：36df6489-9cf9-4c6b-9d1b-eea5453729ad
+2024-04-25 16:28:46,787 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：8ec91c76-471e-44e9-a7f4-cbf7201d76d7
+2024-04-25 16:28:46,788 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：a238408c-25a2-42f4-9c12-7cac0ff8490f
+2024-04-25 16:28:46,789 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：918666c3-aaf8-4d0d-859a-6d36b26fc316
+2024-04-25 16:28:46,790 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：cc379e51-3bda-445d-afc0-d182de7bb1ba
+2024-04-25 16:28:47,546 - celery_task.celery - INFO - json评估任务启动，任务配置：01cdf203-7b32-45b8-b739-e4b3d8cf8220 ['hotel_name']
+2024-04-25 16:28:47,570 - celery_task.celery - INFO - 风险评估已启动，子进程id是：40028583-160c-4a00-9f5b-a8b71567e575
+2024-04-25 16:28:47,571 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：589e2d99-3fa0-4100-a130-2fcbc64e5004
+2024-04-25 16:28:47,572 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：50caea7f-2d99-4e93-a9e5-9876b9a35f73
+2024-04-25 16:28:47,573 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：458a9a07-9162-46c0-832d-d0f1d4c8182a
+2024-04-25 16:28:47,573 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：6b66fbac-fc8f-4351-b0fc-2cc069b30f98
+2024-04-25 16:28:47,574 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：61b92c17-6cfa-4d45-9e43-bd75398935db
+2024-04-25 16:28:48,306 - celery_task.celery - INFO - json评估任务启动，任务配置：0499c16c-1941-4740-a263-45b650bc5d2b ['hotel_name']
+2024-04-25 16:28:48,329 - celery_task.celery - INFO - 风险评估已启动，子进程id是：548ea523-dc8c-413d-9dc9-403049bdf922
+2024-04-25 16:28:48,330 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：e5fedfd6-8d46-4ba3-a8d8-22a39488ba80
+2024-04-25 16:28:48,331 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：23666837-76dc-48e7-95e6-58a3aa801374
+2024-04-25 16:28:48,332 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：fdd70dca-fdb3-4af7-9988-8bf5b7e83f3e
+2024-04-25 16:28:48,333 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：a1ce2054-76f5-4a87-8e16-4c7c2cb32efb
+2024-04-25 16:28:48,333 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：27ebd146-21f7-4a87-ba1b-eb464aaf07ea
+2024-04-25 16:28:48,924 - celery_task.celery - INFO - json评估任务启动，任务配置：ea507130-36ff-4d28-8c8f-aa579be3b66d ['hotel_name']
+2024-04-25 16:28:48,950 - celery_task.celery - INFO - 风险评估已启动，子进程id是：633e6f54-93ff-49f6-ba59-8ce80f80cdc5
+2024-04-25 16:28:48,951 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：6c48f5ea-7dab-4a5c-8b8c-c8890ee7a76e
+2024-04-25 16:28:48,952 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：a6d13aa2-ba6c-48e0-90c4-662d53edcc74
+2024-04-25 16:28:48,953 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：dd49b739-fc95-47a3-8615-a9aeb4847a24
+2024-04-25 16:28:48,954 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：b1424112-77d2-40b3-9294-ecb6617bf566
+2024-04-25 16:28:48,954 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：de824b11-1593-48e8-a0c7-de9b8f15f918
+2024-04-25 16:28:49,527 - celery_task.celery - INFO - json评估任务启动，任务配置：3128f0c7-cb70-438e-8c54-7651c186dd27 ['hotel_name']
+2024-04-25 16:28:49,550 - celery_task.celery - INFO - 风险评估已启动，子进程id是：d4fc2134-60f2-4484-8442-41a7d0795ca9
+2024-04-25 16:28:49,551 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：eff102cf-7f52-47d0-a3be-66b60c44d151
+2024-04-25 16:28:49,552 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：4997e7c4-e5af-45c8-ad9e-59040096a0a9
+2024-04-25 16:28:49,553 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：984a4600-c4c6-45c1-b2bd-9dcc75360899
+2024-04-25 16:28:49,554 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：e3eabb18-1ced-4d73-94f4-6b69f91daa98
+2024-04-25 16:28:49,555 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：019969c5-9f11-4de7-924a-aa18b743fa13
+2024-04-25 16:29:29,361 - celery_task.celery - INFO - 评估任务id: dfeaa1a6-4743-476a-9a6c-471c93079581,风险评估结果：0.0
+2024-04-25 16:29:29,361 - celery_task.celery - INFO - 评估任务id: dfeaa1a6-4743-476a-9a6c-471c93079581,统计推断攻击结果: 0.025
+2024-04-25 16:29:30,985 - celery_task.celery - INFO - dfeaa1a6-4743-476a-9a6c-471c93079581所有评估任务均已成功执行！
+2024-04-25 16:29:42,363 - celery_task.celery - INFO - 评估任务id: e92b9e5c-a651-467c-98e1-915a49cfe492,风险评估结果：0.025
+2024-04-25 16:29:42,363 - celery_task.celery - INFO - 评估任务id: e92b9e5c-a651-467c-98e1-915a49cfe492,统计推断攻击结果: 0.0
+2024-04-25 16:29:44,478 - celery_task.celery - INFO - 评估任务id: a345fc6d-3329-4935-9732-a137346369a1,风险评估结果：0.025
+2024-04-25 16:29:44,478 - celery_task.celery - INFO - 评估任务id: a345fc6d-3329-4935-9732-a137346369a1,统计推断攻击结果: 0.0
+2024-04-25 16:29:46,021 - celery_task.celery - INFO - e92b9e5c-a651-467c-98e1-915a49cfe492所有评估任务均已成功执行！
+2024-04-25 16:29:46,381 - celery_task.celery - INFO - 评估任务id: 0499c16c-1941-4740-a263-45b650bc5d2b,风险评估结果：0.025
+2024-04-25 16:29:46,382 - celery_task.celery - INFO - 评估任务id: 0499c16c-1941-4740-a263-45b650bc5d2b,统计推断攻击结果: 0.0
+2024-04-25 16:29:46,850 - celery_task.celery - INFO - a345fc6d-3329-4935-9732-a137346369a1所有评估任务均已成功执行！
+2024-04-25 16:29:46,946 - celery_task.celery - INFO - 评估任务id: 01cdf203-7b32-45b8-b739-e4b3d8cf8220,风险评估结果：0.025
+2024-04-25 16:29:46,947 - celery_task.celery - INFO - 评估任务id: 01cdf203-7b32-45b8-b739-e4b3d8cf8220,统计推断攻击结果: 0.0
+2024-04-25 16:29:47,265 - celery_task.celery - INFO - 评估任务id: 3128f0c7-cb70-438e-8c54-7651c186dd27,风险评估结果：0.025
+2024-04-25 16:29:47,266 - celery_task.celery - INFO - 评估任务id: 3128f0c7-cb70-438e-8c54-7651c186dd27,统计推断攻击结果: 0.0
+2024-04-25 16:29:47,618 - celery_task.celery - INFO - 评估任务id: ea507130-36ff-4d28-8c8f-aa579be3b66d,风险评估结果：0.025
+2024-04-25 16:29:47,618 - celery_task.celery - INFO - 评估任务id: ea507130-36ff-4d28-8c8f-aa579be3b66d,统计推断攻击结果: 0.0
+2024-04-25 16:29:47,682 - celery_task.celery - INFO - 01cdf203-7b32-45b8-b739-e4b3d8cf8220所有评估任务均已成功执行！
+2024-04-25 16:29:48,397 - celery_task.celery - INFO - 0499c16c-1941-4740-a263-45b650bc5d2b所有评估任务均已成功执行！
+2024-04-25 16:29:49,021 - celery_task.celery - INFO - ea507130-36ff-4d28-8c8f-aa579be3b66d所有评估任务均已成功执行！
+2024-04-25 16:29:49,622 - celery_task.celery - INFO - 3128f0c7-cb70-438e-8c54-7651c186dd27所有评估任务均已成功执行！
+2024-04-25 21:20:55,748 - celery_task.celery - INFO - json评估任务启动，任务配置：4ca5fc84-ce73-4664-b0a0-308f308907c6 ['hotel_name']
+2024-04-25 21:20:55,777 - celery_task.celery - INFO - 风险评估已启动，子进程id是：04916883-4d0f-4b22-8a91-d9ab36c16dc6
+2024-04-25 21:20:55,778 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：aeeca4bf-756f-4adf-982f-a2d2db98f04b
+2024-04-25 21:20:55,779 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：006c95b9-804c-40e8-a8c8-2b40be2189ef
+2024-04-25 21:20:55,780 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：bc7cdf9c-3990-40bd-b3d4-10084af0c815
+2024-04-25 21:20:55,781 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：b6349fed-89a7-4c3a-b284-5a8fb48e989e
+2024-04-25 21:20:55,782 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：3e224f08-1ccc-44ab-8c58-e9545733cea6
+2024-04-25 21:21:50,561 - celery_task.celery - INFO - 评估任务id: 4ca5fc84-ce73-4664-b0a0-308f308907c6,风险评估结果：0.025
+2024-04-25 21:21:50,561 - celery_task.celery - INFO - 评估任务id: 4ca5fc84-ce73-4664-b0a0-308f308907c6,统计推断攻击结果: 0.0
+2024-04-25 21:21:55,851 - celery_task.celery - INFO - 4ca5fc84-ce73-4664-b0a0-308f308907c6所有评估任务均已成功执行！

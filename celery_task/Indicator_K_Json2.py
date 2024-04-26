@@ -9,138 +9,97 @@ import queue
 import numpy as np
 import time
 import uuid
+from celery_task.config import Config
 
+# global_uuid = str(uuid.uuid4())  ##定义全局变量uuid数据
+# print("uuid为：", global_uuid)
 
-global_uuid = str(uuid.uuid4())  ##定义全局变量uuid数据
-print("uuid为：", global_uuid)
-
-class Config:
-    def __init__(self,k,l,t,address):
-        '''
-        :param k: 输入K匿名
-        :param l: 输入l多样性
-        :param t: 输入T紧密度
-        :param address:选取的文件地址
-        '''
-        # self.graph = Graph("http://localhost:7474/browser/", auth=("neo4j", "123456"))
-        # self.graph = Graph("http://192.168.1.121:7474/browser/", auth=("neo4j", "123456"))
-
-        self.json_address = address  ##待评价的数据文件地址
-        self.address_Attr = [["sex","age","id_number","phone"] , ["day_start","day_end","hotel_name"]]##数据文件的属性（主要包含：准标识符属性和敏感属性）
-
-        self.K_Anonymity = k                                        ##定义好的K-Anonymity数
-        self.L_diversity = l                                               ##定义好的L_diversity数
-        self.T_closeness = t                                             ##定义好的T紧密度
-        self.n_s = 0                                                           ##数据集中被隐匿的记录个数，即原数据集中有却没有在脱敏数据集发布的记录个数，暂时定义为0
-
-    def _Function_Data(self):
-        '''
-        :return: 返回文件的所有数据
-        10万条数据，0.29秒
-        '''
-        with open(self.json_address, 'r', encoding='UTF-8') as f:
-            result = json.load(f)
-        return pd.DataFrame(result)
-
-    def _Function_Series_quasi(self):
-        '''
-        :return: 返回数据中的所有准标识符，及其数量,按照升序排列,<class 'pandas.core.series.Series'>格式
-        10万条数据，用时0.3秒
-        '''
-        _TemAll = self._Function_Data()
-        return _TemAll.groupby(self.address_Attr[0], sort=False).size().sort_values()
-
-    def _Probabilistic_Distribution_Privacy(self,each_privacy):
-        '''
-        :param each_privacy:选取的某一个隐私属性或者某几个隐私属性
-        :return:返回针对选取的隐私属性的概率分布,默认降序
-        10万条数据，用时0.29秒
-        '''
-        _TemAll = self._Function_Data()
-        return _TemAll[each_privacy].value_counts(normalize=True)
-
-    def _Num_address(self):
-        '''
-        :return: 返回所有数据的个数
-        10万条数，0.2秒
-        '''
-        with open(self.json_address, 'r', encoding='UTF-8') as f:
-            result = json.load(f)  ##10万条数据
-            return len(result)
-
-    def Run(self):
-        Series_quasi = self._Function_Series_quasi()##结果为升序
-        print(Series_quasi)
-        _TemAll = self._Function_Data()
-
-
-        # Grouped = _TemAll.groupby("hotel_name", sort=False)
-        # i = 0
-        # for each in Grouped:
-        #     if(i==5):
-        #         break
-        #     print(each)
-        #     Quasi_P = each[1][self.address_Attr[0]].value_counts()
-        #     print(Quasi_P)   ##得到所有包含敏感数据值的等价组。
-        #     for each_quasi in Quasi_P.keys():
-        #         print(Series_quasi[each_quasi],end ="     ")
-        #     print("")
-        #     i+=1
-
-        # handler1 = Privacy_data(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        # handler1.run(Series_quasi)                          ##传递标签和其对应的准标识符集合，以及准标识符对应的数量
-        # handler2 = Privacy_policy(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        # handler2.run(Series_quasi)                          ##传递标签和其对应的准标识符集合，以及准标识符对应的数量
-        
-
-        ##数据合规性
-        handler1 = Data_compliance(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        handler1.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-        ##数据可用性
-        handler2 = Data_availability(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        handler2.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-        ##匿名集数据特征
-        handler3 = Desensitization_data_character(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        handler3.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-        ##匿名数据质量评估
-        handler4 = Desensitization_data_quality_evalution(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        handler4.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-        ##隐私保护性度量
-        handler5 = privacy_protection_metrics(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-        handler5.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-
-
-# #脱敏数据：主要包括匿名集数据特征、数据质量评估和隐私保护性度量
-# class Privacy_data(Config):
-#     def __init__(self, k, l,t,address):
+# class Config:
+#     def __init__(self,k,l,t,address):
 #         '''
 #         :param k: 输入K匿名
 #         :param l: 输入l多样性
 #         :param t: 输入T紧密度
 #         :param address:选取的文件地址
 #         '''
-#         super().__init__(k,l,t,address)
-#
-#
-#     def run(self, Series_quasi):      ##运行程序，主要运行匿名集数据特征、数据质量评估和隐私保护性度量
-#         handler1 = Desensitization_data_character(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
+#         # self.graph = Graph("http://localhost:7474/browser/", auth=("neo4j", "123456"))
+#         # self.graph = Graph("http://192.168.1.121:7474/browser/", auth=("neo4j", "123456"))
+
+#         self.json_address = address  ##待评价的数据文件地址
+#         self.address_Attr = [["sex","age","id_number","phone"] , ["day_start","day_end","hotel_name"]]##数据文件的属性（主要包含：准标识符属性和敏感属性）
+
+#         self.K_Anonymity = k                                        ##定义好的K-Anonymity数
+#         self.L_diversity = l                                               ##定义好的L_diversity数
+#         self.T_closeness = t                                             ##定义好的T紧密度
+#         self.n_s = 0                                                           ##数据集中被隐匿的记录个数，即原数据集中有却没有在脱敏数据集发布的记录个数，暂时定义为0
+
+#     def _Function_Data(self):
+#         '''
+#         :return: 返回文件的所有数据
+#         10万条数据，0.29秒
+#         '''
+#         with open(self.json_address, 'r', encoding='UTF-8') as f:
+#             result = json.load(f)
+#         return pd.DataFrame(result)
+
+#     def _Function_Series_quasi(self):
+#         '''
+#         :return: 返回数据中的所有准标识符，及其数量,按照升序排列,<class 'pandas.core.series.Series'>格式
+#         10万条数据，用时0.3秒
+#         '''
+#         _TemAll = self._Function_Data()
+#         return _TemAll.groupby(self.address_Attr[0], sort=False).size().sort_values()
+
+#     def _Probabilistic_Distribution_Privacy(self,each_privacy):
+#         '''
+#         :param each_privacy:选取的某一个隐私属性或者某几个隐私属性
+#         :return:返回针对选取的隐私属性的概率分布,默认降序
+#         10万条数据，用时0.29秒
+#         '''
+#         _TemAll = self._Function_Data()
+#         return _TemAll[each_privacy].value_counts(normalize=True)
+
+#     def _Num_address(self):
+#         '''
+#         :return: 返回所有数据的个数
+#         10万条数，0.2秒
+#         '''
+#         with open(self.json_address, 'r', encoding='UTF-8') as f:
+#             result = json.load(f)  ##10万条数据
+#             return len(result)
+
+#     def Run(self):
+#         Series_quasi = self._Function_Series_quasi()##结果为升序
+#         print(Series_quasi)
+#         _TemAll = self._Function_Data()
+#         ##数据合规性
+#         handler1 = Data_compliance(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
 #         handler1.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-#         handler2 = Desensitization_data_quality_evalution(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
+#         ##数据可用性
+#         handler2 = Data_availability(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
 #         handler2.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-#         handler3 = privacy_protection_metrics(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
+#         ##匿名集数据特征
+#         handler3 = Desensitization_data_character(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
 #         handler3.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
+#         ##匿名数据质量评估
+#         handler4 = Desensitization_data_quality_evalution(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
+#         handler4.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
+#         ##隐私保护性度量
+#         handler5 = privacy_protection_metrics(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
+#         handler5.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
+
 
 
 ##匿名集数据特征
 class Desensitization_data_character(Config):
-    def __init__(self, k, l, t, address):
+    def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''
         :param k: 输入K匿名
         :param l: 输入l多样性
         :param t: 输入T紧密度
         :param address: 选取文件的地址
         '''
-        super().__init__(k, l, t, address)
+        super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
 
     def Average_degree_annonymity(self, Series_quasi):
         '''
@@ -197,14 +156,14 @@ class Desensitization_data_character(Config):
 
 ##匿名数据质量评估
 class Desensitization_data_quality_evalution(Config):
-    def __init__(self, k, l, t, address):
+    def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''
         :param k: 输入K匿名
         :param l: 输入l多样性
         :param t: 输入T紧密度
         :param address: 选取的文件地址
         '''
-        super().__init__(k, l, t, address)
+        super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
 
     def Get_Entropy_based_Average_loss(self, Series_quasi):
         '''
@@ -235,6 +194,7 @@ class Desensitization_data_quality_evalution(Config):
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         length = len(Series_quasi_keys)                                                         ##等价组个数
         res = 0                                                                                                       ##返回值
+        Attr = ()                                                                                                     ##对应的等价组
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布,默认降序
             Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
@@ -246,7 +206,8 @@ class Desensitization_data_quality_evalution(Config):
                     sum_leakage += (Distribution_P[key]) ** 2
             if math.sqrt(sum_leakage) > res:  ##返回等价组中最大的那个分布泄露
                 res = math.sqrt(sum_leakage)
-        return res
+                Attr = Series_quasi_keys[i]
+        return res,Attr
 
 
 
@@ -263,6 +224,7 @@ class Desensitization_data_quality_evalution(Config):
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         length = len(Series_quasi_keys)                                                         ##等价组个数
         res = 0                                                                                                       ##返回值
+        Attr = ()
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布,默认降序
             Entropy_leakage = float(Hmax)                                                           ##熵泄露，Entropy Leakage
@@ -271,8 +233,9 @@ class Desensitization_data_quality_evalution(Config):
                 Entropy_leakage += each_value * math.log2(each_value)
             if math.fabs(Entropy_leakage) > res:
                 res = math.fabs(Entropy_leakage)
-        return res
-
+                Attr = Series_quasi_keys[i]
+        return res,Attr
+    
 
     def Get_Positive_Information_Disclosure(self, each_privacy, Series_quasi):
         '''
@@ -283,34 +246,81 @@ class Desensitization_data_quality_evalution(Config):
         '''
         _TemAll = self._Function_Data()
         Num_All = self._Num_address()  ##所有数据的个数,10万
-        min_value = float("inf")                ##将其初始化为一个无穷大的数
+        max_value = 0.0                ##将其初始化为0.0
         Attr = ()
         Grouped = _TemAll.groupby(each_privacy, sort=False)  ##将数据按照所选敏感属性分组
         for each in Grouped:                                                                ##选取某个敏感属性值
+            # print(each[0],"      ",len(each[1]))
             Quasi_P = each[1][self.address_Attr[0]].value_counts()  ##得到所有包含这个敏感属性值的等价组
             Positive_Num = 0                                                                ##所有包含这个敏感属性值的等价组大小之和
             for each_quasi in Quasi_P.keys():
                 Positive_Num += Series_quasi[each_quasi]
-            if Positive_Num < min_value:                                           ##选取最小的和
-                min_value = Positive_Num
+            tem = (Positive_Num - len(each[1])) / len(each[1])
+            if tem > max_value:                                           ##选取最小的和
+                max_value = tem
                 Attr = each[0]
-        return round((Num_All / min_value) - 1 , 4),Attr
+        return round(tem, 4),Attr
+    
+
+    def Get_KL_Divergence(self,each_privacy,Series_quasi_keys):        
+        '''
+        :param Series_quasi_keys: 文件中所有的准标识符
+        :param each_privacy:选取的隐私属性
+        :return: 返回所有等价组中的最大KL散度，即用KL散度来衡量每一个等价组中的隐私属性分布与整体分布之间的距离 
+        10万条数据，用时50秒
+        '''
+        Distribution_Privacy = self._Probabilistic_Distribution_Privacy(each_privacy)##返回整个数据中某一个敏感属性的概率分布
+        length = len(Series_quasi_keys)
+        res = 0
+        Attr = ()
+        _TemAll = self._Function_Data()
+        Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)##将数据分组
+        for i in range(length):
+            ##得到某个等价组的某个敏感属性的概率分布
+            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            Num_distance = 0
+            for each_Attribute in Distribution_QP.keys():   ##KL散度计算
+                Num_distance += (Distribution_QP[each_Attribute] * math.log2( Distribution_QP[each_Attribute] / Distribution_Privacy[each_Attribute]))
+            if Num_distance > res:                          ##找到最大值
+                res = Num_distance  
+                Attr = Series_quasi_keys[i]
+        return round(res,4),Attr
+    
+    def Get_Uniqueness(self,Series_quasi):
+        '''
+        :param Series_quasi: 数据集中所有的准标识符
+        :return:返回基于熵的数据损失度
+        返回数据集中唯一记录的占比。在最简单的定义中，如果等价类中只有一个记录，那么
+        该记录被认为是唯一的。唯一记录比非唯一记录更容易被重新识别
+        '''
+        Num_All = self._Num_address()
+        Num_Uniqueness = 0
+        for Num_each in Series_quasi:
+            if Num_each == 1:
+                Num_Uniqueness += 1
+            else:  ##由于Series_quasi存储着所有等价组大小，而且按升序排列
+                break
+        return Num_Uniqueness/Num_All
+        
+
 
 
     def runL(self, Series_quasi):
         Entropy_based_Average_Loss = self.Get_Entropy_based_Average_loss(Series_quasi)  ##0.23秒
         print(f"基于熵的平均数据损失度为：{round(Entropy_based_Average_Loss * 100, 2)}%")
+        Uniqueness_proportion = self.Get_Uniqueness(Series_quasi)  
+        print(f"数据集中唯一记录的占比为：{round(Uniqueness_proportion * 100, 2)}%，唯一记录比非唯一记录更容易被重新识别，极易遭受重标识攻击和偏斜攻击")
         listD = [];listE = [];listF = []
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start = time.time()
-            _max = self.Get_Distribution_Leakage(each_privacy, Series_quasi.keys())
-            print(f"数据集针对{each_privacy}的分布泄露为：{round(_max, 4)}")
+            _max,Attr = self.Get_Distribution_Leakage(each_privacy, Series_quasi.keys())
+            print(f"数据集针对{each_privacy}的分布泄露为：{round(_max, 4)},对应等价组为{Attr}")
             listD.append(round(_max, 4))
             # print(f"耗时为：{time.time() - start}")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start2 = time.time()
-            _max = self.Get_Entropy_Leakage(each_privacy, Series_quasi.keys())
-            print(f"数据集针对{each_privacy}的熵泄露为：{round(_max, 4)}")
+            _max,Attr = self.Get_Entropy_Leakage(each_privacy, Series_quasi.keys())
+            print(f"数据集针对{each_privacy}的熵泄露为：{round(_max, 4)},对应等价组为{Attr}")
             listE.append(round(_max, 4))
             # print(f"耗时为：{time.time() - start2}")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
@@ -319,19 +329,24 @@ class Desensitization_data_quality_evalution(Config):
             print(f"数据集针对{each_privacy}的正面信息披露为：{_max},对应属性值为{Attr}")
             listF.append(_max)
             # print(f"耗时为：{time.time()-start3}")
-
+        for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
+            # start4 = time.time()
+            _max,Attr = self.Get_KL_Divergence(each_privacy,Series_quasi.keys())
+            print(f"数据集针对{each_privacy}的KL散度为：{_max},对应等价组为{Attr}")
+            listF.append(_max)
+            # print(f"耗时为：{time.time()-start4}")
 
 
 ##隐私保护性度量
 class privacy_protection_metrics(Config):
-    def __init__(self, k, l, t, address):
+    def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''
         :param k: 输入K匿名
         :param l: 输入l多样性
         :param t: 输入T紧密度
         :param address: 选取的文件地址
         '''
-        super().__init__(k, l, t, address)
+        super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
 
     def Get_Entropy_based_Re_indentification_Risk(self,  Series_quasi_keys):
         '''
@@ -432,34 +447,17 @@ class privacy_protection_metrics(Config):
 
 
 
-# ##隐私策略：主要包括合规性和数据可用性
-# class Privacy_policy(Config):
-#     def __init__(self, k, l,t,address):
-#         '''
-#         :param k: 输入K匿名
-#         :param l: 输入l多样性
-#         :param t: 输入T紧密度
-#         :param address:选取的文件地址
-#         '''
-#         super().__init__(k,l,t,address)
-#
-#     def run(self, Series_quasi):   ##运行程序，主要运行合规性和数据可用性
-#         handler1 = Data_compliance(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-#         handler1.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-#         handler2 = Data_availability(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
-#         handler2.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-
 
 ##数据合规性
 class Data_compliance(Config):
-    def __init__(self, k, l,t,address):
+    def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''
         :param k: 输入K匿名
         :param l: 输入l多样性
         :param t: 输入T紧密度
         :param address:选取的文件地址
         '''
-        super().__init__(k,l,t,address)
+        super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
 
     def IsKAnonymity(self,Series_quasi):
         '''
@@ -494,8 +492,8 @@ class Data_compliance(Config):
         :param Series_quasi_keys: 文件中所有的准标识符
         :param each_privacy:选取的隐私属性
         :return: 返回输入等价组Series_quasi是否符合T紧密性，即每一个等价组中的隐私属性分布与整体分布之间的距离是否小于T_Closeness。若满足，返回True；反之，返回False
-        显而易见，t_closeness的一个关键在于如何定义两个分布之间的距离，EMD过于麻烦，以后有时间可以实现一下；这里采用的是KLD
-        10万条数据，用时20秒
+        显而易见，t_closeness的一个关键在于如何定义两个分布之间的距离，这里采用的是EMD
+        10万条数据，用时3秒
         '''
         Distribution_Privacy = self._Probabilistic_Distribution_Privacy(each_privacy)##返回整个数据中某一个敏感属性的概率分布
         length = len(Series_quasi_keys)
@@ -504,9 +502,12 @@ class Data_compliance(Config):
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布
             Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            # print(Distribution_QP)
             Num_distance = 0
             for each_Attribute in Distribution_QP.keys():
-                Num_distance += (Distribution_QP[each_Attribute] * math.log2( Distribution_QP[each_Attribute] / Distribution_Privacy[each_Attribute]))
+                if Distribution_QP[each_Attribute] > Distribution_Privacy[each_Attribute]:
+                    # print(Distribution_QP[each_Attribute],"    ", Distribution_Privacy[each_Attribute])
+                    Num_distance += (Distribution_QP[each_Attribute] - Distribution_Privacy[each_Attribute]) 
             if Num_distance > self.T_closeness:
                 return False,Series_quasi_keys[i]
         return True,-1
@@ -580,14 +581,14 @@ class Data_compliance(Config):
 
 ##数据可用性
 class Data_availability(Config):
-    def __init__(self, k, l,t,address):
+    def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''
         :param k: 输入K匿名
         :param l: 输入l多样性
         :param t: 输入T紧密度
         :param address:选取的文件地址
         '''
-        super().__init__(k,l,t,address)
+        super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
 
     def Get_CDM(self, Series_quasi):
         '''
@@ -644,15 +645,15 @@ class Data_availability(Config):
         CAVG = self.Get_CAVG(Series_quasi)
         print(f"归一化平均等价组大小度量：{CAVG}")
         # start = time.time()
-        NCP = self.Get_NCP(Series_quasi)
-        print(f"数据损失度为：",NCP)
+        # NCP = self.Get_NCP(Series_quasi)
+        # print(f"数据损失度为：",NCP)
         # print(f"耗时为{time.time()-start}")
 
 
 
-if __name__ == '__main__':
-    Config(2,2,8,"./data/json/3/hotel_1_3_1.json").Run()
-    print("********************************************************8")
+# if __name__ == '__main__':
+#     Config(2,2,0.95,"","./data/json/3/hotel_1_5_2.json",global_uuid,"","","").Run()
+#     print("********************************************************8")
 
 
 ##原本以为value_counts函数是有极限的，没想到是自己用法错误，人家函数很好，是自己废物了

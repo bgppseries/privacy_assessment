@@ -1,7 +1,7 @@
 import os
 import click
 from flask import Flask,jsonify
-from celery import Celery
+# from celery import Celery
 from mylog.logger import mylogger,set_logger
 from logging import INFO
 from app.api.file import api_file
@@ -16,26 +16,26 @@ logger=mylogger(__name__,INFO)
 set_logger(logger)
 
 #### make_celery函数目前不使用
-def make_celery(app):
-    #导入Flask配置文件env
-    #notice: install python-dotenv
-    from dotenv import load_dotenv,find_dotenv
-    load_dotenv(find_dotenv())
+# def make_celery(app):
+#     #导入Flask配置文件env
+#     #notice: install python-dotenv
+#     from dotenv import load_dotenv,find_dotenv
+#     load_dotenv(find_dotenv())
 
-    celery=Celery(
-        app.import_name,
-        broker_url="amqp://qwb:784512@192.168.1.121:5672/test",
-        result_backend = 'redis://:ningzaichun@192.168.1.121:6379/1'
-    )
-    # celery.conf.update(app.config)
-    celery.config_from_object(celery_config)
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_contexe():
-                return self.run(*args,**kwargs)
+#     celery=Celery(
+#         app.import_name,
+#         broker_url="amqp://qwb:784512@192.168.1.121:5672/test",
+#         result_backend = 'redis://:ningzaichun@192.168.1.121:6379/1'
+#     )
+#     # celery.conf.update(app.config)
+#     celery.config_from_object(celery_config)
+#     class ContextTask(celery.Task):
+#         def __call__(self, *args, **kwargs):
+#             with app.app_contexe():
+#                 return self.run(*args,**kwargs)
 
-    celery.Task=ContextTask
-    return celery
+#     celery.Task=ContextTask
+#     return celery
 
 def make_app(config_name=None):
     if config_name is None:
@@ -43,6 +43,7 @@ def make_app(config_name=None):
     logger.info('flask app 正在创建')
     app=Flask('app')
     app.config.from_object(config[config_name])
+    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
     register_errors(app)
     register_blueprints(app)
     return app

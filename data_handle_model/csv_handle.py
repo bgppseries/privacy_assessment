@@ -9,6 +9,9 @@ import subprocess
 import platform
 
 
+
+
+
 def execute_real_time_command(cmd):
     try:
         p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -45,7 +48,8 @@ def import_neo4j_prepro():
     clear_folder("C:\\neo4j\\neo4j-community-4.4.17\data\\transactions\gdbs")
 
 
-def importer():
+def csv_admin_importer():
+    ### 使用admin导入csv
     current_os = platform.system()
     if current_os == 'Windows':
         print("正在执行数据库重构")
@@ -87,7 +91,6 @@ def delete_files_in_folder(folder_path):
         if os.path.isfile(file_path):
             os.remove(file_path)
             ##todo log
-
 
 def read_csv(path, out):
     df = pd.read_csv(path)

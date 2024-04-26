@@ -1,31 +1,39 @@
 # -*- coding: utf-8 -*-
+# ''''
+#     一些库函数
+# '''
 import os.path
 import zipfile
 from time import time
 from uuid import uuid4
 from configparser import ConfigParser
 import data_handle_model.csv_handle
-from data_handle_model.json_handel import json_importer
-from celery_task.task import start_evaluate
+from celery_task.celery import start_evaluate,csv_start_import,json_start_import
+from celery_task.config import Config
 
-
-def start_handle(filename,path,logger):
+def start_handle(config,logger):
     # 对收到的文件进行处理
     # 1. 将数据导入到neo4j中
     # 2. 将评估任务提交到消息队列中
-    file_type=filename.resplit('.',1)[1]
-    config=ConfigParser()
-    config.read('./setting/set.config')
-    info=config['neo4j']
+
+    # 先不管数据库写入
+    file_type=config.json_address.resplit('.',1)[1]
+    conf=ConfigParser()
+    conf.read('./setting/set.config')
+    info=conf['neo4j']
     docker_id=info['docker_id']
-    logger.info('')
+    logger.info('数据库配置成功')
+    # todo 添加一些描述信息
+    dis=''
+    filename=os.path.basename(config.address)
     if file_type=='csv':
         # 这个还要改，先不管
-        start_handle_csv(filename,path)
+        logger.info('file is csv,copy file to docker')
+        csv_start_import.delay(filename,docker_id,dis,config.ID,config.QIDs,config.SA)
     elif file_type=='json':
         logger.info('file is json,copy file to docker')
-        start_evaluate.delay()
-        json_importer(filename,docker_id)
+        json_start_evaluate.delay(config)
+        json_start_import.delay(filename,docker_id,dis,config.ID,config.QIDs,config.SA)
         
 
 
@@ -40,34 +48,6 @@ def allowed_file(filename):
             :return: bool
     """
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-
-
-
-def start_handle_csv(path,to):
-    data_handle_model.handle.read_csv(path, to)
-    print("handle csv success")
-    ##todo logger
-    os.remove(path)
-    data_handle_model.importer()
-
-def start_handle_zip(path_from,path_to):
-    """
-    将zip文件解压到指定目录
-    todo 指定目录是写死的
-    :param path:zip文件目录
-    :return:
-    """
-    with zipfile.ZipFile(path_from,'r') as zip:
-        zip.extractall(path_to)
-    os.remove(path_from)
-    data_handle_model.importer()
-
-
-
-def apoc_json(file):
-    sql=''
 
 
 
