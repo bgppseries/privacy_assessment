@@ -60,7 +60,8 @@ def uniqueness_assess(src_url,to_url):
 
 def test_uniqueness_assess():
     ### 测试函数
-    pattern='./data/to_assess/info_*.json'
+    # pattern='./data/to_assess/info_*.json'
+    pattern='./data/json/3/hotel_*.json'
     print("唯一性评估测试：")
     print("唯一性说明：")
     print("             （1-重复元组数/总元组数）*100%")
@@ -148,7 +149,8 @@ def check_in(uuid,df)->bool:
 def test_reid_risk():
     ### 测试函数
     
-    pattern='./data/to_assess/info_*.json'
+    # pattern='./data/to_assess/info_*.json'
+    pattern='./data/json/3/hotel_*.json'
     file_names=glob.glob(pattern)
     sampling_ratio=[0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,0.0010]
     nan_ratio = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]  # 设置为 60%
