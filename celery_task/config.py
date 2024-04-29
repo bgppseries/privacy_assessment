@@ -3,10 +3,10 @@
 # 开发环境与生产环境配置分离
 
 # # 消息代理使用rabbitmq。与celery实例化时broker参数意义相同
-# broker_url = "amqp://qwb:784512@127.0.0.1:5672/privacy_assess"
+# broker_url = "amqp://qwb:784512@127.0.0.1:5673/privacy_assess"
 
 # # 结果存储使用redis(默认数据库-零)。与celery实例化时backend参数意义相同
-# result_backend = 'redis://:qwb@127.0.0.1:5678/1'
+# result_backend = 'redis://:qwb@127.0.0.1:6379/1'
 
 # # LOG配置
 # worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
@@ -25,8 +25,8 @@ broker_url = "amqp://qwb:784512@127.0.0.1:5672/test"
 # 结果存储使用redis(默认数据库-零)。与celery实例化时backend参数意义相同
 result_backend = 'redis://:qwb@127.0.0.1:5678/1'
 
-# LOG配置
-worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
+# # LOG配置
+# worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
 
 # Celery指定时区，默认UTC
 timezone = "Asia/Shanghai"
@@ -34,7 +34,46 @@ timezone = "Asia/Shanghai"
 #有警告CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer
 broker_connection_retry_on_startup = True
 
+WORKER_ID_MAP_REDISADDRESS='localhost'
+WORKER_ID_MAP_REDISPORT=5678
+WORKER_ID_MAP_REDISDBNUM=3
+WORKER_ID_MAP_REDISPASSWORD='qwb'
 
+import redis
+
+def Send_result(worker_id,res_dict):
+    """
+    Persistently stores task results along with child process ID in Redis.
+    
+    Args:
+    - child_process_id: The ID of the child process.
+    - result_dict: A dictionary containing the task results.
+    """
+    try:
+        # 建立到 Redis 的连接
+        redis_client = redis.StrictRedis(host=WORKER_ID_MAP_REDISADDRESS, port=WORKER_ID_MAP_REDISPORT, db=WORKER_ID_MAP_REDISDBNUM,password=WORKER_ID_MAP_REDISPASSWORD)
+
+    # 检查连接是否成功
+        redis_client.ping()
+        print("Connected to Redis server.")
+    except redis.ConnectionError as e:
+        # 处理连接错误
+        print("Failed to connect to Redis server:", e)
+    except Exception as e:
+        # 处理其他异常
+        print("An error occurred:", e)
+
+    try:
+        # Convert result_dict to JSON string
+        result_json= json.dumps(res_dict, ensure_ascii=False)
+        
+        # Store the result in Redis with the child process ID as key
+        redis_client.set(worker_id, result_json)
+        
+        print("Results persisted successfully for child process:",worker_id)
+    except Exception as e:
+        print("Error occurred while persisting results:", e)
+    
 
 
 
@@ -173,29 +212,9 @@ class Config:
         '''
         return len(self._Function_Data())
 
-    # def Run(self):
-    #     Series_quasi = self._Function_Series_quasi()##结果为升序
-    #     print(Series_quasi)
-    #     _TemAll = self._Function_Data()
-    #     ##数据合规性
-    #     handler1 = Data_compliance(self.K_Anonymity,self.L_diversity,self.T_closeness,"",self.json_address,global_uuid,"","","","","")
-    #     handler1.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-    #     ##数据可用性
-    #     handler2 = Data_availability(self.K_Anonymity,self.L_diversity,self.T_closeness,"",self.json_address,global_uuid,"","","","","")
-    #     handler2.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-    #     ##匿名集数据特征
-    #     handler3 = Desensitization_data_character(self.K_Anonymity,self.L_diversity,self.T_closeness,"",self.json_address,global_uuid,"","","","","")
-    #     handler3.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-    #     ##匿名数据质量评估
-    #     handler4 = Desensitization_data_quality_evalution(self.K_Anonymity,self.L_diversity,self.T_closeness,"",self.json_address,global_uuid,"","","","","")
-    #     handler4.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-    #     ##隐私保护性度量
-    #     handler5 = privacy_protection_metrics(self.K_Anonymity,self.L_diversity,self.T_closeness,"",self.json_address,global_uuid,"","","","","")
-    #     handler5.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
-
  
 
-    def Send_Result(self):
+    def Send_Result_neo4j(self):
         ##将指标返回值写入知识图谱，待定
         pass
         # graph = self.graph
@@ -297,6 +316,13 @@ class Desensitization_data_character(Config):
         print("平均泛化程度为：", Average_anonymity)
         Inherent_Priv = self.Inherent_Privacy( Series_quasi)
         print("固有隐私为：", Inherent_Priv)
+        Send_result(self.worker_uuid,res_dict={
+            "准标识符维数":Dimen_QID,
+            "敏感属性维数":Dimen_SA,
+            "敏感属性种类":Attribute_SA,
+            "平均泛化程度":Average_anonymity,
+            "固有隐私":Inherent_Priv
+        })
 
 
 ##匿名数据质量评估
@@ -309,22 +335,6 @@ class Desensitization_data_quality_evalution(Config):
         :param address: 选取的文件地址
         '''
         super().__init__(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene)
-
-    def Get_Entropy_based_Average_loss(self, Series_quasi):
-        '''
-        :param Series_quasi: 数据集中所有的准标识符
-        :return:返回基于熵的数据损失度
-        原本的函数或者说论文有问题（随笔-基于熵的隐私度量），其对熵的理解有本质上的错误，故将函数修改。
-        针对等价组个数，将现有熵值 / 最大熵，即为数据损失度。越接近1，损失度越大；越接近0，损失度越小。
-        最大熵表示原始数据的熵值，表示原数据的不确定性；现有熵并非香农熵，而是表明现有数据的不确定性
-        例如：原数据数据个数为8，泛化后分布为（2,2,4），则基于熵的数据损失度为1/2
-        '''
-        Num_All = self._Num_address()
-        S0 = math.log2(Num_All)  ##原始数据的匿名熵,即最大熵
-        Num_Loss = 0
-        for Num_each in Series_quasi:
-            Num_Loss += (math.log2(Num_each)) * Num_each / Num_All
-        return Num_Loss / S0
 
 
     def Get_Distribution_Leakage(self, each_privacy, Series_quasi_keys):
@@ -451,35 +461,40 @@ class Desensitization_data_quality_evalution(Config):
 
 
     def runL(self, Series_quasi):
-        Entropy_based_Average_Loss = self.Get_Entropy_based_Average_loss(Series_quasi)  ##0.23秒
-        print(f"基于熵的平均数据损失度为：{round(Entropy_based_Average_Loss * 100, 2)}%")
         Uniqueness_proportion = self.Get_Uniqueness(Series_quasi)  
         print(f"数据集中唯一记录的占比为：{round(Uniqueness_proportion * 100, 2)}%，唯一记录比非唯一记录更容易被重新识别，极易遭受重标识攻击和偏斜攻击")
-        listD = [];listE = [];listF = []
+        listD = [];listE = [];listF = [];listKL=[]
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             start = time.time()
             _max,Attr = self.Get_Distribution_Leakage(each_privacy, Series_quasi.keys())
             print(f"数据集针对{each_privacy}的分布泄露为：{round(_max, 4)},对应等价组为{Attr}")
-            listD.append(round(_max, 4))
+            listD.append(f"数据集针对{each_privacy}的分布泄露为：{round(_max, 4)},对应等价组为{Attr}")
             print(f"耗时为：{time.time() - start}")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             start2 = time.time()
             _max,Attr = self.Get_Entropy_Leakage(each_privacy, Series_quasi.keys())
             print(f"数据集针对{each_privacy}的熵泄露为：{round(_max, 4)},对应等价组为{Attr}")
-            listE.append(round(_max, 4))
+            listE.append(f"数据集针对{each_privacy}的熵泄露为：{round(_max, 4)},对应等价组为{Attr}")
             print(f"耗时为：{time.time() - start2}")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             start3 = time.time()
             _max,Attr = self.Get_Positive_Information_Disclosure(each_privacy, Series_quasi)
             print(f"数据集针对{each_privacy}的正面信息披露为：{_max},对应属性值为{Attr}")
-            listF.append(_max)
+            listF.append(f"数据集针对{each_privacy}的正面信息披露为：{_max},对应属性值为{Attr}")
             print(f"耗时为：{time.time()-start3}")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             start4 = time.time()
             _max,Attr = self.Get_KL_Divergence(each_privacy,Series_quasi.keys())
             print(f"数据集针对{each_privacy}的KL散度为：{_max},对应等价组为{Attr}")
-            listF.append(_max)
+            listKL.append(f"数据集针对{each_privacy}的KL散度为：{_max},对应等价组为{Attr}")
             print(f"耗时为：{time.time()-start4}")
+        Send_result(self.worker_uuid,res_dict={
+            "唯一性":f'{round(Uniqueness_proportion * 100, 2)}%',
+            "分布泄露":listD,
+            "熵泄露":listE,
+            "正面信息披露":listF,
+            "KL_Divergence":listKL
+        })
 
 
 ##隐私保护性度量
@@ -589,6 +604,12 @@ class privacy_protection_metrics(Config):
         Entropy_Re_Risk,QList = self.Get_Entropy_based_Re_indentification_Risk( Series_quasi.keys())
         print(f"整个数据集基于熵的重识别风险为：{Entropy_Re_Risk * 100}%，对应等价组为{QList}")
         print(f"耗时为：{time.time() - start3}")
+
+        Send_result(self.worker_uuid,res_dict={
+            "敏感属性的重识别风险":listP,
+            "单个属性的重识别风险":listQ,
+            "基于熵的重识别风险":f"整个数据集基于熵的重识别风险为：{Entropy_Re_Risk * 100}%，对应等价组为{QList}"
+        })
 
 
 
@@ -717,11 +738,21 @@ class Data_compliance(Config):
                     print(f"{QList}的等价组其隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
                     listAK.append(f"隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
                 print(f"耗时为：{time.time() - start2}")
+            
+            else:
+                print(f"{QList}的等价组其隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
+                listAK.append(f"隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
 
 
-        _list.append(listL)
-        _list.append(listT)
-        _list.append(listAK)
+        Send_result(self.worker_uuid, res_dict={
+            "K-Anonymity":_list[0],
+            "L-Diversity":listL,
+            "T-Closeness":listT,
+            "(α,k)-Anonymity":listAK
+        })
+        # _list.append(listL)
+        # _list.append(listT)
+        # _list.append(listAK)
 
 
 ##数据可用性
@@ -781,18 +812,43 @@ class Data_availability(Config):
         NI_Loss = (0 + (int(ageNum[1]) - int(ageNum[0])) / Age_range + Series_quasi_key[2].count("*") / len( Series_quasi_key[2]) + Series_quasi_key[3].count("*") / len(Series_quasi_key[3])) * Series_quasi_num  ##小数点后保留4位小数
         return NI_Loss
 
+    def Get_Entropy_based_Average_loss(self, Series_quasi):
+        '''
+        :param Series_quasi: 数据集中所有的准标识符
+        :return:返回基于熵的数据损失度
+        原本的函数或者说论文有问题（随笔-基于熵的隐私度量），其对熵的理解有本质上的错误，故将函数修改。
+        针对等价组个数，将现有熵值 / 最大熵，即为数据损失度。越接近1，损失度越大；越接近0，损失度越小。
+        最大熵表示原始数据的熵值，表示原数据的不确定性；现有熵并非香农熵，而是表明现有数据的不确定性
+        例如：原数据数据个数为8，泛化后分布为（2,2,4），则基于熵的数据损失度为1/2
+        '''
+        Num_All = self._Num_address()
+        S0 = math.log2(Num_All)  ##原始数据的匿名熵,即最大熵
+        Num_Loss = 0
+        for Num_each in Series_quasi:
+            Num_Loss += (math.log2(Num_each)) * Num_each / Num_All
+        return Num_Loss / S0
 
     def runL(self, Series_quasi):
         CDM = self.Get_CDM(Series_quasi)
         print(f"数据可辨别度为：{CDM}")
         SupRatio = self.Get_SupRatio()
-        print(f"数据记录匿名率为：{SupRatio*100}%")
+        print(f"数据记录匿名率为：{round(SupRatio*100,2)}%")
         CAVG = self.Get_CAVG(Series_quasi)
         print(f"归一化平均等价组大小度量：{CAVG}")
         start = time.time()
         NCP = self.Get_NCP(Series_quasi)
         print(f"数据损失度为：",NCP)
         print(f"耗时为{time.time()-start}")
+        Entropy_based_Average_Loss = self.Get_Entropy_based_Average_loss(Series_quasi)  ##0.23秒
+        print(f"基于熵的平均数据损失度为：{round(Entropy_based_Average_Loss * 100, 2)}%")
+
+        Send_result(self.worker_uuid,res_dict={
+            "数据可辨别度":CDM,
+            "数据记录匿名率":f"{round(SupRatio*100,2)}%",
+            "归一化平均等价组大小度量":CAVG,
+            "数据损失度":NCP,
+            "基于熵的平均数据损失度":f"{round(Entropy_based_Average_Loss * 100, 2)}%"
+        })
 
 
 

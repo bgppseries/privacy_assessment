@@ -1,0 +1,16 @@
+2024-04-26 15:39:01,340 - celery_task.celery - INFO - json评估任务启动，任务配置：6edd5ed5-0059-4427-b841-4b8ae344c777 ['hotel_name']
+2024-04-26 15:39:01,367 - celery_task.celery - INFO - 风险评估已启动，子进程id是：39f8a0c5-b1e7-4bb4-9926-10741f5e98ce
+2024-04-26 15:39:01,369 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：428754e9-cb11-40be-969f-ccf2b987baa6
+2024-04-26 15:39:01,370 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：546fe704-18df-4311-a4cf-d86fb3feca59
+2024-04-26 15:39:01,371 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：ee0bf79b-5a05-45c9-83bb-1b8806ad186a
+2024-04-26 15:39:01,372 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：ab03e181-62af-442b-b792-eaaa5656d917
+2024-04-26 15:39:01,373 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：eb1edf8a-0fe8-4f47-a40c-95c619e14b59
+2024-04-26 15:40:01,437 - celery_task.celery - INFO - 6edd5ed5-0059-4427-b841-4b8ae344c777所有评估任务均已成功执行！
+2024-04-26 16:02:42,205 - celery_task.celery - INFO - json评估任务启动，任务配置：11e98450-1018-4bc4-8adb-70ced2c388d0 ['hotel_name']
+2024-04-26 16:02:42,207 - celery_task.celery - INFO - 风险评估已启动，子进程id是：92f14d4d-6359-4415-ba62-a42418ed440d
+2024-04-26 16:02:42,209 - celery_task.celery - INFO - 合规性评估已启动，子进程id是：3869fc25-4e9b-4b0d-bdca-48547975f7c3
+2024-04-26 16:02:42,210 - celery_task.celery - INFO - 可用性评估已启动，子进程id是：7b544e50-15ec-48e0-ae00-a55a396c2b68
+2024-04-26 16:02:42,212 - celery_task.celery - INFO - 匿名集数据特征评估已启动，子进程id是：d24b3180-f584-4da7-b065-d614ce7c758a
+2024-04-26 16:02:42,213 - celery_task.celery - INFO - 匿名数据质量评估已启动，子进程id是：9e590eff-e943-4155-93e2-3dcfa53f8429
+2024-04-26 16:02:42,214 - celery_task.celery - INFO - 隐私保护性度量评估已启动，子进程id是：8668552a-05e0-4900-b15d-5791bac5a033
+2024-04-26 16:03:42,277 - celery_task.celery - INFO - 11e98450-1018-4bc4-8adb-70ced2c388d0所有评估任务均已成功执行！

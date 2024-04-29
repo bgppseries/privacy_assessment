@@ -1,7 +1,0 @@
-datebase:
-  username: neo4j
-  password: M5s762xGmsfJcgQ
-  neo4jUrl: 127.0.0.1:7474
-filepath:
-  node_csv: ../data/output/node_output.csv
-  rela_csv: ../data/output/rela_output.csv

@@ -39,6 +39,7 @@ def import_json_to_mysql(json_file, table_name, host, user, password,database):
 if __name__ == "__main__":
     json_file = "./json/3/hotel_1_5_2.json"  # JSON 文件路径
     table_name = "local_test_hotel_1_5_2"  # 数据表名称
+    # host = "10.10.55.24"  # MySQL 主机名
     host = "localhost"  # MySQL 主机名
     user = "root"  # MySQL 用户名
     password = "784512"  # MySQL 密码

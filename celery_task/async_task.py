@@ -1,13 +1,20 @@
-import configparser
-import time
-from celery import Task, Celery,chain,group
+from celery import Task
+from celery import Celery
 from . import config
-import uuid
+
+from celery.utils.log import get_task_logger
+from .data_import_handel import csv_importer,json_importer
+
+import time
+import pandas as pd
+import redis
+from celery_task.config import Data_availability,Data_compliance,Desensitization_data_character,Desensitization_data_quality_evalution, privacy_protection_metrics
+from celery.result import AsyncResult
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from celery.utils.log import get_task_logger
 
-from .data_import_handel import csv_importer,json_importer
+
 # 配置日志
 
 logger = logging.getLogger(__name__)
@@ -20,39 +27,25 @@ logger.addHandler(file_handler)
 celery=Celery()
 celery.config_from_object(config)
 
-global_uuid=uuid.uuid4()
 
-import json
-import math
-import time
-import pandas as pd
-import uuid
-from celery_task.Indicator_K_Json2 import Data_availability,Data_compliance,Desensitization_data_character,Desensitization_data_quality_evalution, privacy_protection_metrics
-from celery.result import AsyncResult
 
 
 class MyTask(Task): # celery 基类
     def on_success(self, retval, task_id, args, kwargs):
         # 执行成功的操作
-        #todo logger
         print('MyTasks 基类回调，任务执行成功')
         return super(MyTask, self).on_success(retval, task_id, args, kwargs)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         # 执行失败的操作
         # 任务执行失败，可以调用接口进行失败报警等操作
-        #todo logger
         print('MyTasks 基类回调，任务执行失败')
         return super(MyTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
 
-""""
-    执行逻辑：针对不同的API接口
-        任务
-"""
-
-
-
+def t_status(id):
+    c = celery.AsyncResult(id)
+    return c
 
 ############## 任务接收API接口设计
 ##      只用于可视化的api，数据平台的todo
@@ -74,27 +67,6 @@ def json_start_import(uuid,file,docker_id,discribition,ID,QIDs,SA):
     json_importer(file,docker_id,ID,QIDs,SA,logger)
 
 
-
-
-@celery.task(bind=True,base=MyTask)
-def start_grouptask(self):
-    task_map = {}  # 用于存储任务 ID 与函数绑定的字典
-    # 绑定任务 ID 与函数
-    task_map[self.request.id] = start_grouptask.__name__
-    # 执行一连串的任务
-    subtasks = group(subtask.s(i) for i in range(10))
-    result = subtasks.apply_async()
-    ##result.join()
-    logger.info(json.dumps(task_map))
-    return json.dumps(task_map)
-
-
-@celery.task(bind=True,base=MyTask)
-def subtask(self,i):
-    time.sleep(60)
-    logger.info(i)
-    print(self.request.id)
-
 # 执行评估指令
 @celery.task(bind=True,base=MyTask)
 def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,k=2,l=2,t=0.95):
@@ -104,34 +76,50 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,k=2,l
     logger.info('json评估任务启动，任务配置：%s %s',worker_id,SA)
     
     # 异步执行 reid_risk 函数，并记录任务 ID
-    reid_risk_worker=reid_risk.delay(worker_id,src_url,un_table_name,to_url,table_name,QIDs,SA,ID)
+    reid_risk_worker=reid_risk.delay(worker_id+'-1',src_url,un_table_name,to_url,table_name,QIDs,SA,ID)
     reid_risk_worker_id=reid_risk_worker.id
     logger.info("风险评估已启动，子进程id是：{}".format(reid_risk_worker_id))
 
     # 异步执行 compliance 函数，并记录任务 ID
-    compliance_worker = compliance.delay(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
+    compliance_worker = compliance.delay(k, l, t, src_url, un_table_name, worker_id+'-2', QIDs, SA, ID, '', '')
     compliance_worker_id = compliance_worker.id
     logger.info("合规性评估已启动，子进程id是：%s", compliance_worker_id)
 
     # 异步执行 availability 函数，并记录任务 ID
-    availability_worker = availability.delay(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
+    availability_worker = availability.delay(k, l, t, src_url, un_table_name, worker_id+'-3', QIDs, SA, ID, '', '')
     availability_worker_id = availability_worker.id
     logger.info("可用性评估已启动，子进程id是：%s", availability_worker_id)
 
     # 异步执行 Desensitization_character 函数，并记录任务 ID
-    Desensitization_character_worker = Desensitization_character.delay(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
+    Desensitization_character_worker = Desensitization_character.delay(k, l, t, src_url, un_table_name, worker_id+'-4', QIDs, SA, ID, '', '')
     Desensitization_character_worker_id = Desensitization_character_worker.id
     logger.info("匿名集数据特征评估已启动，子进程id是：%s", Desensitization_character_worker_id)
 
     # 异步执行 Desensitization_quality 函数，并记录任务 ID
-    Desensitization_quality_worker = Desensitization_quality.delay(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
+    Desensitization_quality_worker = Desensitization_quality.delay(k, l, t, src_url, un_table_name, worker_id+'-5', QIDs, SA, ID, '', '')
     Desensitization_quality_worker_id = Desensitization_quality_worker.id
     logger.info("匿名数据质量评估已启动，子进程id是：%s", Desensitization_quality_worker_id)
 
     # 异步执行 privacy_protection 函数，并记录任务 ID
-    privacy_protection_worker = privacy_protection.delay(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
+    privacy_protection_worker = privacy_protection.delay(k, l, t, src_url, un_table_name, worker_id+'-6', QIDs, SA, ID, '', '')
     privacy_protection_worker_id = privacy_protection_worker.id
     logger.info("隐私保护性度量评估已启动，子进程id是：%s", privacy_protection_worker_id)
+
+    # 维护主线程和子线程id的映射
+    # 只用于任务调度接口
+    thread_process_mapping = {
+        'thread_id': worker_id,
+        'reid_risk_worker_id': reid_risk_worker_id,
+        'compliance_worker_id': compliance_worker_id,
+        'availability_worker_id': availability_worker_id,
+        'Desensitization_character_worker_id': Desensitization_character_worker_id,
+        'Desensitization_quality_worker_id': Desensitization_quality_worker_id,
+        'privacy_protection_worker_id': privacy_protection_worker_id
+    }
+    from .config import WORKER_ID_MAP_REDISADDRESS,WORKER_ID_MAP_REDISDBNUM,WORKER_ID_MAP_REDISPORT,WORKER_ID_MAP_REDISPASSWORD
+    redis_client = redis.StrictRedis(host=WORKER_ID_MAP_REDISADDRESS, port=WORKER_ID_MAP_REDISPORT, db=WORKER_ID_MAP_REDISDBNUM,password=WORKER_ID_MAP_REDISPASSWORD)
+    redis_client.hmset(worker_id,thread_process_mapping)
+
     # 轮询各个函数执行情况
     while True:
         # 获取各个函数的异步结果对象
@@ -152,7 +140,6 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,k=2,l
         else:
             # 若未全部成功执行，则等待一段时间后继续轮询
             time.sleep(15)  # 等待5秒后再次轮询
-
 
 @celery.task(bind=True,base=MyTask)
 def reid_risk(self,uuid,src_url,un_table_name,to_url,table_name,QIDs,SA,ID):

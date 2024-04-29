@@ -137,7 +137,6 @@ def reidentity_risk_assess(worker_id,src_dburl,src_table,to_dburl,to_table,qids,
             bg.loc[random_rows, col] = np.nan
     
     bg=bg.astype(object)
-    print("bg知识库：",bg)
     hdf=hdf.astype(object)
     # 计算距离矩阵
     distances = cdist(bg.loc[:,qids], hdf.loc[:,qids],lambda x, y: distance(x, y))
@@ -188,6 +187,11 @@ def reidentity_risk_assess(worker_id,src_dburl,src_table,to_dburl,to_table,qids,
     risk=sum/(sampling_ratio*j_df.shape[0])
     # risk是重识别lv
     # statistics_risk是统计推断还原率
+    from .config import Send_result
+    Send_result(worker_id=worker_id,res_dict={
+        "重识别率":risk,
+        "统计推断还原率":statistics_risk
+    })
     return risk,statistics_risk
 
 def distance(x,y):

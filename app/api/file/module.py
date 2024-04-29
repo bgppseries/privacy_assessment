@@ -8,7 +8,7 @@ from time import time
 from uuid import uuid4
 from configparser import ConfigParser
 import data_handle_model.csv_handle
-from celery_task.celery import start_evaluate,csv_start_import,json_start_import
+from celery_task.async_task import start_evaluate,csv_start_import,json_start_import
 from celery_task.config import Config
 
 def start_handle(config,logger):
