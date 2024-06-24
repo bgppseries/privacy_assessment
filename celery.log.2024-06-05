@@ -1,0 +1,7 @@
+2024-06-11 16:24:29,594 - celery_task.async_task - INFO - json评估任务启动，任务配置：e103e6a2-5694-4d26-be60-4e3f8063361f ['hotel_name']
+2024-06-11 16:24:29,624 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：c99f9ca4-fcde-418e-8088-f892e7767346
+2024-06-11 16:24:29,625 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：3556d408-28fc-40c8-90e1-f553773e7450
+2024-06-11 16:24:29,627 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：34979f9a-ad5a-4168-97ba-b8d4e4514651
+2024-06-11 16:24:29,629 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：b065c67c-cd21-41ad-8a0f-8b313dfbb8ed
+2024-06-11 16:24:29,630 - celery_task.async_task - INFO - 匿名数据质量评估已启动，子进程id是：c13a4204-26a2-4708-850f-72c7f2a466d1
+2024-06-11 16:24:29,632 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：b75e7780-adab-4c41-81d2-08db22f0f4a9

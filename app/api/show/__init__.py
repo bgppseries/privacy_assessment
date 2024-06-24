@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from flask import Blueprint, render_template, jsonify
 from flask import Flask, url_for
 
@@ -10,6 +11,7 @@ import configparser
 from pandas.io.formats import string
 
 api_show = Blueprint('api_show', __name__)
+
 ##根据关系名得到属性节点的categories值
 dict={
     "has_addr":1,
@@ -71,6 +73,168 @@ def get_neo4j_result():
     query = 'match p=(n:UUID)<-->(b) return p limit 1000'
     res = show_neo4j(query)
     return res
+
+
+##  api返回主机资源使用情况
+import psutil
+import time
+# 用于存储上一次调用的网络流量数据
+last_net_io = psutil.net_io_counters()
+last_time = time.time()
+@api_show.route('/table/sysinfo',methods=['post', 'GET'])
+def get_system_status():
+    global last_net_io, last_time
+    current_time = time.time()
+    # 获取 CPU 使用率
+    cpu_usage = psutil.cpu_percent(interval=1)
+    # 获取内存使用率
+    memory_info = psutil.virtual_memory()
+    memory_usage = memory_info.percent
+    # 获取当前网络流量
+    current_net_io = psutil.net_io_counters()
+    # 计算时间间隔
+    interval = current_time - last_time
+    # 计算网络流量（MB/s）
+    network_traffic = ((current_net_io.bytes_sent + current_net_io.bytes_recv) -
+                       (last_net_io.bytes_sent + last_net_io.bytes_recv)) / interval / (1024 * 1024)
+    # 更新 last_net_io 和 last_time
+    last_net_io = current_net_io
+    last_time = current_time
+
+    components = [{
+        "name": "系统组件",
+        "cpu_usage": cpu_usage,
+        "memory_usage": memory_usage,
+        "network_traffic": round(network_traffic, 4),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }]
+
+    data = {
+        "components": components
+    }
+    return jsonify(data)
+
+#   api返回任务相关信息
+@api_show.route('/workerinfo',methods=["POST","GET"])
+def get_worker_info():
+    # 假数据
+    tasks = [
+        {
+            'id': 'task1',
+            'status': 'completed',
+            'parameters': {
+                'src_url': 'http://example.com/source1',
+                'un_table_name': 'table1',
+                'to_url': 'http://example.com/target1',
+                'table_name': 'processed_table1',
+                'QIDs': ['name', 'age', 'address'],
+                'SA': ['disease'],
+                'ID': ['ssn'],
+                'k': 3,
+                'l': 2,
+                't': 0.9
+            },
+            'results': [
+                {'type': 'Risk Assessment', 'value': 'Low Risk'},
+                {'type': 'Compliance Assessment', 'value': 'Compliant'},
+                {'type': 'Usability Assessment', 'value': 'High Usability'},
+                {'type': 'Anonymization Data Characteristics', 'value': 'Good Quality'},
+                {'type': 'Anonymization Data Quality', 'value': 'Excellent'},
+                {'type': 'Privacy Protection Metrics', 'value': 'Strong Protection'}
+            ],
+            'description':'Performing data analysis on the given datasets to extract meaningful insights.'
+        },
+        {
+            'id': 'task2',
+            'status': 'pending',
+            'parameters': {
+                'src_url': 'http://example.com/source2',
+                'un_table_name': 'table2',
+                'to_url': 'http://example.com/target2',
+                'table_name': 'processed_table2',
+                'QIDs': ['name', 'age', 'location'],
+                'SA': ['income'],
+                'ID': ['passport_number'],
+                'k': 5,
+                'l': 3,
+                't': 0.8
+            },
+            'results': [],
+            'description':'Performing data analysis on the given datasets to extract meaningful insights.'
+        },
+        {
+            'id': 'task3',
+            'status': 'completed',
+            'parameters': {
+                'src_url': 'http://example.com/source3',
+                'un_table_name': 'table3',
+                'to_url': 'http://example.com/target3',
+                'table_name': 'processed_table3',
+                'QIDs': ['job', 'zip_code'],
+                'SA': ['salary'],
+                'ID': ['national_id'],
+                'k': 4,
+                'l': 2,
+                't': 0.95
+            },
+            'results': [
+                {'type': 'Risk Assessment', 'value': 'Medium Risk'},
+                {'type': 'Compliance Assessment', 'value': 'Partially Compliant'},
+                {'type': 'Usability Assessment', 'value': 'Medium Usability'},
+                {'type': 'Anonymization Data Characteristics', 'value': 'Average Quality'},
+                {'type': 'Anonymization Data Quality', 'value': 'Good'},
+                {'type': 'Privacy Protection Metrics', 'value': 'Moderate Protection'}
+            ],
+            'description':'Performing data analysis on the given datasets to extract meaningful insights.'
+        },
+        {
+            'id': 'task4',
+            'status': 'completed',
+            'parameters': {
+                'src_url': 'http://example.com/source4',
+                'un_table_name': 'table4',
+                'to_url': 'http://example.com/target4',
+                'table_name': 'processed_table4',
+                'QIDs': ['gender', 'birth_date'],
+                'SA': ['health_status'],
+                'ID': ['driver_license'],
+                'k': 3,
+                'l': 2,
+                't': 0.85
+            },
+            'results': [
+                {'type': 'Risk Assessment', 'value': 'High Risk'},
+                {'type': 'Compliance Assessment', 'value': 'Non-Compliant'},
+                {'type': 'Usability Assessment', 'value': 'Low Usability'},
+                {'type': 'Anonymization Data Characteristics', 'value': 'Poor Quality'},
+                {'type': 'Anonymization Data Quality', 'value': 'Below Average'},
+                {'type': 'Privacy Protection Metrics', 'value': 'Weak Protection'}
+            ],
+            'description':'Performing data analysis on the given datasets to extract meaningful insights.'
+        },
+        {
+            'id': 'task5',
+            'status': 'pending',
+            'parameters': {
+                'src_url': 'http://example.com/source5',
+                'un_table_name': 'table5',
+                'to_url': 'http://example.com/target5',
+                'table_name': 'processed_table5',
+                'QIDs': ['ethnicity', 'marital_status'],
+                'SA': ['political_views'],
+                'ID': ['tax_id'],
+                'k': 6,
+                'l': 4,
+                't': 0.7
+            },
+            'results': [],
+            'description':'Performing data analysis on the given datasets to extract meaningful insights.'
+        }
+    ]
+    return jsonify(tasks)
+
+
+
 
 
 def show_neo4j(query):

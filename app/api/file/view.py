@@ -136,10 +136,14 @@ def upload_file():
 #     logger.info('worker_id: %s',str(res))
 #     return str(res)
 
+
+
+
+# api：处理收到的数据，先评估，同时发送给隐私增强系统
 @api_file.route('/privacy_assess_test',methods=["POST"])
 def json_test():
     data = request.json
-    # 处理接收到的 JSON 数据
+    # 处理接收到的 JSON 报文
     q=data['Quasi_identifiers']
     idd=data['Direct_identifiers']
     sa=data['Sensitive_attributes']
@@ -151,14 +155,22 @@ def json_test():
     l=data['l-diversity']
     t=data['t-closeness']
     
+    # 启动评估任务
+    # 将未脱敏的数据先评估一遍
     result=start_evaluate.delay(src_url,un_table_name,src_url,un_table_name,q,sa,idd,k,l,t)
     print("task_id is: ",result.id)
     logger.info("test success:{}".format(data))
+    worker_id=result.id
+    
+    # 发送给隐私增强系统
+    from celery_task.async_task import process_data_chain
+    process_data_chain(worker_id,un_table_name,src_url)
+
     # 返回响应
-    return result.id
+    return worker_id
 
 
-
+# api:  获取评估结果
 @api_file.route('/privacy_res_test',methods=["GET"])
 def get_work_assess():
     """
@@ -193,6 +205,9 @@ def get_work_assess():
         for key in keys:
             # 提取子线程ID
             child_process_id = key.decode('utf-8')
+            # 排除后缀为 '-0' 的键
+            if child_process_id.endswith('-0'):
+                continue
             # 获取并解码结果JSON
             result_json = redis_client.get(child_process_id).decode('utf-8')
             result_dict = json.loads(result_json)
@@ -202,11 +217,19 @@ def get_work_assess():
         return jsonify(results), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-        
+
+# api:  进程调度接口        
+from celery_task.async_task import t_status,t_stop
+
 @api_file.route('/status',methods=["POST"])
 def get_assess_status():
     data=request.json
     worker_id=data['Worker_Id']
+    action_type=data['Type']
+    #   获取参数
+    if not worker_id or action_type is None:
+        return jsonify({'error': 'Worker_Id and Type fields are required.'}), 400
+
     import redis
     from celery_task.config import WORKER_ID_MAP_REDISADDRESS,WORKER_ID_MAP_REDISDBNUM,WORKER_ID_MAP_REDISPASSWORD,WORKER_ID_MAP_REDISPORT
     try:
@@ -218,48 +241,56 @@ def get_assess_status():
     except redis.ConnectionError as e:
         # 处理连接错误
         print("Failed to connect to Redis server:", e)
+        return jsonify({'error': 'Failed to connect to Redis server.'}), 500
     except Exception as e:
         # 处理其他异常
         print("An error occurred:", e)
+        return jsonify({'error': 'An error occurred while connecting to Redis.'}), 500
     #  连接建立后，根据workerid判断是否已完成全部任务
 
-    # 根据 worker_id 从 Redis 中获取所有子进程的任务 ID
+    # 获取所有子任务的ID
     subtask_ids = []
-    subtask_field=[]
+    subtask_field = []
     hash_data = redis_client.hgetall(worker_id)
-    # 如果哈希表不为空，则遍历所有字段和对应的值
     if hash_data:
         for field, value in hash_data.items():
-            # 将字节字符串解码为字符串
             field_str = field.decode()
             value_str = value.decode()
             subtask_ids.append(value_str)
             subtask_field.append(field_str)
 
-    from celery_task.async_task import t_status
-    # 查询每个任务的执行情况
-    results = {}
-    for i in range(len(subtask_ids)):
-        result = t_status(subtask_ids[i])
-        results[subtask_field[i]] = {
-            'subworker_id': subtask_ids[i],
-            'state': result.state,
-            'traceback': result.traceback
-        }
-    return jsonify(results)
+    #  根据任务类型获取执行不同的处理逻辑
+    if action_type == 0:  # 停止任务
+        for subtask_id in subtask_ids:
+            result = t_stop(subtask_id)
+        return jsonify({'msg': 'All subtasks killed', 'task_id': worker_id}), 200
+
+    elif action_type == 1:  # 查看任务状态
+        # subtask_ids = []
+        # subtask_field = []
+        # hash_data = redis_client.hgetall(worker_id)
+        # if hash_data:
+        #     for field, value in hash_data.items():
+        #         field_str = field.decode()
+        #         value_str = value.decode()
+        #         subtask_ids.append(value_str)
+        #         subtask_field.append(field_str)
+        results = {'msg': {}}
+        for i in range(len(subtask_ids)):
+            result = t_status(subtask_ids[i])
+            results['msg'][subtask_field[i]] ={
+                        'subworker_id': subtask_ids[i],
+                        'state': result.state,
+                        'traceback': result.traceback
+            }
+            
+        return jsonify(results), 200
+
+    else:
+        return jsonify({'error': 'Invalid Type value. Expected values are 0, 1, 2, or 3.'}), 400
 
 
-### 本接口处理第一次隐私文件上传
-@api_file.route('/to_assess',methods=["POST"])
-def beginassess():
-    pass
 
-
-
-### 本接口处理隐私增强后回传的脱敏数据
-@api_file.route('/assess')
-def assess_file():
-    pass
 
 
 

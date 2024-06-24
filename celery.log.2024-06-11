@@ -1,0 +1,2 @@
+2024-06-12 11:21:09,233 - celery_task.async_task - INFO - 评估任务id: fbce783b-e16e-4f4a-ac7b-c398f45cdc78-1,风险评估结果：1.0
+2024-06-12 11:21:09,234 - celery_task.async_task - INFO - 评估任务id: fbce783b-e16e-4f4a-ac7b-c398f45cdc78-1,统计推断攻击结果: 0
