@@ -154,17 +154,20 @@ def json_test():
     k=data['k-anonymity']
     l=data['l-diversity']
     t=data['t-closeness']
-    
+
+    k=int(k)
+    l=int(l)
+    t=float(t)
     # 启动评估任务
     # 将未脱敏的数据先评估一遍
-    result=start_evaluate.delay(src_url,un_table_name,src_url,un_table_name,q,sa,idd,k,l,t)
+    result=start_evaluate.delay(src_url,un_table_name,src_url,un_table_name,q,sa,idd,scene,description,k,l,t)
     print("task_id is: ",result.id)
     logger.info("test success:{}".format(data))
     worker_id=result.id
     
     # 发送给隐私增强系统
-    from celery_task.async_task import process_data_chain
-    process_data_chain(worker_id,un_table_name,src_url)
+    # from celery_task.async_task import process_data_chain
+    # process_data_chain(worker_id,un_table_name,src_url)
 
     # 返回响应
     return worker_id

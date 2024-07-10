@@ -9,6 +9,7 @@ import json
 import configparser
 
 from pandas.io.formats import string
+import redis
 
 api_show = Blueprint('api_show', __name__)
 
@@ -59,7 +60,9 @@ kind=[
     {
         "name":"电话号码"
     }
-    ]
+]
+
+
 @api_show.route('/metric',methods=['post','GET'])
 def get_metric():
     query='MATCH p=()-[r:has]->() RETURN p'
@@ -120,121 +123,132 @@ def get_worker_info():
     # 假数据
     tasks = [
         {
-            'id': 'task1',
+            'id': 'task_be5de1d3-f564-4ad4-a978-7158b74e271f',
             'status': 'completed',
             'parameters': {
-                'src_url': 'http://example.com/source1',
+                'src_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'un_table_name': 'table1',
-                'to_url': 'http://example.com/target1',
+                'to_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'table_name': 'processed_table1',
                 'QIDs': ['name', 'age', 'address'],
                 'SA': ['disease'],
                 'ID': ['ssn'],
                 'k': 3,
                 'l': 2,
-                't': 0.9
+                't': 0.9,
+                'data_scene':'网购服务'
             },
             'results': [
-                {'type': 'Risk Assessment', 'value': 'Low Risk'},
-                {'type': 'Compliance Assessment', 'value': 'Compliant'},
-                {'type': 'Usability Assessment', 'value': 'High Usability'},
-                {'type': 'Anonymization Data Characteristics', 'value': 'Good Quality'},
-                {'type': 'Anonymization Data Quality', 'value': 'Excellent'},
-                {'type': 'Privacy Protection Metrics', 'value': 'Strong Protection'}
+                {'type': 'Risk Assessment', 'rank':69,'value': 'Low Risk'},
+                {'type': 'Compliance Assessment', 'rank':75,'value': 'Compliant'},
+                {'type': 'Usability Assessment', 'rank':77,'value': 'High Usability'},
+                {'type': 'Anonymization Data Characteristics','rank':80, 'value': 'Good Quality'},
+                {'type': 'Anonymization Data Quality', 'rank':88,'value': 'Excellent'},
+                {'type': 'Privacy Protection Metrics', 'rank':40,'value': 'Strong Protection'}
             ],
             'description':'Performing data analysis on the given datasets to extract meaningful insights.'
         },
         {
-            'id': 'task2',
-            'status': 'pending',
+            'id': 'task_e0f3cfaa-39d0-4bab-a6e7-7e32299abad3',
+            'status': 'in_progress',
             'parameters': {
-                'src_url': 'http://example.com/source2',
+                'src_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'un_table_name': 'table2',
-                'to_url': 'http://example.com/target2',
+                'to_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'table_name': 'processed_table2',
                 'QIDs': ['name', 'age', 'location'],
                 'SA': ['income'],
                 'ID': ['passport_number'],
                 'k': 5,
                 'l': 3,
-                't': 0.8
+                't': 0.8,
+                'data_scene':'网购服务'
             },
             'results': [],
             'description':'Performing data analysis on the given datasets to extract meaningful insights.'
         },
         {
-            'id': 'task3',
+            'id': 'task_abb66df4-b0d8-4105-b640-ac59126cbee9',
             'status': 'completed',
             'parameters': {
-                'src_url': 'http://example.com/source3',
+                'src_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'un_table_name': 'table3',
-                'to_url': 'http://example.com/target3',
+                'to_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'table_name': 'processed_table3',
                 'QIDs': ['job', 'zip_code'],
                 'SA': ['salary'],
                 'ID': ['national_id'],
                 'k': 4,
                 'l': 2,
-                't': 0.95
+                't': 0.95,
+                'data_scene':'医疗卫生'
             },
             'results': [
-                {'type': 'Risk Assessment', 'value': 'Medium Risk'},
-                {'type': 'Compliance Assessment', 'value': 'Partially Compliant'},
-                {'type': 'Usability Assessment', 'value': 'Medium Usability'},
-                {'type': 'Anonymization Data Characteristics', 'value': 'Average Quality'},
-                {'type': 'Anonymization Data Quality', 'value': 'Good'},
-                {'type': 'Privacy Protection Metrics', 'value': 'Moderate Protection'}
+                {'type': 'Risk Assessment', 'rank':79,'value': 'Medium Risk'},
+                {'type': 'Compliance Assessment', 'rank':79,'value': 'Partially Compliant'},
+                {'type': 'Usability Assessment', 'rank':79,'value': 'Medium Usability'},
+                {'type': 'Anonymization Data Characteristics', 'rank':79,'value': 'Average Quality'},
+                {'type': 'Anonymization Data Quality', 'rank':79,'value': 'Good'},
+                {'type': 'Privacy Protection Metrics', 'rank':79,'value': 'Moderate Protection'}
             ],
             'description':'Performing data analysis on the given datasets to extract meaningful insights.'
         },
         {
-            'id': 'task4',
+            'id': 'task_a8dfcacf-b6d2-4f4a-bee6-3d6f06d0892a',
             'status': 'completed',
             'parameters': {
-                'src_url': 'http://example.com/source4',
+                'src_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'un_table_name': 'table4',
-                'to_url': 'http://example.com/target4',
+                'to_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'table_name': 'processed_table4',
                 'QIDs': ['gender', 'birth_date'],
                 'SA': ['health_status'],
                 'ID': ['driver_license'],
                 'k': 3,
                 'l': 2,
-                't': 0.85
+                't': 0.85,
+                'data_scene':'教育服务'
             },
             'results': [
-                {'type': 'Risk Assessment', 'value': 'High Risk'},
-                {'type': 'Compliance Assessment', 'value': 'Non-Compliant'},
-                {'type': 'Usability Assessment', 'value': 'Low Usability'},
-                {'type': 'Anonymization Data Characteristics', 'value': 'Poor Quality'},
-                {'type': 'Anonymization Data Quality', 'value': 'Below Average'},
-                {'type': 'Privacy Protection Metrics', 'value': 'Weak Protection'}
+                {'type': 'Risk Assessment', 'rank':79,'value': 'High Risk'},
+                {'type': 'Compliance Assessment', 'rank':59,'value': 'Non-Compliant'},
+                {'type': 'Usability Assessment', 'rank':46,'value': 'Low Usability'},
+                {'type': 'Anonymization Data Characteristics', 'rank':89,'value': 'Poor Quality'},
+                {'type': 'Anonymization Data Quality', 'rank':75,'value': 'Below Average'},
+                {'type': 'Privacy Protection Metrics', 'rank':84,'value': 'Weak Protection'}
             ],
             'description':'Performing data analysis on the given datasets to extract meaningful insights.'
         },
         {
-            'id': 'task5',
-            'status': 'pending',
+            'id': 'task_97d83d9b-6707-45a4-a2fc-8fe9459561d0',
+            'status': 'in_progress',
             'parameters': {
-                'src_url': 'http://example.com/source5',
+                'src_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'un_table_name': 'table5',
-                'to_url': 'http://example.com/target5',
+                'to_url': 'mysql+pymysql://root:784512@localhost:3306/local_test',
                 'table_name': 'processed_table5',
                 'QIDs': ['ethnicity', 'marital_status'],
                 'SA': ['political_views'],
                 'ID': ['tax_id'],
                 'k': 6,
                 'l': 4,
-                't': 0.7
+                't': 0.7,
+                'data_scene':'网购服务'
             },
             'results': [],
             'description':'Performing data analysis on the given datasets to extract meaningful insights.'
         }
     ]
+    r = redis.StrictRedis(host='localhost', port=5678, db=5, password='qwb',decode_responses=True)
+    # 从 Redis 获取以 "-0" 结尾的键值对
+    # 从 Redis 获取以 "-0" 结尾的键值对
+    # 从 Redis 获取以 "-0" 结尾的键值对
+    keys = r.keys('*-0')
+    for key in keys:
+        value = r.get(key)
+        if value:
+            tasks.append(json.loads(value))
     return jsonify(tasks)
-
-
-
 
 
 def show_neo4j(query):
@@ -316,25 +330,42 @@ def get_metric_result(query):
     # 连接到neo4j数据库
     session = driver.session()
     # 执行查询
+    print(query)
     result = session.run(query)
-    df=result.keys()
-    #print(df)
     children=[]
     links=[]
     id=0
     for record in result:
-        link=record.data()['p']
-        #print(link)
-        f=link[0]['name']
-        f_d=link[0]['desc']
-        c=link[2]['name']
-        c_d=link[2]['desc']
-        l={
-            "father":f,
-            "father_desc":f_d,
-            "children":c,
-            "children_desc":c_d
-        }
+        print(record.value)
+        path = record['p']
+        # 访问路径中的节点和关系
+        nodes = list(path.nodes)
+        relationships_in_path = list(path.relationships)
+        
+        # 确保路径中至少有一个关系
+        if relationships_in_path:
+            start_node = nodes[0]
+            relationship = relationships_in_path[0]
+            end_node = nodes[1]
+            
+            l = {
+                "father": start_node._properties['name'],
+                "father_desc": start_node._properties.get('desc', ''),
+                "children": end_node._properties['name'],
+                "children_desc": end_node._properties.get('desc', '')
+            }
+        # link=record.data()['p']
+        # print(link)
+        # f=link[0]['name']
+        # f_d=link[0]['desc']
+        # c=link[2]['name']
+        # c_d=link[2]['desc']
+        # l={
+        #     "father":f,
+        #     "father_desc":f_d,
+        #     "children":c,
+        #     "children_desc":c_d
+        # }
         links.append(l)
     # 创建一个空字典，用于存储子节点
     child_dict = {}
@@ -390,7 +421,3 @@ def handle(dict,child_dict):
         'children': l
     }
     return a
-# if __name__=='__main__':
-#     query = 'match p=(n:UUID)<-->(b) return p limit 1000'
-#     res = show_neo4j(query)
-#     print(res)

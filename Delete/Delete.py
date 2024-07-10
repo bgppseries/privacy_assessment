@@ -39,7 +39,7 @@ broker_connection_retry_on_startup = True
 
 WORKER_ID_MAP_REDISADDRESS='localhost'
 WORKER_ID_MAP_REDISPORT=5678
-WORKER_ID_MAP_REDISDBNUM=3
+WORKER_ID_MAP_REDISDBNUM=6
 WORKER_ID_MAP_REDISPASSWORD='qwb'
 
 import redis
@@ -81,6 +81,19 @@ import time
 import pandas as pd
 import uuid
 from sqlalchemy import create_engine,text
+
+def get_res(worker_id="97d83d9b-6707-45a4-a2fc-8fe9459561d0"):
+    # redis中存放的关于worker_id映射表
+    # key:    worker_id        value:     map,存放的是各个子任务的uuid
+    # key:    worker_id+'-0'   value:     评估任务的相关参数
+    # key:    worker_id+'-1'   value:     风险评估结果
+    # key:    worker_id+'-2'   value:     合规性评估结果
+    # key:    worker_id+'-3'   value:     可用性评估结果
+    # key:    worker_id+'-4'   value:     匿名集数据特征评估结果
+    # key:    worker_id+'-5'   value:     匿名集数据质量评估结果
+    # key:    worker_id+'-6'   value:     隐私保护性度量评估结果
+    return 0
+
 
 # from celery_task.Indicator_K_Json2 import Data_availability,Data_compliance,Desensitization_data_character,Desensitization_data_quality_evalution, privacy_protection_metrics
 
@@ -892,9 +905,9 @@ if __name__ == '__main__':
     global_uuid = str(uuid.uuid4())  ##定义全局变量uuid数据
     print("uuid为：", global_uuid)
     _dict = {}
-    _list = ['local_test_hotel_0_0_0', 'local_test_hotel_0_0_1', 'local_test_hotel_0_0_2', 'local_test_hotel_0_1_0', 'local_test_hotel_0_1_1', 'local_test_hotel_0_1_2', 'local_test_hotel_0_2_0', 'local_test_hotel_0_2_1', 'local_test_hotel_0_2_2', 'local_test_hotel_0_3_0', 'local_test_hotel_0_3_1', 'local_test_hotel_0_3_2', 'local_test_hotel_0_4_0', 'local_test_hotel_0_4_1', 'local_test_hotel_0_4_2', 'local_test_hotel_0_5_0', 'local_test_hotel_0_5_1', 'local_test_hotel_0_5_2', 'local_test_hotel_1_0_0', 'local_test_hotel_1_0_1', 'local_test_hotel_1_0_2', 'local_test_hotel_1_1_0', 'local_test_hotel_1_1_1', 'local_test_hotel_1_1_2', 'local_test_hotel_1_2_0', 'local_test_hotel_1_2_1', 'local_test_hotel_1_2_2', 'local_test_hotel_1_3_0', 'local_test_hotel_1_3_1', 'local_test_hotel_1_3_2', 'local_test_hotel_1_4_0', 'local_test_hotel_1_4_1', 'local_test_hotel_1_4_2', 'local_test_hotel_1_5_0', 'local_test_hotel_1_5_1', 'local_test_hotel_1_5_2']
+    _list = ['hotel_0_0_0', 'hotel_0_0_1', 'hotel_0_0_2', 'hotel_0_1_0', 'hotel_0_1_1', 'hotel_0_1_2', 'hotel_0_2_0', 'hotel_0_2_1', 'hotel_0_2_2', 'hotel_0_3_0', 'hotel_0_3_1', 'hotel_0_3_2', 'hotel_0_4_0', 'hotel_0_4_1', 'hotel_0_4_2', 'hotel_0_5_0', 'hotel_0_5_1', 'hotel_0_5_2', 'hotel_1_0_0', 'hotel_1_0_1', 'hotel_1_0_2', 'hotel_1_1_0', 'hotel_1_1_1', 'hotel_1_1_2', 'hotel_1_2_0', 'hotel_1_2_1', 'hotel_1_2_2', 'hotel_1_3_0', 'hotel_1_3_1', 'hotel_1_3_2', 'hotel_1_4_0', 'hotel_1_4_1', 'hotel_1_4_2', 'hotel_1_5_0', 'hotel_1_5_1', 'hotel_1_5_2']
     for each in _list:
-        _dict[each] = Run(2,2,0.95,'mysql+pymysql://root:784512@localhost:3306/local_test',each,global_uuid,["sex","age","id_number","phone"],["day_start","day_end","hotel_name"],"","","")
+        _dict[each] = Run(2,2,0.95,'mysql+pymysql://root:784512@localhost:3306/Ind_fusion',each,global_uuid,["sex","age","id_number","phone"],["day_start","day_end","hotel_name"],"","","")
         # Config(2,2,0.95,"","./data/csv/adult_with_pii.csv",global_uuid,"","","","","").Run()
         print("********************************************************8")
     

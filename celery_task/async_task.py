@@ -256,7 +256,7 @@ def process_list_test(a1,a2,a3):
 
 # 执行评估指令
 @celery.task(bind=True,base=MyTask)
-def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene,k=2,l=2,t=0.95):
+def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene,des,k=2,l=2,t=0.95):
     print("########################################################################")
     print("*******************************评估启动**********************************")
     worker_id = start_evaluate.request.id
@@ -273,25 +273,37 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene
     key:    worker_id+'-5'   value:     匿名集数据质量评估结果
     key:    worker_id+'-6'   value:     隐私保护性度量评估结果
     """
+    tt='worker_'+worker_id
     # 保存参数到 Redis
     task_params = {
-        'src_url': src_url,
-        'un_table_name': un_table_name,
-        'to_url': to_url,
-        'table_name': table_name,
-        'QIDs': QIDs,
-        'SA': SA,
-        'ID': ID,
-        'k': k,
-        'l': l,
-        't': t
+        'id':tt,
+        "parameters":{
+            'src_url': src_url,
+            'un_table_name': un_table_name,
+            'to_url': to_url,
+            'table_name': table_name,
+            'QIDs': QIDs,
+            'SA': SA,
+            'ID': ID,
+            'k': k,
+            'l': l,
+            't': t,
+            'data_scene':scene
+        },
+        "results": [],
+        'description':des,
+        'status':'in_progress'
     }
     from .config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISPASSWORD
     redis_client = redis.StrictRedis(host=WORKER_ID_MAP_REDISADDRESS, port=WORKER_ID_MAP_REDISPORT, db=WORKER_ID_MAP_REDISDBNUM, password=WORKER_ID_MAP_REDISPASSWORD)
     # 将所有值转换为字符串
-    task_params = {k: (json.dumps(v) if isinstance(v, list) else v) for k, v in task_params.items()}
-    redis_client.hmset(worker_id+'-0', task_params)
+    # task_params = {k: (json.dumps(v) if isinstance(v, list) else v) for k, v in task_params.items()}
+    # redis_client.hmset(worker_id+'-0', task_params)
+    # 将字典转换为 JSON 字符串
+    task_params_json = json.dumps(task_params)
 
+    # 将 JSON 字符串存储到 Redis
+    redis_client.set(worker_id + '-0', task_params_json)
 
     # 异步执行 reid_risk 函数，并记录任务 ID
     reid_risk_worker=reid_risk.delay(worker_id+'-1',src_url,un_table_name,to_url,table_name,QIDs,SA,ID)
