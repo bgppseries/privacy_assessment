@@ -1,0 +1,17 @@
+PRIVACY_ASSESSMENT
+    ∏       app(后端服务器相关)
+    ∏       celery_task()
+    ∏       data_handle_model()
+    ∏       Delete()
+    ∏       mylog(日志生成)
+    ∏ [ √ ] report(存储报告的生成相关素材)
+                image(报告生成的背景照片)
+                interface.py
+    ∏       setting(日志生成)
+    ≌[ √ ] server.py(创建服务并规定服务地址)
+    ≌[ √ ] report.py(报告pdf生成代码，用于生成检测报告pdf)
+    
+    
+    
+    
+
