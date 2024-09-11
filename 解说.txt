@@ -1,15 +1,19 @@
 PRIVACY_ASSESSMENT
 (使用flask框架搭建python web框架)
-    ∏ [   ] app(后端服务器相关)
-                ∏ [   ] api
+    ∏ [   ] app(后端服务器相关，配置flask框架)
+                ∏ [   ] api(提供服务器功能所需api)
+                            ∏ [   ] file(用于文件上传)
+                            ∏ [   ] show(用于前端展示，提供函数接口调用)
+                            ∏ [   ] test(测试所用)
                 ∏ [   ] config
-                ∏ [   ] static
+                ∏ [ √ ] static(装服务器的配套资源，包括css, font, js, picture文件)
                 ∏ [   ] templates
-                ≌[   ] __init__.py()
+                ≌[   ] __init__.py(确定访问的回应与状态码，以及导入api中定义的相关api)
     ∏       celery_task()
     ∏       data_handle_model()
     ∏       Delete()
     ∏       mylog(日志生成)
+    
     ∏ [ √ ] report(存储报告的生成相关素材)
                 ∏ [ √ ] mage(报告生成的背景照片)
                 ≌[ √ ] interface.py(未写完的数据库接口函数)
