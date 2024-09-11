@@ -1,4 +1,3 @@
-
 from flask import Flask,jsonify
 # from celery import Celery
 from mylog.logger import mylogger,set_logger
