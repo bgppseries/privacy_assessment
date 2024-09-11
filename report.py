@@ -64,7 +64,7 @@ def draw_info(c):
     c_high = START_HIGH
     c_high -= 55
     # 1.先绘制模块背景--矩形框
-    ## 理解,质疑,成为，贴片
+    ## 质疑, 理解, 成为, 贴片
     c.drawImage("./report/images/info.png", 45, c_high - 290, width=505, height=272)
 
     # c.setFillOverprint(True)
@@ -88,6 +88,7 @@ def draw_info(c):
     c_high -= 25
     c.drawString(95, c_high + 1, "报告编号 : ")
     # 3.加上个六边形
+    # 边界框，右边图像背景范畴
     c.setFillOverprint(False)
     draw_info_hexagon(c, 425, c_high + 70, 60)
     draw_hexagon(c, 425, c_high + 70, 48, colors.whitesmoke)
