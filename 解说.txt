@@ -13,7 +13,10 @@ PRIVACY_ASSESSMENT
     ∏       data_handle_model()
     ∏       Delete()
     ∏       mylog(日志生成)
-    
+                ≌[ √ ] __init__.py(空的init文件，无实际作用)
+                ≌[ √ ] interface.py(未写完的数据库接口函数)
+                ≌[ √ ] test_log.py(log日志测试函数，没用)
+                ≌[ √ ] test.log(log日志测试结果，没用，可删)
     ∏ [ √ ] report(存储报告的生成相关素材)
                 ∏ [ √ ] mage(报告生成的背景照片)
                 ≌[ √ ] interface.py(未写完的数据库接口函数)
