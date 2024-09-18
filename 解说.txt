@@ -30,7 +30,7 @@ PRIVACY_ASSESSMENT
     ≌[ √ ] server.py(创建服务并规定服务地址)
     ≌[ √ ] report.py(报告pdf生成代码，用于生成检测报告pdf)
     ≌[ √ ] requirements.txt(项目所需python库)environment.yml
-    ≌[ √ ] environment.yml(项目所需python库)
+    ≌[ √ ] environment.yml(docker环境配置所需库)
     
     
     
