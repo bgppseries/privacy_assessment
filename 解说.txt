@@ -29,6 +29,8 @@ PRIVACY_ASSESSMENT
                 ≌[ √ ] set.config(neo4j数据库部署相关配置，访问地址等)
     ≌[ √ ] server.py(创建服务并规定服务地址)
     ≌[ √ ] report.py(报告pdf生成代码，用于生成检测报告pdf)
+    ≌[ √ ] requirements.txt(项目所需python库)environment.yml
+    ≌[ √ ] environment.yml(项目所需python库)
     
     
     
