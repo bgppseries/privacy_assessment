@@ -7,13 +7,20 @@ PRIVACY_ASSESSMENT
                             ∏ [   ] test(测试所用)
                 ∏ [   ] config
                 ∏ [ √ ] static(装服务器的配套资源，包括css, font, js, picture文件)
-                ∏ [   ] templates
-                ≌[   ] __init__.py(确定访问的回应与状态码，以及导入api中定义的相关api)
-    ∏       celery_task()
-    ∏       data_handle_model()
-    ∏       Delete()
-    ∏       mylog(日志生成)
-    
+                ∏ [   ] templates(网页html前端页面编写)
+                            ≌[   ] indix.html(首页)
+                            ≌[   ] test.html(用于前端展示，提供函数接口调用)
+                            ≌[   ] tmp.html(测试所用)
+                ≌[ √ ] __init__.py(确定访问的回应与状态码，以及导入api中定义的相关api，写程序创建日志)
+    ∏       celery_task(主要任务功能函数)
+    ∏       data_handle_model(neo4j相关处理)
+    ∏       Delete(数据测试与使用？)
+
+    ∏ [ √ ] mylog(日志生成相关代码)
+                ≌[ √ ] __init__.py(无具体内容的导入文件)
+                ≌[ √ ] logger.py(写log具体实现功能的文件)
+                ≌[ √ ] test_log.py(log功能测试，可以删除，不影响使用)
+                ≌[ √ ] test.log(log功能测试具体输出)
     ∏ [ √ ] report(存储报告的生成相关素材)
                 ∏ [ √ ] mage(报告生成的背景照片)
                 ≌[ √ ] interface.py(未写完的数据库接口函数)
