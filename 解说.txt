@@ -1,22 +1,35 @@
+[ √ ]代表源代码已看完并了解
+[   ]代表未看
+[ o ]代表知道具体作用，但逐句了解
+
+
 PRIVACY_ASSESSMENT
 (使用flask框架搭建python web框架)
     ∏ [   ] app(后端服务器相关，配置flask框架)
-                ∏ [   ] api(提供服务器功能所需api)
+                ∏ [ √ ] __pycache__(flash框架自动生成，之后各文件夹相同，不再赘述)
+                ∏ [   ] api(提供服务器功能所需api)__pycache__
                             ∏ [   ] file(用于文件上传)
                             ∏ [   ] show(用于前端展示，提供函数接口调用)
                             ∏ [   ] test(测试所用)
-                ∏ [   ] config
+                ∏ [ √ ] config(规定了redis非关系型数据库的一些访问方式，供__init__.py调用)
+                (PS：数据库由键值对提供访问，数据库内部具体内容尚不可知)
                 ∏ [ √ ] static(装服务器的配套资源，包括css, font, js, picture文件)
-                ∏ [   ] templates
-                ≌[   ] __init__.py(确定访问的回应与状态码，以及导入api中定义的相关api)
-    ∏       celery_task()
-    ∏       data_handle_model()
-    ∏       Delete()
-    ∏       mylog(日志生成)
-                ≌[ √ ] __init__.py(空的init文件，无实际作用)
-                ≌[ √ ] interface.py(未写完的数据库接口函数)
-                ≌[ √ ] test_log.py(log日志测试函数，没用)
-                ≌[ √ ] test.log(log日志测试结果，没用，可删)
+                ∏ [ o ] templates(网页html前端页面编写，三个前端网页)
+                            ≌[ o ] indix.html(首页)
+                            ≌[ o ] test.html(用于前端展示，提供函数接口调用)
+                            ≌[ o ] tmp.html(测试所用)
+                ≌[ √ ] __init__.py(确定访问的回应与状态码，以及导入api中定义的相关api，写程序创建日志)
+    ∏       celery_task(主要任务功能函数，核心)
+    
+    
+    ∏       data_handle_model(neo4j相关处理)
+    ∏       Delete(数据测试与使用？)
+
+    ∏ [ √ ] mylog(日志生成相关代码)
+                ≌[ √ ] __init__.py(无具体内容的导入文件)
+                ≌[ √ ] logger.py(写log具体实现功能的文件)
+                ≌[ √ ] test_log.py(log功能测试，可以删除，不影响使用)
+                ≌[ √ ] test.log(log功能测试具体输出)
     ∏ [ √ ] report(存储报告的生成相关素材)
                 ∏ [ √ ] mage(报告生成的背景照片)
                 ≌[ √ ] interface.py(未写完的数据库接口函数)
@@ -25,6 +38,8 @@ PRIVACY_ASSESSMENT
                 ≌[ √ ] set.config(neo4j数据库部署相关配置，访问地址等)
     ≌[ √ ] server.py(创建服务并规定服务地址)
     ≌[ √ ] report.py(报告pdf生成代码，用于生成检测报告pdf)
+    ≌[ √ ] requirements.txt(项目所需python库)environment.yml
+    ≌[ √ ] environment.yml(docker环境配置所需库)
     
     
     
