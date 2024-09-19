@@ -16,8 +16,9 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 
 
-# 配置日志
-
+##2024.9.19  配置日志
+## TimedRotatingFileHandler 每日凌晨生成一个新的日志文件
+## 包含时间戳（'%(asctime)s'）、记录器名称（'%(name)s'）、日志级别（'%(levelname)s'）和日志消息（'%(message)s'）。
 logger = logging.getLogger(__name__)
 file_handler = TimedRotatingFileHandler('celery.log', when='midnight')
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -25,9 +26,12 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
+##2024.9.19 使用同级文件夹下config作为配置文件配置处理器
 celery=Celery()
 celery.config_from_object(config)
 
+
+##2024.9.19  ../app.file调用
 def t_status(id):
     c = celery.AsyncResult(id)
     return c
@@ -40,6 +44,7 @@ import traceback
 def check_and_handle_task_result(task, worker_id):
     """
     检查任务的结果并在有错误时处理。
+    2024.9.19 错误结果弹出函数
     """
     from .config import Send_result
     try:
@@ -50,10 +55,12 @@ def check_and_handle_task_result(task, worker_id):
         Send_result(worker_id, {}, success=False, error_message=error_msg)
         logger.error("任务 %s 中出现错误：%s", worker_id, error_msg)
 
+##2024.9.19 无调用
 def send_err(uuid):
     pass
 
 
+##2024.9.19 有调试用print_delete,后续是否删除待定
 class MyTask(Task): # celery 基类
     def on_success(self, retval, task_id, args, kwargs):
         # 执行成功的操作
@@ -66,6 +73,9 @@ class MyTask(Task): # celery 基类
         print('MyTasks 基类回调，任务执行失败')
         return super(MyTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
+
+##2024.9.19 self 参数代表 Celery 任务的实例本身，通过 @app.task(bind=True) 装饰器进行绑定。
+## 通过 self，你可以在任务函数内部访问任务实例的属性和方法，例如任务请求、重新尝试任务等
 
 # 执行csv导入指令
 @celery.task(bind=True,base=MyTask)
@@ -81,6 +91,7 @@ def json_start_import(uuid,file,docker_id,discribition,ID,QIDs,SA):
 
 
 # 定义异步任务，将数据发送给隐私增强系统
+##2024.9.19 只进行发送和格式确定
 @celery.task(bind=True,base=MyTask)
 def send_data_to_backend(self,worker_id,data_table,sql_url):
     """
@@ -104,6 +115,8 @@ def send_data_to_backend(self,worker_id,data_table,sql_url):
         logger.error("发送给隐私增强系统失败，Error:{}".format(e))
         return None
 
+
+##2024.9.19 下创建任务连时调用
 @celery.task(bind=True,base=MyTask)
 def start_evaluate_enhanced(self,result,worker_id):
     if result==None:
@@ -255,6 +268,7 @@ def process_list_test(a1,a2,a3):
 
 
 # 执行评估指令
+## app.file 调用
 @celery.task(bind=True,base=MyTask)
 def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene,des,k=2,l=2,t=0.95):
     print("########################################################################")
@@ -388,6 +402,7 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene
         else:
             # 若未全部成功执行，则等待一段时间后继续轮询
             time.sleep(15)  # 等待5秒后再次轮询
+
 
 @celery.task(bind=True,base=MyTask)
 def reid_risk(self,uuid,src_url,un_table_name,to_url,table_name,QIDs,SA,ID):
