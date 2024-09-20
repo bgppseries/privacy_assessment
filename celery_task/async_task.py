@@ -238,13 +238,19 @@ def start_evaluate_enhanced(self,result,worker_id):
             time.sleep(15)  # 等待5秒后再次轮询
 
 
-# 创建任务链
+# 创建任务链，设置异步执行
+##2024.9.20 chain函数是Celery中的一个构造器，用于创建一个任务链
+#.s()是一个快捷方式，用于创建一个任务的签名，它将任务转换为一个可调用的对象，这样你就可以传递参数而不立即执行它
+# |操作符用于连接任务，它表示前一个任务的输出将作为后一个任务的输入
 def process_data_chain(worker_id,data_table,sql_url):
     chain_task = chain(
         send_data_to_backend.s(worker_id,data_table,sql_url) | 
         start_evaluate_enhanced.s(worker_id=worker_id)
         )
     chain_task.delay()
+
+
+##2024.9.20 三个测试函数，没啥用，后续可以按照 print_delete 删除
 @celery.task(bind=True,base=MyTask)
 def test_1(self,a1,a2,a3):
     
@@ -411,8 +417,10 @@ def reid_risk(self,uuid,src_url,un_table_name,to_url,table_name,QIDs,SA,ID):
     logger.info('评估任务id: {},风险评估结果：{}'.format(uuid,ridrisk))
     logger.info('评估任务id: {},统计推断攻击结果: {}'.format(uuid,sarisk))
 
+
 from .config import Config
 
+##2024.9.20 反序列化获得的数据，并在其中解析所需的 5 种数据
 @celery.task(bind=True,base=MyTask)
 def compliance(self,Series_quasi,_TemAll,k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
     # 反序列化 Series

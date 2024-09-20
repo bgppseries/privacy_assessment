@@ -22,7 +22,8 @@ PRIVACY_ASSESSMENT
 
     ∏       celery_task(主要任务功能函数，核心)
                 ∏ [ √ ] __init__.py(空的)
-                ∏ [   ] async_task.py(定义了Celery 应用实例和任务函数，用@celery.task装饰 => 在文件中具体注释)
+                ∏ [ √ ] async_task.py(定义了Celery 应用实例和任务函数，用@celery.task装饰 => 在文件中具体注释，
+                        start_evaluate被app调用，再上的任务链未被调用??)
                 ∏ [   ] config.py(定义了 Celery 的配置文件 => 在文件中具体注释)
 
     
