@@ -1,4 +1,3 @@
-
 from neo4j import GraphDatabase
 import configparser
 from py2neo import Graph

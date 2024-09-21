@@ -15,6 +15,7 @@ import platform
 def execute_real_time_command(cmd):
     try:
         p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        ##2024.9.21 检查进程是否还在运行
         while p.poll() == None:
             out = p.stdout.readline().strip()
             if out:
@@ -36,6 +37,8 @@ def execute_command(command):
         return e.output
 
 
+##2024.09.21 获取neo4j的安装/运行目录
+## 均为下文定义函数，用来执行命令，完成对 neo4j 服务的开启前准备
 def import_neo4j_prepro():
     """
     todo 目前还是写死
@@ -92,6 +95,8 @@ def delete_files_in_folder(folder_path):
             os.remove(file_path)
             ##todo log
 
+
+##2024.09.21 读取 csv 文件的具体操作函数
 def read_csv(path, out):
     df = pd.read_csv(path)
     other_columns = df.columns[0:]

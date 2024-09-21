@@ -1,7 +1,7 @@
 [ √ ]代表源代码已看完并了解
 [   ]代表未看
 [ o ]代表知道具体作用，但逐句了解
-
+全局搜索 todo 代表还没有完全写好，需要后期填补写好
 
 PRIVACY_ASSESSMENT
 (使用flask框架搭建python web框架)
@@ -24,10 +24,12 @@ PRIVACY_ASSESSMENT
                 ∏ [ √ ] __init__.py(空的)
                 ∏ [ √ ] async_task.py(定义了Celery 应用实例和任务函数，用@celery.task装饰 => 在文件中具体注释，
                         start_evaluate被app调用，再上的任务链未被调用??)
-                ∏ [   ] config.py(定义了 Celery 的配置文件 => 在文件中具体注释)
+                ∏ [ √ ] config.py(定义了 Celery 的配置文件 => 在文件中具体注释)
 
     
-    ∏       data_handle_model(neo4j相关处理)
+    ∏ [ √ ] data_handle_model(neo4j相关处理)
+                ∏ [ √ ] data_import_handel.py(读取csv,json文件及neo4j数据库开启关闭相关操作的具体处理函数)
+
     ∏       Delete(数据测试与使用？)
 
     ∏ [ √ ] mylog(日志生成相关代码)
@@ -55,8 +57,8 @@ PS
 WARING:
 1>celery_task\async_task.py
     csv_start_import 无 self 参数，待看，好像没啥问题
-
+2>celery_task\async_task.py
+    start_evaluate被app调用，再上的任务链未被调用??
 
 completed：
-1>celery_task\async_task.py 两个主函数
-question
+
