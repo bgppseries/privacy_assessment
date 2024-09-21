@@ -121,6 +121,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # from celery_task.Indicator_K_Json2 import Data_availability,Data_compliance,Desensitization_data_character,Desensitization_data_quality_evalution, privacy_protection_metrics
 
+##2024.09.21 做测试用代码
+##说明了从此以下所有代码的用法
 def Run(k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
     '''
     :param k: 输入K匿名
@@ -207,6 +209,8 @@ class Config:
         ##################可用性评估-----耿志颖
         self.n_s = 0                                                           ##数据集中被隐匿的记录个数，即原数据集中有却没有在脱敏数据集发布的记录个数，暂时定义为0
 
+    ##2024.09.21 数据读取并处理
+    # 返回数据用在之下的处理函数中，以 _TemAll 表示
     def _Function_Data(self):
         '''
         :return: 返回文件的所有数据
@@ -331,6 +335,7 @@ class Config:
 
 
 ##匿名集数据特征
+##2024.09.21 主要是 runL 函数，调用了其他所有函数
 class Desensitization_data_character(Config):
     def __init__(self, k,l,t,url,address,worker_uuid,QIDs,SA,ID,bg_url,scene):
         '''

@@ -48,12 +48,15 @@ PRIVACY_ASSESSMENT
     
 PS
 1>print_delete 说明有额外print输出的内容，后期可能要删除
-
+2>app.file.model 需重写？涉及到对neo4j数据库的读写和对相关docker容器的访问没写全？
+3>celery_task\config.py
+    Send_Result_neo4j(self) 将指标返回值写入知识图谱，未写，之后需要补全
 
 WARING:
 1>celery_task\async_task.py
-    csv_start_import 无 self 参数，待看
+    csv_start_import 无 self 参数，待看，好像没啥问题
 
 
 completed：
 1>celery_task\async_task.py 两个主函数
+question
