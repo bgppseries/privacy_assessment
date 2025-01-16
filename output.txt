@@ -1,0 +1,83 @@
+{
+    "风险评估结果": {
+        "error_message": "",
+        "success": true,
+        "统计推断还原率": 0.0,
+        "重识别率": 0.05
+    },
+    "合规性评估结果": {
+        "(α,k)-Anonymity": {
+            "AnonymityandLvalue": [
+                0.5,
+                2.0
+            ],
+            "hotel_name": "满足"
+        },
+        "K-Anonymity": {
+            "k_value": "2",
+            "整体": "满足"
+        },
+        "L-Diversity": {
+            "l_value": "2",
+            "hotel_name": "满足"
+        },
+        "T-Closeness": {
+            "T_value": "0.95",
+            "hotel_name": "满足"
+        },
+        "error_message": "",
+        "success": true
+    },
+    "可用性评估结果": {
+        "error_message": "",
+        "success": true,
+        "基于熵的平均数据损失度": "48.43%",
+        "归一化平均等价组大小度量": 94.697,
+        "数据可辨别度": 31689984,
+        "数据记录匿名率": "0.0%"
+    },
+    "匿名集数据特征评估结果": {
+        "error_message": "",
+        "success": true,
+        "准标识符维数": 4,
+        "固有隐私": 378,
+        "平均泛化程度": 189.3939,
+        "敏感属性种类": [
+            "hotel_name"
+        ],
+        "敏感属性维数": 1
+    },
+    "匿名集数据质量评估结果": {
+        "KL_Divergence": {
+            "hotel_name": "3.8502"
+        },
+        "error_message": "",
+        "success": true,
+        "分布泄露": {
+            "hotel_name": "0.3622"
+        },
+        "唯一性": "0.0%",
+        "正面信息披露": {
+            "null": "95.8829"
+        },
+        "熵泄露": {
+            "null": "3.8082"
+        }
+    },
+    "隐私保护性度量评估结果": {
+        "error_message": "",
+        "success": true,
+        "单个属性的重识别风险": {
+            "sex": "0.19",
+            "age": "0.21",
+            "id_number": "0.66",
+            "phone": "0.34"
+        },
+        "基于熵的重识别风险": {
+            "value": "56.66"
+        },
+        "敏感属性的重识别风险": {
+            "hotel_name": "56.66"
+        }
+    }
+}

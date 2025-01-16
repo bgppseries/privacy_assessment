@@ -285,6 +285,7 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene
     """"
     redis中存放的关于worker_id映射表
     key:    worker_id        value:     map,存放的是各个子任务的uuid
+    ## 子线程id
     key:    worker_id+'-0'   value:     评估任务的相关参数
     key:    worker_id+'-1'   value:     风险评估结果
     key:    worker_id+'-2'   value:     合规性评估结果
@@ -397,7 +398,7 @@ def start_evaluate(self,src_url,un_table_name,to_url,table_name,QIDs,SA,ID,scene
         Desensitization_character_result = AsyncResult(Desensitization_character_worker.id)
         Desensitization_quality_result = AsyncResult(Desensitization_quality_worker.id)
         privacy_protection_result = AsyncResult(privacy_protection_worker.id)
-        
+        5
         # 判断是否所有函数都成功执行
         if (reid_risk_result.successful() and compliance_result.successful() and
             availability_result.successful() and Desensitization_character_result.successful() and

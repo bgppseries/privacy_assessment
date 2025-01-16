@@ -25,13 +25,15 @@ PRIVACY_ASSESSMENT
                 ∏ [ √ ] async_task.py(定义了Celery 应用实例和任务函数，用@celery.task装饰 => 在文件中具体注释，
                         start_evaluate被app调用，再上的任务链未被调用??)
                 ∏ [ √ ] config.py(定义了 Celery 的配置文件 => 在文件中具体注释)
-
+                ∏ [ o ] data_import_handel.py(读取csv和json的相关函数)
+                ∏ [ o ] Indicator_K_Json2.py(相关函数的具体实现与实际测试函数)
+                ∏ [ o ] risk.py()
     
-    ∏ [ √ ] data_handle_model(neo4j相关处理)
-                ∏ [ √ ] data_import_handel.py(读取csv,json文件及neo4j数据库开启关闭相关操作的具体处理函数)
-
+    
     ∏       Delete(数据测试与使用？)
 
+    ∏ [ √ ] data_handle_model(neo4j相关处理)
+                ∏ [ √ ] data_import_handel.py(读取csv,json文件及neo4j数据库开启关闭相关操作的具体处理函数)
     ∏ [ √ ] mylog(日志生成相关代码)
                 ≌[ √ ] __init__.py(无具体内容的导入文件)
                 ≌[ √ ] logger.py(写log具体实现功能的文件)

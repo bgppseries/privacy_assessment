@@ -112,7 +112,7 @@ def reidentity_risk_assess(worker_id,src_dburl,src_table,to_dburl,to_table,qids,
     """
     print("评估开始：","任务id",worker_id,"qids:",qids,"sa",sa,id,'原始文件',src_table,'脱敏后文件',to_table)
 
-    
+    ### 创建数据库引擎并连接数据库
     query = f"SELECT * FROM {src_table}"
     # 创建SQLAlchemy的Engine对象
     engine = create_engine(src_dburl).connect()
@@ -122,6 +122,7 @@ def reidentity_risk_assess(worker_id,src_dburl,src_table,to_dburl,to_table,qids,
     engine=create_engine(to_dburl).connect()
     tuomindf=pd.read_sql(sql=text(query),con=engine)
     # 使用列表推导式来选取存在的列
+    ##2024.12.30 对于 qq 中的每一个列名 col，如果 col 在 df 的列名中，则保留该列，最终得到一个新的 DataFrame j_df
     qq=qids+id
     j_df = df[[col for col in qq if col in df.columns]]
     hdf = tuomindf[[col for col in qq if col in tuomindf.columns]]

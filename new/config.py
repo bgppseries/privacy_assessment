@@ -653,7 +653,8 @@ class privacy_protection_metrics(Config):
         10万条数据，用时2秒
         '''
         # _TemAll = self._Function_Data()                                                         ##得到所有数据，DataFrame格式
-        Num_Privacy = len(_TemAll[each_privacy].drop_duplicates())##得到所有数据中所选敏感属性的种类个数，即set集大小
+        Num_Privacy = len(_TemAll[each_privacy].drop_duplicates())
+        ##得到所有数据中所选敏感属性的种类个数，即set集大小
         Hmax = math.log2(Num_Privacy)
         
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
@@ -983,12 +984,6 @@ class Data_availability(Config):
             # "数据损失度":NCP,
             "基于熵的平均数据损失度":f"{round(Entropy_based_Average_Loss * 100, 2)}%"
         })
-
-
-
-
-
-
 
 if __name__ == '__main__':
     global_uuid = str(uuid.uuid4())  ##定义全局变量uuid数据

@@ -24,6 +24,7 @@ set_logger(logger)
 # 2024年4月25日15:53:51 文件方式取消，函数废除
 @api_file.route('/upload',methods=['POST'])
 def upload_file():
+    ### 获取当前目录并拼接
     to=os.getcwd()+'\\data\\unhandeled'
     bg_dir=os.getcwd()+'\\data\\bg'
     logger.info("file api receive a work")
