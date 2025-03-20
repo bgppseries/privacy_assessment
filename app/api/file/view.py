@@ -140,7 +140,7 @@ def upload_file():
 
 
 # api：处理收到的数据，先评估，同时发送给隐私增强系统
-@api_file.route('/privacy_assess_test',methods=["POST"])
+@api_file.route('/privacy_assess',methods=["POST"])
 def json_test():
     data = request.json
     # 处理接收到的 JSON 报文
@@ -174,7 +174,7 @@ def json_test():
 
 
 # api:  获取评估结果
-@api_file.route('/privacy_res_test',methods=["GET"])
+@api_file.route('/privacy_res',methods=["GET"])
 def get_work_assess():
     """
     根据主线程任务ID获取各个子线程的任务结果。
@@ -220,6 +220,11 @@ def get_work_assess():
         return jsonify(results), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+
+
 
 # api:  进程调度接口        
 from celery_task.async_task import t_status,t_stop

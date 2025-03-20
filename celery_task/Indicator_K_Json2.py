@@ -10,6 +10,7 @@ import numpy as np
 import time
 import uuid
 from celery_task.config import Config
+import  redis
 
 # global_uuid = str(uuid.uuid4())  ##定义全局变量uuid数据
 # print("uuid为：", global_uuid)
@@ -88,6 +89,55 @@ from celery_task.config import Config
 #         handler5 = privacy_protection_metrics(self.K_Anonymity,self.L_diversity,self.T_closeness,self.json_address)
 #         handler5.runL(Series_quasi)                          ##传递准标识符集合，以及准标识符对应的数量
 
+def sendvalue(worker_id, key, value, valuetype):
+    """
+    向 Redis 添加 key 和 value，支持存储单一类型数据或列表数据，并确保数据类型被保留。
+
+    参数:
+        worker_ud (str): Redis 连接字符串。
+        key (str): 要存储的小指标的名称。
+        value (int, float, list): 要存储的小指标结果值Value，可以是单一值或列表。
+        valuetype (type): 值的类型（int 或 float 或 list）。
+    """
+    try:
+        worker_id=worker_id+'-0'
+        # 初始化 Redis 连接
+        from .config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPORT, \
+            WORKER_ID_MAP_REDISPASSWORD, TASKS_ZSET_KEY
+        redis_conn = redis.StrictRedis(host=WORKER_ID_MAP_REDISADDRESS, port=WORKER_ID_MAP_REDISPORT,
+                                         db=WORKER_ID_MAP_REDISDBNUM, password=WORKER_ID_MAP_REDISPASSWORD)
+
+        current_value = redis_conn.get(worker_id)
+        if not current_value:
+            raise ValueError(f"No data found for worker_id '{worker_id}'")
+
+        # 解析现有数据
+        data = json.loads(current_value)
+
+        # 确保 "results" 字段存在并为字典
+        if "results" not in data or not isinstance(data["results"], dict):
+            data["results"] = {}
+
+        # 验证值的类型
+        if isinstance(value, list):
+            # 如果是列表，验证每个元素是否匹配指定类型
+            if not all(isinstance(v, valuetype) for v in value):
+                raise ValueError(f"All elements in the list must be of type {valuetype}")
+        else:
+            # 如果是单一值，确保值的类型匹配指定类型
+            if not isinstance(value, valuetype):
+                raise ValueError(f"Value must be of type {valuetype}, but got {type(value)}")
+
+        # 添加或更新 "results" 中的键值
+        data["results"][key] = value
+
+        # 保存修改后的数据回 Redis
+        redis_conn.set(worker_id, json.dumps(data))
+        print(f"Updated 'results' field for worker_id '{worker_id}': {data['results']}")
+
+    except Exception as e:
+        print(f"Error occurred: {e}",key," ",value," ",valuetype)
+
 
 
 ##匿名集数据特征
@@ -152,6 +202,14 @@ class Desensitization_data_character(Config):
         print("平均泛化程度为：", Average_anonymity)
         Inherent_Priv = self.Inherent_Privacy( Series_quasi)
         print("固有隐私为：", Inherent_Priv)
+
+        #将数据写入redis中
+        sendvalue(self.worker_uuid, "准标识符维数",Dimen_QID, float)
+        sendvalue(self.worker_uuid, "敏感属性维数",Dimen_SA, float)
+        sendvalue(self.worker_uuid, "敏感属性种类",Attribute_SA, float)
+        sendvalue(self.worker_uuid, "平均泛化程度",Average_anonymity, float)
+        sendvalue(self.worker_uuid, "固有隐私",Inherent_Priv, float)
+
 
 
 ##匿名数据质量评估
@@ -306,35 +364,61 @@ class Desensitization_data_quality_evalution(Config):
 
 
     def runL(self, Series_quasi):
-        Entropy_based_Average_Loss = self.Get_Entropy_based_Average_loss(Series_quasi)  ##0.23秒
-        print(f"基于熵的平均数据损失度为：{round(Entropy_based_Average_Loss * 100, 2)}%")
-        Uniqueness_proportion = self.Get_Uniqueness(Series_quasi)  
+
+
+        listD = [];listE = [];listF = [];listKL = []
+        valuesUniqueness_proportion  = [];valueDistribution_Leakage = []; valueEntropy_Leakage = [];valuePositive_Information_Disclosure = [];valueKL_Divergence = [];
+
+
+        Uniqueness_proportion = self.Get_Uniqueness(Series_quasi)
         print(f"数据集中唯一记录的占比为：{round(Uniqueness_proportion * 100, 2)}%，唯一记录比非唯一记录更容易被重新识别，极易遭受重标识攻击和偏斜攻击")
-        listD = [];listE = [];listF = []
+        valuesUniqueness_proportion.append(Uniqueness_proportion)
+
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start = time.time()
             _max,Attr = self.Get_Distribution_Leakage(each_privacy, Series_quasi.keys())
             print(f"数据集针对{each_privacy}的分布泄露为：{round(_max, 4)},对应等价组为{Attr}")
             listD.append(round(_max, 4))
+            valueDistribution_Leakage.append(_max)
             # print(f"耗时为：{time.time() - start}")
+
+
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start2 = time.time()
             _max,Attr = self.Get_Entropy_Leakage(each_privacy, Series_quasi.keys())
             print(f"数据集针对{each_privacy}的熵泄露为：{round(_max, 4)},对应等价组为{Attr}")
             listE.append(round(_max, 4))
+            valueEntropy_Leakage.append(_max)
             # print(f"耗时为：{time.time() - start2}")
+
+
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start3 = time.time()
             _max,Attr = self.Get_Positive_Information_Disclosure(each_privacy, Series_quasi)
             print(f"数据集针对{each_privacy}的正面信息披露为：{_max},对应属性值为{Attr}")
             listF.append(_max)
+            valuePositive_Information_Disclosure.append(_max)
             # print(f"耗时为：{time.time()-start3}")
+
+
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             # start4 = time.time()
             _max,Attr = self.Get_KL_Divergence(each_privacy,Series_quasi.keys())
             print(f"数据集针对{each_privacy}的KL散度为：{_max},对应等价组为{Attr}")
-            listF.append(_max)
+            listKL.append(_max)
+            valueKL_Divergence.append(_max)
             # print(f"耗时为：{time.time()-start4}")
+
+
+
+        #将数据写入redis中
+        sendvalue(self.worker_uuid, "唯一性",valuesUniqueness_proportion, float)
+        sendvalue(self.worker_uuid, "分布泄露",valueDistribution_Leakage, float)
+        sendvalue(self.worker_uuid, "熵泄露",valueEntropy_Leakage, float)
+        sendvalue(self.worker_uuid, "正面信息披露",valuePositive_Information_Disclosure, float)
+        sendvalue(self.worker_uuid, "KL散度",valueKL_Divergence, float)
+
+
 
 
 ##隐私保护性度量
@@ -428,22 +512,36 @@ class privacy_protection_metrics(Config):
     def runL(self, Series_quasi):
         listP = [];
         listQ = []  ##一行同时初始化多个参数，要用分号而不要用逗号
+
+        ValuePrivacy = []; ValueQusai = [];ValueALL = []
+
         for each_privacy in self.address_Attr[1]:
             # start1 = time.time()
             Entropy_Re_Risk_with,QList = self.Get_Entropy_based_Re_indentification_Risk_with(Series_quasi.keys(),each_privacy)
             print(f"针对敏感属性{each_privacy}基于熵的重识别风险为：{Entropy_Re_Risk_with * 100}%，对应等价组为{QList}")  ##149秒/132秒/132秒
             listP.append(f"针对敏感属性{each_privacy}基于熵的重识别风险为：{Entropy_Re_Risk_with * 100}%，对应等价组为{QList}")
+            ValuePrivacy.append(Entropy_Re_Risk_with)
+
             # print(f"耗时为：{time.time() - start1}")
         for each_QID in self.address_Attr[0]:
             # start2 = time.time()
             Entropy_Re_Risk_QID,Attr = self.Get_Entropy_based_Re_indentification_Risk_QID(each_QID)
             print(f"针对准标识符属性{each_QID}基于熵的重识别风险为：{round(Entropy_Re_Risk_QID * 100, 2)}%，对应属性值为{Attr}")
             listQ.append(f'{round(Entropy_Re_Risk_QID * 100, 2)}%')
+            ValueQusai.append(Entropy_Re_Risk_QID)
+
             # print(f"耗时为：{time.time() - start2}")
         # start3 = time.time()
         Entropy_Re_Risk,QList = self.Get_Entropy_based_Re_indentification_Risk( Series_quasi.keys())
         print(f"整个数据集基于熵的重识别风险为：{Entropy_Re_Risk * 100}%，对应等价组为{QList}")
+        ValueALL.append(Entropy_Re_Risk)
         # print(f"耗时为：{time.time() - start3}")
+
+
+        sendvalue(self.worker_uuid, "敏感属性重识别风险", ValuePrivacy, float)
+        sendvalue(self.worker_uuid, "基于准标识符重识别风险", ValueQusai, float)
+        sendvalue(self.worker_uuid, "整体重识别风险", ValueALL, float)
+
 
 
 
@@ -533,13 +631,18 @@ class Data_compliance(Config):
 
     def runL(self, Series_quasi):
         BoolK = self.IsKAnonymity(Series_quasi)  ##若为True，满足K匿名；反之，不满足
+        ValueK_Anonymity = []; ValueL_Diversity = []; ValueT_Closeness = []; ValueAK_Anonymity = []
+
+
         _list = []
         if BoolK:                                                        ##若不满足K匿名，则必不满足(0.5,k)-Anonymity
             print(f"满足{self.K_Anonymity}-匿名")
             _list.append(f"满足{self.K_Anonymity}-匿名")
+            ValueK_Anonymity.append(1)
         else:
             print(f"准标识符为{Series_quasi.keys()[0]}的等价组不满足{self.K_Anonymity}-匿名，安全性低，容易遭受偏斜攻击和重标识攻击！")
             _list.append(f"准标识符为{Series_quasi.keys()[0]}的等价组不满足{self.K_Anonymity}-匿名，安全性低，容易遭受偏斜攻击和重标识攻击！")
+            ValueK_Anonymity.append(0)
 
         listL = []; listT = []; listAK = []
         for each_privacy in self.address_Attr[1]:
@@ -548,18 +651,26 @@ class Data_compliance(Config):
             if BoolL:
                 print(f"隐私属性{each_privacy}满足{self.L_diversity}-多样性")
                 listL.append(f"隐私属性{each_privacy}满足{self.L_diversity}-多样性")
+                ValueL_Diversity.append(1)
+
             else:
                 print(f"{QList}的等价组其隐私属性{each_privacy}不满足{self.L_diversity}-多样性，容易遭受偏斜攻击和重标识攻击！")
                 listL.append(f"{QList}的等价组其隐私属性{each_privacy}不满足{self.L_diversity}-多样性，容易遭受偏斜攻击和重标识攻击！")
+                ValueL_Diversity.append(0)
+
+
             # start1 = time.time()
             # print(f"消耗时间{start1 - start}")
             BoolT,QList = self.IsTCloseness(Series_quasi.keys(), each_privacy)  ##180秒
             if BoolT:
                 print(f"隐私属性{each_privacy}满足{self.T_closeness}-紧密性")
                 listT.append(f"隐私属性{each_privacy}满足{self.T_closeness}-紧密性")
+                ValueT_Closeness.append(1)
+
             else:
                 print(f"{QList}的等价组其隐私属性{each_privacy}不满足{self.T_closeness}-紧密性")
                 listT.append(f"隐私属性{each_privacy}不满足{self.T_closeness}-紧密性")
+                ValueT_Closeness.append(0)
             # print(f"消耗时间{time.time()-start1}")
 
             if BoolK:                                                                               ##若不满足K匿名，则必不满足(0.5,k)-Anonymity
@@ -568,15 +679,28 @@ class Data_compliance(Config):
                 if BoolAK:
                     print(f"隐私属性{each_privacy}满足(0.5,{self.K_Anonymity})-Anonymity")
                     listAK.append(f"隐私属性{each_privacy}满足(0.5,{self.K_Anonymity})-Anonymity")
+                    ValueAK_Anonymity.append(1)
                 else:
                     print(f"{QList}的等价组其隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
                     listAK.append(f"隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
+                    ValueAK_Anonymity.append(0)
                 # print(f"耗时为：{time.time() - start2}")
+            else:
+                print(f"{QList}的等价组其隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
+                listAK.append(f"隐私属性{each_privacy}不满足(0.5,{self.K_Anonymity})-Anonymity，容易遭受偏斜攻击和重标识攻击！")
+                ValueAK_Anonymity.append(0)
 
 
         _list.append(listL)
         _list.append(listT)
         _list.append(listAK)
+
+        #将数据发送到redis库中
+        #K匿名的列表，存储int值
+        sendvalue(self.worker_uuid, "K_Anonymity", ValueK_Anonymity, int)
+        sendvalue(self.worker_uuid, "L_Diversity", ValueL_Diversity, int)
+        sendvalue(self.worker_uuid, "T_Closeness", ValueT_Closeness, int)
+        sendvalue(self.worker_uuid, "AK_Anonymity", ValueAK_Anonymity, int)
 
 
 ##数据可用性
@@ -645,9 +769,21 @@ class Data_availability(Config):
         CAVG = self.Get_CAVG(Series_quasi)
         print(f"归一化平均等价组大小度量：{CAVG}")
         # start = time.time()
-        # NCP = self.Get_NCP(Series_quasi)
-        # print(f"数据损失度为：",NCP)
+        NCP = self.Get_NCP(Series_quasi)
+        print(f"数据损失度为：",NCP)
         # print(f"耗时为{time.time()-start}")
+
+        Entropy_based_Average_Loss = self.Get_Entropy_based_Average_loss(Series_quasi)  ##0.23秒
+        print(f"基于熵的平均数据损失度为：{round(Entropy_based_Average_Loss * 100, 2)}%")
+
+        sendvalue(self.worker_uuid, "数据可辨别度", CDM, float)
+        sendvalue(self.worker_uuid, "匿名率", SupRatio, float)
+        sendvalue(self.worker_uuid, "归一化平均等价组大小", CAVG, float)
+        sendvalue(self.worker_uuid, "数据损失度", NCP, float)
+        sendvalue(self.worker_uuid, "基于熵的平均数据损失度",Entropy_based_Average_Loss, float)
+
+
+
 
 
 
