@@ -2,6 +2,9 @@ import json
 import os
 from datetime import datetime
 from flask import jsonify, request
+from sqlalchemy import create_engine, inspect
+from sqlalchemy.exc import SQLAlchemyError
+import traceback
 
 from celery_task.async_task import start_evaluate
 from . import api_file
@@ -107,39 +110,9 @@ def upload_file():
         res="please input particular file, now we can only support csv and json"
     return res
 
-# @api_file.route('/test',methods=["GET","POST"])
-# def test():
-#     res=request.form.get('user_name')
-#     res=str(res)
-#     tutu=res
-#     print(res)
-#     print(request.form)
-#     for item in request.form:
-#         print(item)
-#     file=request.files.get('bg_file')
-#     if file:
-#         print("success recv file",file.filename)
-#     else :
-#         print("NNNNNNN")
-#     res="okok"
-
-#     from celery_task.async_task import json_start_evaluate,add
-#     import uuid
-#     u=uuid.uuid4
-#     logger.info("recv:")
-#     logger.info('task uuid: %s',tutu)
-#     result=json_start_evaluate.delay(tutu)
-#     res=result.id
-#     logger.info('worker_id: %s',str(res))
-#     result=add.delay(1,2)
-#     res=result.id
-#     logger.info('worker_id: %s',str(res))
-#     return str(res)
 
 
-
-
-# api：处理收到的数据，先评估，同时发送给隐私增强系统
+# api：处理收到的数据，先评估
 @api_file.route('/privacy_assess',methods=["POST"])
 def json_test():
     data = request.json
@@ -303,11 +276,54 @@ def get_assess_status():
 
 
 
-@api_file.route('/hello')
-def hello():
-    return 'hello world!'
-
+# api: 获取当前时间
 @api_file.route('/time',methods=["GET","POST"])
 def get_time():
     return datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")
 
+# api: 获取数据库表名和列名
+engines={}
+@api_file.route('/get-tables', methods=['POST'])
+def get_tables():
+    data = request.get_json()
+    db_url = data.get('url')
+    print("收到的数据库URL:", db_url)
+
+    if not db_url:
+        return jsonify({'success': False, 'message': '缺少数据库URL'}), 400
+
+    try:
+        # 创建数据库连接引擎
+        engine = create_engine(db_url)
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+
+        # 保存引擎供后续使用（可选）
+        engines['engine'] = engine
+
+        return jsonify({'success': True, 'tables': tables})
+
+    except SQLAlchemyError as e:
+        print("SQLAlchemyError:", str(e))
+        return jsonify({'success': False, 'message': str(e)}), 500
+    except Exception as e:
+        print("其他错误:", traceback.format_exc())
+        return jsonify({'success': False, 'message': '内部服务器错误', 'error': str(e)}), 500
+
+@api_file.route('/get-columns', methods=['POST'])
+def get_columns():
+    data = request.get_json()
+    table_name = data.get('table')
+    if not table_name:
+        return jsonify({'success': False, 'message': '缺少表名'}), 400
+
+    engine = engines.get('engine')
+    if not engine:
+        return jsonify({'success': False, 'message': '数据库连接尚未建立'}), 400
+
+    try:
+        inspector = inspect(engine)
+        columns = [col['name'] for col in inspector.get_columns(table_name)]
+        return jsonify({'success': True, 'columns': columns})
+    except SQLAlchemyError as e:
+        return jsonify({'success': False, 'message': str(e)}), 500

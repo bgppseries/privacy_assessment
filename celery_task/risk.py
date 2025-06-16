@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cdist
-
 import Levenshtein
 import glob
 import math
@@ -22,7 +21,7 @@ from sqlalchemy import create_engine,text
                 1.距离dis
                 2.向量？
 """
-
+##  todo 重写
 
 # 设置随机种子，确保每次运行结果一致
 #np.random.seed(0)

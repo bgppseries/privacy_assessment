@@ -1,2 +1,0 @@
-2024-06-23 20:57:28,295 - celery_task.async_task - INFO - 评估任务id: 97d83d9b-6707-45a4-a2fc-8fe9459561d0-1,风险评估结果：1.0
-2024-06-23 20:57:28,295 - celery_task.async_task - INFO - 评估任务id: 97d83d9b-6707-45a4-a2fc-8fe9459561d0-1,统计推断攻击结果: 0

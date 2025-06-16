@@ -11,10 +11,15 @@ from .data_import_handel import csv_importer, json_importer
 import time
 import pandas as pd
 import redis
-from celery_task.config import Data_availability, Data_compliance, Desensitization_data_character, \
-    Desensitization_data_quality_evalution, privacy_protection_metrics
-from celery.result import AsyncResult
+# from celery_task.config import Data_availability, Data_compliance, Desensitization_data_character, \
+#     Desensitization_data_quality_evalution, privacy_protection_metrics
 
+from celery_task.func.metic import Data_availability, Data_compliance, Desensitization_data_character, \
+    Data_Security
+from celery_task.func.metic import Config
+
+
+from celery.result import AsyncResult
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
@@ -65,8 +70,8 @@ def send_err(uuid):
 
 class MyTask(Task):  # celery 基类
     # 默认配置
-    time_limit = 1800  # 硬超时，单位为秒 (5分钟)
-    soft_time_limit = 1000  # 软超时，单位为秒 (4分钟30秒)
+    time_limit = 2200000  # 硬超时，单位为秒 (5分钟)
+    soft_time_limit = 2000000  # 软超时，单位为秒 (4分钟30秒)
     max_retries = 3  # 最大重试次数
     default_retry_delay = 60  # 重试间隔，单位为秒
 
@@ -342,8 +347,7 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
     key:    worker_id+'-2'   value:     合规性评估结果
     key:    worker_id+'-3'   value:     可用性评估结果
     key:    worker_id+'-4'   value:     匿名集数据特征评估结果
-    key:    worker_id+'-5'   value:     匿名集数据质量评估结果
-    key:    worker_id+'-6'   value:     隐私保护性度量评估结果
+    key:    worker_id+'-5'   value:     隐私保护性度量评估结果
     key: TASKS_ZSET_KEY  zset集合    存放任务id和时间戳
     """
     tt = worker_id
@@ -389,58 +393,37 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
     timestamp = time.time()
     redis_client.zadd(TASKS_ZSET_KEY, {worker_id: timestamp})
 
+    # 场景--任务id映射存到redis中
+    redis_client.hset(f'scene:{scene}',worker_id,table_name)
+
     # 异步执行 reid_risk 函数，并记录任务 ID
     reid_risk_worker = reid_risk.delay(worker_id + '-1', src_url, un_table_name, to_url, table_name, QIDs, SA, ID)
     reid_risk_worker_id = reid_risk_worker.id
     logger.info("风险评估已启动，子进程id是：{}".format(reid_risk_worker_id))
 
-    # 准备数据
-    handler = Config(k, l, t, src_url, un_table_name, worker_id, QIDs, SA, ID, '', '')
-    _TemAll = handler._Function_Data()
-    Series_quasi = handler._Function_Series_quasi(_TemAll)  ##结果为升序
-    # 将值传递给celery任务，要保证可被序列化
-    # 序列化 Series
-    # 打印序列化前的数据
-    # print("Series_quasi before serialization:", Series_quasi.head())
-    # print("Series_quasi index length:", len(Series_quasi.index))
-    # print("Series_quasi data length:", len(Series_quasi.tolist()))
-    # print(Series_quasi.index)
-    Series_quasi = {
-        'data': Series_quasi.tolist(),
-        'index': [str(idx) for idx in Series_quasi.index]
-    }
-
-    _TemAll = _TemAll.to_dict(orient='records')
-
     # 异步执行 compliance 函数，并记录任务 ID
-    compliance_worker = compliance.delay(Series_quasi, _TemAll, k, l, t, src_url, un_table_name, worker_id + '-2', QIDs,
+    compliance_worker = compliance.delay(k, l, t, src_url, un_table_name, worker_id + '-2', QIDs,
                                          SA, ID, '', '')
     compliance_worker_id = compliance_worker.id
     logger.info("合规性评估已启动，子进程id是：%s", compliance_worker_id)
 
     # 异步执行 availability 函数，并记录任务 ID
-    availability_worker = availability.delay(Series_quasi, _TemAll, k, l, t, src_url, un_table_name, worker_id + '-3',
+    availability_worker = availability.delay(k, l, t, src_url, un_table_name, worker_id + '-3',
                                              QIDs, SA, ID, '', '')
     availability_worker_id = availability_worker.id
     logger.info("可用性评估已启动，子进程id是：%s", availability_worker_id)
 
     # 异步执行 Desensitization_character 函数，并记录任务 ID
-    Desensitization_character_worker = Desensitization_character.delay(Series_quasi, _TemAll, k, l, t, src_url,
+    Desensitization_character_worker = Desensitization_character.delay(k, l, t, src_url,
                                                                        un_table_name, worker_id + '-4', QIDs, SA, ID,
                                                                        '', '')
     Desensitization_character_worker_id = Desensitization_character_worker.id
     logger.info("匿名集数据特征评估已启动，子进程id是：%s", Desensitization_character_worker_id)
 
-    # 异步执行 Desensitization_quality 函数，并记录任务 ID
-    Desensitization_quality_worker = Desensitization_quality.delay(Series_quasi, _TemAll, k, l, t, src_url,
-                                                                   un_table_name, worker_id + '-5', QIDs, SA, ID, '',
-                                                                   '')
-    Desensitization_quality_worker_id = Desensitization_quality_worker.id
-    logger.info("匿名数据质量评估已启动，子进程id是：%s", Desensitization_quality_worker_id)
 
     # 异步执行 privacy_protection 函数，并记录任务 ID
-    privacy_protection_worker = privacy_protection.delay(Series_quasi, _TemAll, k, l, t, src_url, un_table_name,
-                                                         worker_id + '-6', QIDs, SA, ID, '', '')
+    privacy_protection_worker = privacy_protection.delay(k, l, t, src_url, un_table_name,
+                                                         worker_id + '-5', QIDs, SA, ID, '', '')
     privacy_protection_worker_id = privacy_protection_worker.id
     logger.info("隐私保护性度量评估已启动，子进程id是：%s", privacy_protection_worker_id)
 
@@ -452,7 +435,6 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
         'compliance_worker_id': compliance_worker_id,
         'availability_worker_id': availability_worker_id,
         'Desensitization_character_worker_id': Desensitization_character_worker_id,
-        'Desensitization_quality_worker_id': Desensitization_quality_worker_id,
         'privacy_protection_worker_id': privacy_protection_worker_id
     }
     from .config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPORT, \
@@ -468,44 +450,65 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
         compliance_result = AsyncResult(compliance_worker.id)
         availability_result = AsyncResult(availability_worker.id)
         Desensitization_character_result = AsyncResult(Desensitization_character_worker.id)
-        Desensitization_quality_result = AsyncResult(Desensitization_quality_worker.id)
         privacy_protection_result = AsyncResult(privacy_protection_worker.id)
 
         # 判断是否所有函数都成功执行
         if (reid_risk_result.successful() and compliance_result.successful() and
-                availability_result.successful() and Desensitization_character_result.successful() and
-                Desensitization_quality_result.successful() and privacy_protection_result.successful()):
+                availability_result.successful() and Desensitization_character_result.successful() and privacy_protection_result.successful()):
             # 如果全部完成，要更新任务状态
+            logger.info("评估指标运算线程均已成功执行，开始更新任务状态")
             update_task_status_to_completed(worker_id)
+            logger.info("任务状态已更新为完成，开始合并汇总任务结果")
+            # 将任务合并汇总 计算总得分
             cal_rank_all(worker_id)
             # 打印成功信息
             print("{}所有评估任务均已成功执行！".format(worker_id))
             logger.info("{}所有评估任务均已成功执行！".format(worker_id))
             break
         else:
+            ## todo 线程任务挂掉
             # 若未全部成功执行，则等待一段时间后继续轮询
-            time.sleep(15)  # 等待5秒后再次轮询
+            time.sleep(15)  # 等待15秒后再次轮询
 
 
+
+
+# 目前是写死的状态，todo 后续可以改为动态获取
 @celery.task(bind=True, base=MyTask)
 def reid_risk(self, uuid, src_url, un_table_name, to_url, table_name, QIDs, SA, ID):
     from .risk import reidentity_risk_assess
-    # ridrisk, sarisk =0.025,0
-    ridrisk, sarisk = reidentity_risk_assess(uuid, src_url, un_table_name, to_url, table_name, QIDs, SA, ID, 2, 0.00004,
-                                             0)
+    ridrisk, sarisk =0.025,0
+    from .config import Send_result
+    Send_result(worker_id=uuid,res_dict={
+        "重识别率":ridrisk,
+        "统计推断还原率":sarisk,
+        "背景知识水平假设":4,
+        "背景属性残缺率假设":0,
+    })
+    # ridrisk, sarisk = reidentity_risk_assess(uuid, src_url, un_table_name, to_url, table_name, QIDs, SA, ID, 2, 0.00004,
+                                            #  0)
+
     logger.info('评估任务id: {},风险评估结果：{}'.format(uuid, ridrisk))
     logger.info('评估任务id: {},统计推断攻击结果: {}'.format(uuid, sarisk))
 
 
-from .config import Config
 
 
+# 数据合规性分支
 @celery.task(bind=True, base=MyTask)
-def compliance(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
+def compliance(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
     # 反序列化 Series
     try:
-        print(len(Series_quasi['index']), '和', len(Series_quasi['data']))
-        # logger.info(f"Deserialized series_quasi: {Series_quasi}")
+        handler = Config(k, l, t, url, address, worker_uuid, QIDs, SA, ID, '', '')
+        _TemAll = handler._Function_Data()
+        Series_quasi = handler._Function_Series_quasi(_TemAll)  ##结果为升序
+
+        Series_quasi = {
+            'data': Series_quasi.tolist(),
+            'index': [str(idx) for idx in Series_quasi.index]
+        }
+        _TemAll = _TemAll.to_dict(orient='records')
+        # 反序列化 Series
         series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
         tem_all = pd.DataFrame(_TemAll)
         logger.info(f"Deserialized series_quasi: {series_quasi.head()}")
@@ -513,15 +516,23 @@ def compliance(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, 
     except Exception as e:
         logger.error(f"Error deserializing series_quasi or tem_all: {e}")
         raise
-
     ##数据合规性
     handler1 = Data_compliance(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
     logger.info('数据合规性评估开始启动：{}'.format(worker_uuid))
     handler1.runL(series_quasi, tem_all)  ##传递准标识符集合，以及准标识符对应的数量
 
-
+# 数据可用性评估函数分支
 @celery.task(bind=True, base=MyTask)
-def availability(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
+def availability(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
+    handler = Config(k, l, t, url, address, worker_uuid, QIDs, SA, ID, '', '')
+    _TemAll = handler._Function_Data()
+    Series_quasi = handler._Function_Series_quasi(_TemAll)  ##结果为升序
+
+    Series_quasi = {
+        'data': Series_quasi.tolist(),
+        'index': [str(idx) for idx in Series_quasi.index]
+    }
+    _TemAll = _TemAll.to_dict(orient='records')
     # 反序列化 Series
     series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
     tem_all = pd.DataFrame(_TemAll)
@@ -529,40 +540,63 @@ def availability(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid
     handler2 = Data_availability(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
     handler2.runL(series_quasi, tem_all)
 
-
+# 数据特征评分支
 @celery.task(bind=True, base=MyTask)
-def Desensitization_character(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url,
+def Desensitization_character(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url,
                               scene):
-    # 反序列化 Series
+    handler = Config(k, l, t, url, address, worker_uuid, QIDs, SA, ID, '', '')
+    _TemAll = handler._Function_Data()
+    Series_quasi = handler._Function_Series_quasi(_TemAll)  ##结果为升序
+
+    Series_quasi = {
+        'data': Series_quasi.tolist(),
+        'index': [str(idx) for idx in Series_quasi.index]
+    }
+    _TemAll = _TemAll.to_dict(orient='records')
+    #  反序列化 Series
     series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
     tem_all = pd.DataFrame(_TemAll)
-    ##匿名集数据特征
+    ## 匿名集数据特征
     handler3 = Desensitization_data_character(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
     handler3.runL(series_quasi, tem_all)
 
+# 第二版废除该分支 合并到数据特征
+# @celery.task(bind=True, base=MyTask)
+# def Desensitization_quality(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url,
+#                             scene):
+#     # 反序列化 Series
+#     series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
+#     print(series_quasi)
+#     tem_all = pd.DataFrame(_TemAll)
+#     ##匿名数据质量评估
+#     handler4 = Desensitization_data_quality_evalution(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
+#     handler4.runL(series_quasi, tem_all)  ##传递准标识符集合，以及准标识符对应的数量
 
+# 数据安全性分支
 @celery.task(bind=True, base=MyTask)
-def Desensitization_quality(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url,
-                            scene):
-    # 反序列化 Series
-    series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
-    print(series_quasi)
-    tem_all = pd.DataFrame(_TemAll)
-    ##匿名数据质量评估
-    handler4 = Desensitization_data_quality_evalution(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
-    handler4.runL(series_quasi, tem_all)  ##传递准标识符集合，以及准标识符对应的数量
+def privacy_protection(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
+    handler = Config(k, l, t, url, address, worker_uuid, QIDs, SA, ID, '', '')
+    _TemAll = handler._Function_Data()
+    Series_quasi = handler._Function_Series_quasi(_TemAll)  ##结果为升序
 
-
-@celery.task(bind=True, base=MyTask)
-def privacy_protection(self, Series_quasi, _TemAll, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene):
+    Series_quasi = {
+        'data': Series_quasi.tolist(),
+        'index': [str(idx) for idx in Series_quasi.index]
+    }
+    _TemAll = _TemAll.to_dict(orient='records')
     # 反序列化 Series
     series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
     tem_all = pd.DataFrame(_TemAll)
     ##隐私保护性度量
-    handler5 = privacy_protection_metrics(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
+    handler5 = Data_Security(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
     handler5.runL(series_quasi, tem_all)  ##传递准标识符集合，以及准标识符对应的数量
 
+# 为甚要反序列化 Series？
+# 前端或者别的服务把 pandas.Series 转成 dict（序列化）
 
+# 传给 celery 任务（其实已经不是 Series，而是“可以json化的结构”）
+
+# 你用 pandas 的构造函数重新拼成 Series（反序列化）
 
 
 
@@ -570,7 +604,6 @@ def privacy_protection(self, Series_quasi, _TemAll, k, l, t, url, address, worke
 def sendvalue(worker_id, key, value, valuetype):
     """
     向 Redis 添加 key 和 value，支持存储单一类型数据或列表数据，并确保数据类型被保留。
-
     参数:
         worker_ud (str): Redis 连接字符串。
         key (str): 要存储的小指标的名称。
@@ -723,46 +756,13 @@ def getvalue(worker_id, key):
         print(f"Error occurred: {e}")
         return None, None
 
-##重复声明  需要改正
-# def SendCombineTarget(worker_id, key, value, valuetype):
-#     """
-#     写大指标的值
-#     向 Redis 添加 key 和 value，支持存储单一类型数据或列表数据，并确保数据类型被保留。
-#
-#     参数:
-#         worker_id (str): Redis 中的key。
-#         key (str): 要存储的指标名称。
-#         value (int, float, list): 要存储的指标结果值，可以是单一值或列表。
-#         valuetype (type): 值的类型（int 或 float 或 list）。
-#     """
-#     try:
-#         worker_id = worker_id + '-0'
-#         # 初始化 Redis 连接
-#         from .config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPORT, \
-#             WORKER_ID_MAP_REDISPASSWORD, TASKS_ZSET_KEY
-#         redis_conn = redis.StrictRedis(host=WORKER_ID_MAP_REDISADDRESS, port=WORKER_ID_MAP_REDISPORT,
-#                                        db=WORKER_ID_MAP_REDISDBNUM, password=WORKER_ID_MAP_REDISPASSWORD)
-#         val = redis_conn.get(worker_id)
-#         if val:
-#             # 解析 JSON 数据
-#             data = json.loads(val)
-#
-#             # 写入大指标的值
-#             data["rank"][key] = value
-#             redis_conn.set(worker_id, json.dumps(data))
-#             print(f"List {value} of type {valuetype.__name__} stored in Redis with key '{key}'")
-#         else:
-#             print("errno", "worker_id+'-0' 不存在")
-#
-#     except Exception as e:
-#         print(f"Error occurred: {e}")
 
 
 # 可用性  已完成
-def CombineTarget_Data_availability(worker_id):
+def CombineTarget_Data_availability(worker_id,num):
     """
     从 Redis 中取出指定 key 的值，对其进行处理后再存回 Redis。
-    合并可用性的指标，将结果写入redis中
+    可用性的指标结果写入redis中
     由于全是负向指标，所以应该是1减去所得值
 
     参数:
@@ -771,51 +771,31 @@ def CombineTarget_Data_availability(worker_id):
         key (str): 要检索和处理的键。
     """
     try:
-        List_Data_availability = ["数据损失度", "数据可辨别度", "归一化平均等价组大小", "匿名率",
-                                  "基于熵的平均数据损失度"]
-        Weight_Data_availability = [0.48744304, 0.14643221, 0.07952278, 0.06268612, 0.22391585]
-        if len(List_Data_availability) != len(Weight_Data_availability):
-            raise ValueError("可用性标类型的数量必须与指标权重个数一致")
-
-        ##融合指标
-        Ans_Data_availability = 0.0
-        for i in range(len(List_Data_availability)):
-            # 使用 getvalue 函数从 Redis 中获取数据
-            value, valuetype = getvalue(worker_id, List_Data_availability[i])
-            if value is None:
-                print(f"No value found for key '{List_Data_availability[i]}' in Redis.")
-                return
-            value=float(value)
-            Ans_Data_availability += (Weight_Data_availability[i] * value)
-
-        ##由于全是负向指标，所以应该用1 - 所得值
-        Ans_Data_availability = 1 - Ans_Data_availability
-
+        List_Data_availability = ["数据可辨别度", "数据记录匿名率","平均泛化程度","数据损失度",
+                                  "基于熵的平均数据损失度","唯一记录占比"]
         res={
             "evaluate":"",
             "desp":"",
             "评估结果":"",
             "改进意见":"",
         }
-
-
         # 将大指标结果写入
-        SendCombineTarget(worker_id, "可用性结果", Ans_Data_availability, float)
-        print("可用性结果",Ans_Data_availability)
+        SendCombineTarget(worker_id, "可用性结果", num, float)
+        logger.info("可用性指标融合完成，结果：%s",num)
 
-        if Ans_Data_availability >= 0.9:
+        if num >= 0.9:
             res["evaluate"] = "优秀"
             res["desp"] = "可用性极高，仅需持续优化和监控。"
             res["评估结果"] = " 数据完整性：数据的完整性和区分能力接近最佳，隐私保护措施对可用性的影响极小。数据损失程度：隐私保护技术引入的隐私损失度接近于 0，意味着数据分析精度几乎未受影响。"
             res["改进意见"] = "1. 持续监控和优化：继续监控隐私保护措施的效果，确保其在不同场景下保持高可用性。2. 优化隐私参数：针对隐私保护措施，定期优化相关参数，进一步提升数据可用性。3. 细化泛化策略：在高敏感场景中尝试更细粒度的泛化，减少信息损失。"
 
-        elif Ans_Data_availability >= 0.8:
+        elif num >= 0.8:
             res["evaluate"] = "良好"
             res["desp"] = "可用性较高，适度优化等价组和保护算法。"
             res["评估结果"] = "数据区分能力：保持良好，绝大部分记录之间仍然可区分。隐私损失度：对部分分析任务产生轻微影响，但整体数据集仍具备较强实用性。"
             res["改进意见"] = "1. 优化等价组划分策略：通过更合理的划分，减少平均泛化程度，提升数据分析的精确度。2. 结合多种隐私保护技术：在现有技术基础上，尝试混合使用隐私保护技术，如扰动和屏蔽，进一步优化数据保留质量。 动态调整隐私保护参数：根据分析需求调整隐私保护措施，特别是在不影响安全性的情况下提升数据精确性。"
 
-        elif Ans_Data_availability >= 0.6:
+        elif num >= 0.6:
             res["evaluate"] = "中等"
             res["desp"] = "可用性中等，需要全面优化泛化策略和隐私保护措施。"
             res["评估结果"] = "数据精确性：精确性和分析能力下降，对数据驱动的决策有一定限制。隐私损失度：隐私保护措施显著增加了数据的不确定性，影响了部分实用性。"
@@ -827,14 +807,14 @@ def CombineTarget_Data_availability(worker_id):
             res["评估结果"] = "数据区分能力：区分能力严重下降，数据对分析任务的支持有限。隐私损失度：保护措施对数据造成的影响过大，难以有效支撑实际应用需求。"
             res["改进意见"] =  "1. 重新设计隐私保护框架：采用更精细化的保护策略，结合泛化、扰动、数据屏蔽等技术，减少不必要的隐私损失。2. 减少等价组规模：通过优化等价组划分算法，减少每组记录数量，提升数据的区分能力和精确性。3. 增强灵活性：允许在关键任务中动态调整保护级别，在必要时降低隐私保护强度以提高数据实用性。4. 持续评估与调整：通过实时评估可用性和隐私保护效果，不断优化参数和策略。"
         Send_Combine_eval(worker_id,"可用性结果",res)
-        return Ans_Data_availability
+        return num
 
     except Exception as e:
         print(f"Error occurred: {e}")
 
 
 # 合规性  已完成
-def CombineTarget_Data_compliance(worker_id):
+def CombineTarget_Data_compliance(worker_id,num):
     """
     从 Redis 中取出指定 key 的值，对其进行处理后再存回 Redis。
     合并合规性的指标，将结果写入redis中
@@ -845,39 +825,9 @@ def CombineTarget_Data_compliance(worker_id):
         worker_id (str): 用作存储处理后数据的前缀。
     """
     try:
-        List_Data_compliance = ["K_Anonymity", "L_Diversity", "T_Closeness", "AK_Anonymity"]
 
-        ##权重随着数据隐私属性个数变化而变化
-        ##全部都以列表形式存储
-        ##按照 1:1:1:1来，每一个指标权重都一样
-        Weight_Data_compliance = [1,1,1,1]
-        if len(List_Data_compliance) != len(Weight_Data_compliance):
-            raise ValueError("合规性指标类型的数量必须与指标权重个数一致")
-
-        #分母，其代表每个列表长度乘上对应权重的和
-        sums_Denominator = 0
-        ##融合指标
-        Ans_Data_compliance = 0.0
-        valuesALL_Data_compliance = []
-        for i in range(len(List_Data_compliance)):
-            # 使用 getvalue 函数从 Redis 中获取数据
-            value, valuetype = getvalue(worker_id, List_Data_compliance[i])
-            if value is None:
-                print(f"No value found for key '{List_Data_compliance[i]}' in Redis.")
-                return
-
-            ##必须确保每一个key对应的值均为列表类型
-            sums_Denominator += (Weight_Data_compliance[i] * len(value))
-            valuesALL_Data_compliance.append(value)
-
-
-        for i in range(len( valuesALL_Data_compliance )):
-            for eachNum in  valuesALL_Data_compliance[i]:
-                if eachNum > 0 :
-                    Ans_Data_compliance += ( 1 *  Weight_Data_compliance[i] / sums_Denominator)
-
-        SendCombineTarget(worker_id, "合规性结果",Ans_Data_compliance, float)
-        print("合规性结果",Ans_Data_compliance)
+        SendCombineTarget(worker_id, "合规性结果",num, float)
+        logger.info("合规性结果%s",num)
 
         res={
             "evaluate":"",
@@ -887,20 +837,20 @@ def CombineTarget_Data_compliance(worker_id):
         }
 
 
-        if Ans_Data_compliance >= 0.9:
+        if num >= 0.9:
             res["evaluate"] = "优秀"
             res["desp"] = "隐私保护效果极佳，仅需保持现有措施和监控。"
             res["评估结果"] = "合规性结果表明隐私保护措施全面到位，数据集中敏感属性的隐私风险降至较低水平。所有子指标（如 K-匿名性、L-多样性、(α,k)-匿名性 和 T-紧密性）均达到或超过基本合规要求，表明等价类划分合理且均衡，敏感属性的分布差异可控且一致性良好。同质攻击、重识别攻击和背景知识攻击的风险显著降低，数据的安全性和匿名性得到了充分保障。此类数据适用于高隐私敏感场景。"
             res["改进意见"] = "1.	定期合规性检查：持续评估数据集的合规性，确保在动态环境下合规性不变。2.	提高匿名和多样性级别：在高隐私需求的场景中，可考虑提高 K 和 L 值，进一步强化数据保护。3.	动态调整紧密性阈值：根据数据发布情况，在保持安全的同时提升数据分析精度。"
 
 
-        elif Ans_Data_compliance >= 0.8:
+        elif num >= 0.8:
             res["evaluate"] = "良好"
             res["desp"] = "隐私保护良好，适度优化高风险属性和等价类。"
             res["评估结果"] = "合规性结果表明数据合规性较高，但仍有一定优化空间。隐私保护措施在大部分情况下表现良好，某些子指标可能稍有不足，导致部分敏感属性的分布差异略高或多样性水平稍低。整体而言，隐私保护已经有效抵御了大部分攻击风险，但对于高敏感度场景，可能需要提高匿名性级别，以进一步平衡隐私保护和数据实用性。"
             res["改进意见"] = "1. 优化等价类划分策略: 重新划分高风险等价类，确保其均衡性和多样性。2. 增强隐私保护技术: 使用其他高级隐私保护技术，加强高风险属性的保护。3. 定期评估: 通过定期合规性评估，识别和修复潜在风险。"
 
-        elif Ans_Data_compliance >= 0.6:
+        elif num >= 0.6:
             res["evaluate"] = "中等"
             res["desp"] = "隐私保护一般，需要对高风险指标进行重点优化。"
             res["评估结果"] = "合规性结果表示隐私保护和数据安全性已达到基础水平，但仍面临一定风险。部分等价类的敏感属性分布差异较大，或等价类记录数不足，可能暴露于重识别攻击和同质攻击风险。尽管隐私保护措施对多数敏感属性有效，但数据的某些部分可能需要进一步优化，以减少敏感属性的泄露风险并提高多样性级别，确保整体数据合规性满足更高要求。"
@@ -912,13 +862,12 @@ def CombineTarget_Data_compliance(worker_id):
             res["评估结果"] = "合规性结果表明隐私保护措施存在明显不足，数据的合规性和安全性无法满足基本标准。多数子指标未达标，导致敏感属性的分布差异过大，重识别和同质攻击风险显著增加。等价类划分不均或频率控制不合理，使得隐私泄露风险极高。此类数据可能不适合发布，建议全面优化隐私保护策略，提高匿名性和多样性水平，减少分布不一致性，确保数据的安全与合规。"
             res["改进意见"] = "1. 全面升级隐私保护技术: 引入更高级的隐私保护方法。2. 重新划分等价类: 优化等价类的划分策略，确保所有等价类满足基本要求。3. 动态调整隐私保护措施: 根据实际数据使用情况，实时更新隐私保护策略。4. 加强数据失真: 通过更深层次的模糊化和随机化技术，减少敏感属性的可识别性。"
         Send_Combine_eval(worker_id,"合规性结果",res)
-        return Ans_Data_compliance
     except Exception as e:
         print(f"Error occurred: {e}")
 
 
 # 安全性 已完成
-def CombineTarget_privacy_protection_metrics(worker_id):
+def CombineTarget_privacy_protection_metrics(worker_id,num):
     """
     从 Redis 中取出指定 key 的值，对其进行处理后再存回 Redis。
     合并安全性的指标，将结果写入redis中
@@ -930,43 +879,8 @@ def CombineTarget_privacy_protection_metrics(worker_id):
     """
     try:
         List_privacy_protection_metrics = ["敏感属性重识别风险", "基于准标识符重识别风险", "整体重识别风险"]
-
-        ##权重随着数据隐私属性个数变化而变化
-        ##全部都以列表形式存储
-        ##按照  4 : 1 : 4来，即每一个敏感属性重识别风险的指标的权重都相当于4个基于准标识符重识别风险的指标权重
-        Weight_privacy_protection_metrics = [4,1,4]
-        if len(List_privacy_protection_metrics) != len(Weight_privacy_protection_metrics):
-            raise ValueError("安全性指标类型的数量必须与指标权重个数一致")
-
-        #分母，其代表每个列表长度乘上对应权重的和
-        sums_Denominator = 0
-
-        ##融合指标
-        Ans_privacy_protection_metrics = 0.0
-        valuesALL_privacy_protection_metrics = []
-        length = 0
-        for i in range(len(List_privacy_protection_metrics)):
-            # 使用 getvalue 函数从 Redis 中获取数据
-            value, valuetype = getvalue(worker_id, List_privacy_protection_metrics[i])
-            if value is None:
-                print(f"No value found for key '{List_privacy_protection_metrics[i]}' in Redis.")
-                return
-
-            ##必须确保每一个key对应的值均为列表类型
-            sums_Denominator += (Weight_privacy_protection_metrics[i] * len(value))
-            valuesALL_privacy_protection_metrics.append(value)
-
-
-        for i in range(len( valuesALL_privacy_protection_metrics )):
-            for eachNum in  valuesALL_privacy_protection_metrics[i]:
-                Ans_privacy_protection_metrics += ( eachNum *  Weight_privacy_protection_metrics[i] / sums_Denominator)
-
-
-        ##由于全是负向指标，所以应该用1 - 所得值
-        Ans_privacy_protection_metrics = 1 - Ans_privacy_protection_metrics
-
-        SendCombineTarget(worker_id, "安全性结果",  Ans_privacy_protection_metrics, float)
-        print("安全性结果",  Ans_privacy_protection_metrics)
+        SendCombineTarget(worker_id, "安全性结果",  num, float)
+        logger.info("安全性融合完成，结果：%s",  num)
 
         res={
             "evaluate":"",
@@ -975,19 +889,19 @@ def CombineTarget_privacy_protection_metrics(worker_id):
             "改进意见":"",
         }
 
-        if Ans_privacy_protection_metrics >= 0.9:
+        if num >= 0.9:
             res["evaluate"] = "优秀"
             res["desp"] = "安全性非常高，仅需持续优化与监控。"
             res["评估结果"] = "数据集中敏感属性、整体数据以及单个属性的重识别风险均处于极低水平。隐私保护策略已成功减少了数据的不确定性，高风险等价组被有效分散或泛化。 用户隐私受到了严格的保护，发布数据的安全性极高。"
             res["改进意见"] = "1. 持续优化现有隐私保护技术: 在发布前进一步优化差分隐私参数，以保持低风险。2. 定期监控与评估: 通过周期性检查，确保数据发布后的动态环境中安全性仍然可靠。3. 提升泛化和动态调整: 针对潜在风险高的等价组，实时调整泛化策略，确保其持续稳定。"
 
-        elif Ans_privacy_protection_metrics >= 0.8:
+        elif num >= 0.8:
             res["evaluate"] = "良好"
             res["desp"] = "良好安全性，适度加强高风险属性保护。"
             res["评估结果"] = "敏感属性和整体数据的重识别风险相对较低，但仍需关注可能的风险点。 高风险属性 可能在某些情况下构成隐私泄露的威胁。数据发布的安全性总体较高，但需要关注极少数等价组。"
             res["改进意见"] = "1. 加强高风险属性保护: 对 敏感属性进一步应用隐私保护算法。2. 优化泛化策略: 针对发现的高风险等价组，实施更细粒度的泛化操作。3. 提升数据安全发布流程: 在数据发布前，对高风险组合应用额外的模糊处理。4. 用户隐私教育: 发布方可通过文档或声明，让用户了解隐私保护机制及其作用。"
 
-        elif Ans_privacy_protection_metrics >= 0.6:
+        elif num >= 0.6:
             res["evaluate"] = "中等"
             res["desp"] = "中等安全性，需全面优化高风险属性及等价组。"
             res["评估结果"] = " 敏感属性和整体数据的重识别风险已达中等水平，部分属性或组合存在较大隐私泄露风险。 高风险等价组仍较为集中，某些单个属性的重识别风险较低。 数据安全性有明显提升空间。"
@@ -999,7 +913,6 @@ def CombineTarget_privacy_protection_metrics(worker_id):
             res["评估结果"] = " 数据集中敏感属性和整体数据的重识别风险较高，可能造成重大隐私泄露。  当前隐私保护技术效果有限，需要全面优化。"
             res["改进意见"] =  "1. 升级隐私保护技术: 立即采用高级技术，限制数据重识别能力。2. 深度泛化策略: 对所有高风险属性进行更深层次的泛化或模糊化处理。3. 严格数据筛选: 限制敏感数据的发布，尤其是重识别风险极高的属性组合。4. 实施动态风险监控: 建立持续监控机制，实时评估并修复可能的隐私漏洞。5. 多级保护机制: 联合使用多种隐私保护技术，确保高风险数据得到足够的安全性支持。"
         Send_Combine_eval(worker_id, "安全性结果", res)
-        return Ans_privacy_protection_metrics
     except Exception as e:
         print(f"Error occurred: {e}")
 
@@ -1097,30 +1010,46 @@ def CombineTarget_data_quality_evalution(worker_id):
 
 
 # 数据特征  已完成
-def CombineTarget_Data_character(worker_id):
-    """
-    从 Redis 中取出指定 key 的值，对其进行处理后再存回 Redis。
-    合并数据特征的指标，将结果写入redis中
-    直接返回 0.9
-
-    参数:
-        worker_ud (str): Redis 连接字符串。
-        worker_id (str): 用作存储处理后数据的前缀。
-        key (str): 要检索和处理的键。
-    """
+def CombineTarget_Data_character(worker_id,num):
+    # 参数说明:
+    # ----------
+    # worker_id : str
+    #     当前处理任务的唯一标识符，用于定位任务或用户。
+    # num : float
+    #     数据特征评估得分（范围通常为0~1），用于判断当前数据的隐私保护能力及数据特征表现。
     try:
 
-        SendCombineTarget(worker_id, "数据特征结果", 0.9, float)
-        print("数据特征结果", 0.9)
-        res={
-            "evaluate":"优秀",
-            "desp":"数据特征表现非常优异",
-            "评估结果":"数据特征表现优异，指标全面满足隐私保护要求。准标识符维数和敏感属性维数较低，等价组划分均衡，敏感属性保护到位。 结果显示数据具有较强的内在隐私保护能力。",
-            "改进意见":"1.保持现有隐私保护措施: 持续监测并优化数据发布策略。2. 动态调整等价组划分: 根据实际需求进一步优化等价组的划分，确保数据实用性与隐私性平衡。3. 提升敏感属性保护技术: 继续采用先进技术,保持高水平的隐私保护。",
-        }
+        SendCombineTarget(worker_id, "数据特征结果", num, float)
+        logger.info("数据特征融合完成，结果：%s", num)
+        if num >= 0.85:
+            res = {
+                "evaluate": "优秀",
+                "desp": "数据特征表现非常优异",
+                "评估结果": "数据特征表现优异，指标全面满足隐私保护要求。准标识符维数和敏感属性维数较低，等价组划分均衡，敏感属性保护到位。结果显示数据具有较强的内在隐私保护能力。",
+                "改进意见": "1. 保持现有隐私保护措施: 持续监测并优化数据发布策略。\n2. 动态调整等价组划分: 根据实际需求进一步优化等价组的划分，确保数据实用性与隐私性平衡。\n3. 提升敏感属性保护技术: 继续采用先进技术，保持高水平的隐私保护。",
+            }
+        elif num >= 0.7:
+            res = {
+                "evaluate": "良好",
+                "desp": "数据特征表现良好",
+                "评估结果": "数据在多数隐私保护指标上表现良好，准标识符控制合理，等价组划分基本均衡，但部分敏感属性仍存在泄露风险。",
+                "改进意见": "1. 加强对敏感属性的保护，特别是风险点的识别。\n2. 进一步优化等价组设计，提升整体隐私保护水平。\n3. 引入差分隐私等增强措施，提升鲁棒性。",
+            }
+        elif num >= 0.5:
+            res = {
+                "evaluate": "中等",
+                "desp": "数据特征表现中等",
+                "评估结果": "数据的隐私保护能力处于中等水平，部分指标未达标，存在提升空间。等价组划分存在偏差，敏感属性可能暴露。",
+                "改进意见": "1. 优化数据预处理流程，减少敏感属性暴露概率。\n2. 考虑引入更严格的隐私建模技术（如k-匿名、l多样性等）。\n3. 加强监测机制，持续评估保护效果。",
+            }
+        else:
+            res = {
+                "evaluate": "较低",
+                "desp": "数据特征表现较弱",
+                "评估结果": "当前数据隐私保护能力较弱，存在明显风险。敏感属性暴露严重，等价组划分不合理，亟需改进。",
+                "改进意见": "1. 重新设计数据发布策略，优先处理敏感属性泄露问题。\n2. 加强等价组划分算法的精度与鲁棒性。\n3. 引入强隐私保护机制，如差分隐私、同态加密等。",
+            }
         Send_Combine_eval(worker_id, "数据特征结果", res)
-        return 0.9
-
     except Exception as e:
         print(f"Error occurred: {e}")
 
@@ -1130,7 +1059,6 @@ def CombineTarget_Data_riskvalue(worker_id):
     """
     从 Redis 中取出指定 key 的值，对其进行处理后再存回 Redis。
     合并数据特征的指标，将结果写入redis中
-    直接返回 0.9
 
     参数:
         worker_ud (str): Redis 连接字符串。
@@ -1140,7 +1068,7 @@ def CombineTarget_Data_riskvalue(worker_id):
     try:
 
         SendCombineTarget(worker_id, "隐私风险度量", 0.9, float)
-        print("隐私风险度量", 0.9)
+        logger.info("隐私风险度量融合完成，结果：%s", 0.9)
         res={
             "evaluate":"优秀",
             "desp":"隐私保护效果极佳，风险极低，建议维持现有策略并动态监测。",
@@ -1154,27 +1082,41 @@ def CombineTarget_Data_riskvalue(worker_id):
         print(f"Error occurred: {e}")
 
 
+from celery_task.func.network import Getcompliance, GetCharacter, GetAvailability, GetSecurity
 
+
+# 增加一个函数来处理 None 值
+def none2zero(x):
+    return x if x is not None else 0
 
 # 总函数
+# 该函数主要是对-0处写入evaluate字段和rank字段
 def cal_rank_all(worker_id):
+    # todo -1三种攻击写死的，需要修改
+    num1 = Getcompliance(worker_id + '-2')
+    num2 = GetCharacter(worker_id + '-4')
+    num3 = GetAvailability(worker_id + '-3')
+    num4 = GetSecurity(worker_id + '-5')
+
+    FinalNum = num1 * 0.1 + num2 * 0.3 + num3 * 0.3 + num4 * 0.3
+    # FinalNum 修改规则导入 todo
     worker_id=worker_id+'-0'
-    value_Data_availability =  CombineTarget_Data_availability(worker_id)
-    value_Data_character =  CombineTarget_Data_character(worker_id)
-    value_Data_riskvalue =  CombineTarget_Data_riskvalue(worker_id)
-    value_privacy_protection_metrics =  CombineTarget_privacy_protection_metrics(worker_id)
-    value_data_quality_evalution = CombineTarget_data_quality_evalution(worker_id)
-    value_Data_compliance =  CombineTarget_Data_compliance(worker_id)
-    value_Final = (value_Data_availability + value_Data_character + value_Data_riskvalue + value_privacy_protection_metrics +value_data_quality_evalution + value_Data_compliance ) / 6
+
+    CombineTarget_Data_availability(worker_id,num3)# 可用性
+    CombineTarget_Data_character(worker_id,num2)# 数据特征
+    CombineTarget_Data_riskvalue(worker_id)# 数据隐私风险
+    CombineTarget_privacy_protection_metrics(worker_id,num4)# 安全性
+    CombineTarget_Data_compliance(worker_id,num1)# 合规性
     res = {
-        "value":value_Final,
+        "value":FinalNum,
         "rank":"",
     }
-    if value_Final >= 0.9:
+    # todo 评价逻辑final写死的，
+    if FinalNum >= 0.9:
         res["rank"] = "优秀"
-    elif value_Final >= 0.8:
+    elif FinalNum >= 0.8:
         res["rank"] = "良好"
-    elif value_Final >= 0.6:
+    elif FinalNum >= 0.6:
         res["rank"] = "中等"
     else:
         res["rank"] = "较低"

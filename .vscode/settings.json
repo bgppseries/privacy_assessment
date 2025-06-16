@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./celery_task/func"
+    ]
+}
