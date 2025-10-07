@@ -4,11 +4,14 @@ import json
 import pickle
 import numpy as np
 
+from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
 # 与写入函数保持一致的 Redis 连接常量
+"""
 WORKER_ID_MAP_REDISADDRESS = '192.168.1.107'
 WORKER_ID_MAP_REDISPORT   = 5678
 WORKER_ID_MAP_REDISDBNUM  = 5
 WORKER_ID_MAP_REDISPASSWORD = 'qwb'
+"""
 
 def getvalue(worker_id: str, key: str | None = None):
     """

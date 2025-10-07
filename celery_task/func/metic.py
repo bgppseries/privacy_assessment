@@ -17,13 +17,13 @@
 # Data_availability  为Config子类，包含可用性领域内的所有指标实现，以及一个runL函数，通过runL函数依次调用该领域内所有评估指标代码，然后使用Send_result和sendvalue将评估结果写入到redis数据库中。
 
 
-
-# from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
+from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
+"""
 WORKER_ID_MAP_REDISADDRESS = '192.168.1.107'
 WORKER_ID_MAP_REDISPORT = 5678
 WORKER_ID_MAP_REDISDBNUM = 5
 WORKER_ID_MAP_REDISPASSWORD = 'qwb'
-
+"""
 # ZSET 键  用于 任务先后顺序
 TASKS_ZSET_KEY = 'tasks'
 

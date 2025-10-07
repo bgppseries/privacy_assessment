@@ -28,7 +28,7 @@ privacy_enhance_url="http://10.10.55.25:8082/common/desensitization/eTPSS"
 broker_url = "amqp://qwb:784512@127.0.0.1:5673/test"
 
 # 结果存储使用redis(默认数据库-零)。与celery实例化时backend参数意义相同
-result_backend = 'redis://:qwb@127.0.0.1:5678/1'
+result_backend = 'redis://:qwb@127.0.0.1:6379/1'
 
 # # LOG配置
 # worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
@@ -41,8 +41,8 @@ broker_connection_retry_on_startup = True
 
 WORKER_ID_MAP_REDISADDRESS='localhost'
 # 开发环境是5678  部署是6379
-WORKER_ID_MAP_REDISPORT=5678
-# WORKER_ID_MAP_REDISPORT=6379
+# WORKER_ID_MAP_REDISPORT=5678
+WORKER_ID_MAP_REDISPORT=6379
 WORKER_ID_MAP_REDISDBNUM=5
 WORKER_ID_MAP_REDISPASSWORD='qwb'
 
