@@ -1,0 +1,523 @@
+2025-06-15 10:31:07,125 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:31:07,132 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:31:07,132 - celery_task.async_task - INFO - 数据合规性评估开始启动：23e218d5-0610-498a-8b69-3d7372d094ae-2
+2025-06-15 10:33:14,129 - celery_task.async_task - INFO - json评估任务启动，任务配置：3642054f-724f-4bf2-95c6-84c5728c6959 ['hotel_name']
+2025-06-15 10:33:14,161 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：dee2dd4c-307f-4066-8f8d-1758ce2fa7ff
+2025-06-15 10:33:14,163 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：5033e1f8-35cb-4c2f-ad0f-bac123c6aa2d
+2025-06-15 10:33:14,165 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：d44ef744-30fb-45c9-b52a-2384686548c2
+2025-06-15 10:33:14,167 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：fe6b8531-1fb9-46d8-9dae-6ee12e256b1d
+2025-06-15 10:33:14,168 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：87834135-bc81-4950-984b-0db91ac8747c
+2025-06-15 10:33:14,449 - celery_task.async_task - INFO - 评估任务id: 3642054f-724f-4bf2-95c6-84c5728c6959-1,风险评估结果：0.025
+2025-06-15 10:33:14,449 - celery_task.async_task - INFO - 评估任务id: 3642054f-724f-4bf2-95c6-84c5728c6959-1,统计推断攻击结果: 0
+2025-06-15 10:33:15,438 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:33:15,443 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:33:15,443 - celery_task.async_task - INFO - 数据合规性评估开始启动：3642054f-724f-4bf2-95c6-84c5728c6959-2
+2025-06-15 10:33:29,191 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:33:29,196 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:39:38,792 - celery_task.async_task - INFO - json评估任务启动，任务配置：d1153cea-84b5-44d2-93c5-7cb2de6beb76 ['hotel_name']
+2025-06-15 10:39:38,825 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：ce37d490-a72c-431b-b387-5416950b204e
+2025-06-15 10:39:38,827 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：16f309fd-a0a0-464c-9633-2351c42e1e17
+2025-06-15 10:39:38,829 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：7f8f8207-5a3f-4577-8b43-9590a8b8b2c8
+2025-06-15 10:39:38,831 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：c08143c5-7280-40eb-89f9-357030f82a3b
+2025-06-15 10:39:38,833 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：846fc79d-a916-4ced-881f-db31a5433bf5
+2025-06-15 10:39:39,108 - celery_task.async_task - INFO - 评估任务id: d1153cea-84b5-44d2-93c5-7cb2de6beb76-1,风险评估结果：0.025
+2025-06-15 10:39:39,108 - celery_task.async_task - INFO - 评估任务id: d1153cea-84b5-44d2-93c5-7cb2de6beb76-1,统计推断攻击结果: 0
+2025-06-15 10:39:40,128 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:39:40,132 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:39:40,133 - celery_task.async_task - INFO - 数据合规性评估开始启动：d1153cea-84b5-44d2-93c5-7cb2de6beb76-2
+2025-06-15 10:39:53,855 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:39:53,861 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:42:26,701 - celery_task.async_task - INFO - json评估任务启动，任务配置：c94fb62a-5b61-4a62-9bb2-b1067aa163a8 ['hotel_name']
+2025-06-15 10:42:26,732 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：48430f33-ca73-43c0-8d3e-6b2741309430
+2025-06-15 10:42:26,734 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：5a063ac3-b257-4b1e-a450-a2431f38fa6c
+2025-06-15 10:42:26,736 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：c91ecdfa-7a50-4393-9cc6-0437e87c952e
+2025-06-15 10:42:26,737 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：298d8bca-6919-4401-a8ca-2542fbfcb66a
+2025-06-15 10:42:26,739 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：1e18185b-a4db-4e8e-a63c-34c60611f300
+2025-06-15 10:42:27,005 - celery_task.async_task - INFO - 评估任务id: c94fb62a-5b61-4a62-9bb2-b1067aa163a8-1,风险评估结果：0.025
+2025-06-15 10:42:27,005 - celery_task.async_task - INFO - 评估任务id: c94fb62a-5b61-4a62-9bb2-b1067aa163a8-1,统计推断攻击结果: 0
+2025-06-15 10:42:28,100 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:42:28,108 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:42:28,108 - celery_task.async_task - INFO - 数据合规性评估开始启动：c94fb62a-5b61-4a62-9bb2-b1067aa163a8-2
+2025-06-15 10:42:41,761 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:42:41,767 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:44:41,630 - celery_task.async_task - INFO - json评估任务启动，任务配置：b46fe80e-062c-4d00-978c-f00ac5985fd5 ['hotel_name']
+2025-06-15 10:44:41,663 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：5fef2f7e-9fc9-4fa7-8a66-70c93e57fa6c
+2025-06-15 10:44:41,665 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：9d8f7a0b-86ec-4b50-a554-880ce5aeef10
+2025-06-15 10:44:41,667 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：de75814e-8804-4a4c-828e-05953f52c1b5
+2025-06-15 10:44:41,668 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：46b8c8e8-ff69-4e81-bf14-7b23ac55ae0c
+2025-06-15 10:44:41,670 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：264237e7-76f1-4f86-ac57-44f4de33f800
+2025-06-15 10:44:41,956 - celery_task.async_task - INFO - 评估任务id: b46fe80e-062c-4d00-978c-f00ac5985fd5-1,风险评估结果：0.025
+2025-06-15 10:44:41,956 - celery_task.async_task - INFO - 评估任务id: b46fe80e-062c-4d00-978c-f00ac5985fd5-1,统计推断攻击结果: 0
+2025-06-15 10:44:42,942 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:44:42,947 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:44:42,947 - celery_task.async_task - INFO - 数据合规性评估开始启动：b46fe80e-062c-4d00-978c-f00ac5985fd5-2
+2025-06-15 10:44:56,680 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:44:56,686 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:46:07,303 - celery_task.async_task - INFO - json评估任务启动，任务配置：7b89c56c-5aa5-4a7b-afaa-f229266df79a ['hotel_name']
+2025-06-15 10:46:07,332 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：ef848741-192d-4a24-b444-bb3c05dfe502
+2025-06-15 10:46:07,333 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：239d8d92-ffb2-4a9c-903f-37522ee9ece2
+2025-06-15 10:46:07,334 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：83dab7c1-5867-4086-8922-ab693c684fba
+2025-06-15 10:46:07,335 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：6429604d-d1c7-48f9-9026-8f95515f6c4a
+2025-06-15 10:46:07,336 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：795f61fb-47aa-48f1-a9b9-6ee1116b3c73
+2025-06-15 10:46:07,621 - celery_task.async_task - INFO - 评估任务id: 7b89c56c-5aa5-4a7b-afaa-f229266df79a-1,风险评估结果：0.025
+2025-06-15 10:46:07,621 - celery_task.async_task - INFO - 评估任务id: 7b89c56c-5aa5-4a7b-afaa-f229266df79a-1,统计推断攻击结果: 0
+2025-06-15 10:46:08,670 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:46:08,676 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:46:08,676 - celery_task.async_task - INFO - 数据合规性评估开始启动：7b89c56c-5aa5-4a7b-afaa-f229266df79a-2
+2025-06-15 10:46:22,358 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:46:22,363 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:47:46,589 - celery_task.async_task - INFO - json评估任务启动，任务配置：cb2faab6-3e49-48f8-a6e4-42e23d2ff71d ['hotel_name']
+2025-06-15 10:47:46,618 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：2df29a1d-42e2-49a6-908a-fe0245e371f8
+2025-06-15 10:47:46,619 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：6d3889c2-bda3-415e-9eeb-1ed2b371357b
+2025-06-15 10:47:46,620 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：91a7ba8d-e5c3-4445-a351-30d5cd423a61
+2025-06-15 10:47:46,621 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：49375d63-4254-48c7-a429-2bd5d8380381
+2025-06-15 10:47:46,622 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：1213a0b0-ae64-49b0-b83f-89eeda7b8767
+2025-06-15 10:47:46,914 - celery_task.async_task - INFO - 评估任务id: cb2faab6-3e49-48f8-a6e4-42e23d2ff71d-1,风险评估结果：0.025
+2025-06-15 10:47:46,914 - celery_task.async_task - INFO - 评估任务id: cb2faab6-3e49-48f8-a6e4-42e23d2ff71d-1,统计推断攻击结果: 0
+2025-06-15 10:47:47,986 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:47:47,993 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:47:47,994 - celery_task.async_task - INFO - 数据合规性评估开始启动：cb2faab6-3e49-48f8-a6e4-42e23d2ff71d-2
+2025-06-15 10:48:01,644 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:48:01,649 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:50:35,401 - celery_task.async_task - INFO - json评估任务启动，任务配置：e61735ba-0c5b-4c0d-8fb8-582502c64cd7 ['hotel_name']
+2025-06-15 10:50:35,431 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：f450a032-1bd5-470a-acdc-95a70ad8c5e6
+2025-06-15 10:50:35,433 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：592b81b8-d6e9-487d-a08f-85f749568158
+2025-06-15 10:50:35,434 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：6c131c36-b7a5-40f8-88dc-7edcbb3a7b92
+2025-06-15 10:50:35,435 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：1f6a33e0-9bcd-41ef-aa72-af10c6f17331
+2025-06-15 10:50:35,437 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：af8bd6f9-debf-4e80-a69a-ab131964d5d2
+2025-06-15 10:50:35,713 - celery_task.async_task - INFO - 评估任务id: e61735ba-0c5b-4c0d-8fb8-582502c64cd7-1,风险评估结果：0.025
+2025-06-15 10:50:35,713 - celery_task.async_task - INFO - 评估任务id: e61735ba-0c5b-4c0d-8fb8-582502c64cd7-1,统计推断攻击结果: 0
+2025-06-15 10:50:36,705 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:50:36,714 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:50:36,714 - celery_task.async_task - INFO - 数据合规性评估开始启动：e61735ba-0c5b-4c0d-8fb8-582502c64cd7-2
+2025-06-15 10:50:50,457 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:50:50,462 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:53:31,181 - celery_task.async_task - INFO - json评估任务启动，任务配置：360d0528-f523-42f2-865c-7c3f6d7b0ae5 ['hotel_name']
+2025-06-15 10:53:31,212 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：10284509-7682-4642-b4e8-09d6da537851
+2025-06-15 10:53:31,214 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：abd5821c-8252-4cb4-a700-0c974d605def
+2025-06-15 10:53:31,215 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：70a31bb9-f495-41d5-82ef-a0e345ac838a
+2025-06-15 10:53:31,216 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：6cf651e9-79c3-4292-be80-b0fac9c7fe92
+2025-06-15 10:53:31,217 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：84bcc1b1-2958-4188-b35a-a93777d1fe46
+2025-06-15 10:53:31,503 - celery_task.async_task - INFO - 评估任务id: 360d0528-f523-42f2-865c-7c3f6d7b0ae5-1,风险评估结果：0.025
+2025-06-15 10:53:31,504 - celery_task.async_task - INFO - 评估任务id: 360d0528-f523-42f2-865c-7c3f6d7b0ae5-1,统计推断攻击结果: 0
+2025-06-15 10:53:32,484 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:53:32,490 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:53:32,490 - celery_task.async_task - INFO - 数据合规性评估开始启动：360d0528-f523-42f2-865c-7c3f6d7b0ae5-2
+2025-06-15 10:53:46,233 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:53:46,238 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 10:55:38,410 - celery_task.async_task - INFO - json评估任务启动，任务配置：cf30c584-0529-49b0-991c-ee300731b348 ['hotel_name']
+2025-06-15 10:55:38,438 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：320e9d0c-7120-4add-9276-697224358aa0
+2025-06-15 10:55:38,439 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：825df56c-f1fd-4482-8fd3-509d504abaf8
+2025-06-15 10:55:38,440 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：e8f5b356-3113-41cb-9eae-abadd6c4ea47
+2025-06-15 10:55:38,441 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：e3210699-f1fc-4ccb-980d-977dc160e8d0
+2025-06-15 10:55:38,442 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：6ef26e70-72d8-4852-a4a3-0d5833777413
+2025-06-15 10:55:38,719 - celery_task.async_task - INFO - 评估任务id: cf30c584-0529-49b0-991c-ee300731b348-1,风险评估结果：0.025
+2025-06-15 10:55:38,719 - celery_task.async_task - INFO - 评估任务id: cf30c584-0529-49b0-991c-ee300731b348-1,统计推断攻击结果: 0
+2025-06-15 10:55:39,709 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 10:55:39,715 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 10:55:39,715 - celery_task.async_task - INFO - 数据合规性评估开始启动：cf30c584-0529-49b0-991c-ee300731b348-2
+2025-06-15 10:55:53,461 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 10:55:53,465 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:01:28,511 - celery_task.async_task - INFO - json评估任务启动，任务配置：aa53aaad-c810-40eb-beaa-09a2f5ae5161 ['hotel_name']
+2025-06-15 11:01:28,540 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：35930a95-5503-422b-9fff-693facb7bde2
+2025-06-15 11:01:28,542 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：38c0b8ff-0d14-4732-93b8-1620a841befd
+2025-06-15 11:01:28,543 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：a51fdbd4-4560-4fcc-841d-308a8f8efd62
+2025-06-15 11:01:28,544 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：e883920c-a9fe-4484-b9e2-a1e9a08d1d2e
+2025-06-15 11:01:28,545 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：064934e7-4d55-4a1d-81bc-2e8faba1327a
+2025-06-15 11:01:28,837 - celery_task.async_task - INFO - 评估任务id: aa53aaad-c810-40eb-beaa-09a2f5ae5161-1,风险评估结果：0.025
+2025-06-15 11:01:28,838 - celery_task.async_task - INFO - 评估任务id: aa53aaad-c810-40eb-beaa-09a2f5ae5161-1,统计推断攻击结果: 0
+2025-06-15 11:01:29,800 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:01:29,806 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:01:29,807 - celery_task.async_task - INFO - 数据合规性评估开始启动：aa53aaad-c810-40eb-beaa-09a2f5ae5161-2
+2025-06-15 11:01:43,566 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:01:43,571 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:04:48,463 - celery_task.async_task - INFO - json评估任务启动，任务配置：cfef7303-853b-4d07-ad66-0602d43acdc8 ['hotel_name']
+2025-06-15 11:04:48,495 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：2e640979-6be1-42c7-97ec-e3b01d6e315c
+2025-06-15 11:04:48,497 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：142d1f0c-498e-4eb6-aa5a-b074888a5f61
+2025-06-15 11:04:48,499 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：c006baa9-c8f9-461c-a728-ba4a46c9dc90
+2025-06-15 11:04:48,501 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：cc539882-bbe6-427e-8544-36fa31fc4483
+2025-06-15 11:04:48,502 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：52ab5d89-0f32-49ee-9fdc-79599dd2b813
+2025-06-15 11:04:48,790 - celery_task.async_task - INFO - 评估任务id: cfef7303-853b-4d07-ad66-0602d43acdc8-1,风险评估结果：0.025
+2025-06-15 11:04:48,790 - celery_task.async_task - INFO - 评估任务id: cfef7303-853b-4d07-ad66-0602d43acdc8-1,统计推断攻击结果: 0
+2025-06-15 11:04:49,812 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:04:49,823 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:04:49,823 - celery_task.async_task - INFO - 数据合规性评估开始启动：cfef7303-853b-4d07-ad66-0602d43acdc8-2
+2025-06-15 11:05:03,525 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:05:03,529 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:25:22,586 - celery_task.async_task - INFO - json评估任务启动，任务配置：391d19b8-175f-4260-9fd4-b40e1e330cb8 ['hotel_name']
+2025-06-15 11:25:22,618 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：c8656e9b-1d5f-41e1-8b66-677cbf37a715
+2025-06-15 11:25:22,620 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：369067e7-5816-44d1-9996-2fcb2b1e30cd
+2025-06-15 11:25:22,622 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：b6b960fc-457c-43a7-b203-b55607f749d0
+2025-06-15 11:25:22,624 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：57abdb5f-eaa3-4854-9538-2e2ea037cb03
+2025-06-15 11:25:22,625 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：84b08106-c26c-4d6c-ab07-d4746414b8c8
+2025-06-15 11:25:22,913 - celery_task.async_task - INFO - 评估任务id: 391d19b8-175f-4260-9fd4-b40e1e330cb8-1,风险评估结果：0.025
+2025-06-15 11:25:22,913 - celery_task.async_task - INFO - 评估任务id: 391d19b8-175f-4260-9fd4-b40e1e330cb8-1,统计推断攻击结果: 0
+2025-06-15 11:25:23,907 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:25:23,914 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:25:23,915 - celery_task.async_task - INFO - 数据合规性评估开始启动：391d19b8-175f-4260-9fd4-b40e1e330cb8-2
+2025-06-15 11:25:37,647 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:25:37,652 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:26:54,076 - celery_task.async_task - INFO - json评估任务启动，任务配置：64694d4a-a464-4219-8b2a-3fcfeb7f27f2 ['hotel_name']
+2025-06-15 11:26:54,109 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：627d98c5-c94e-4a4d-9c5d-4b6e4f78e61f
+2025-06-15 11:26:54,111 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：2784227e-2f0f-4c80-a189-fc91dfd677f5
+2025-06-15 11:26:54,113 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：f141e389-b7fa-40a7-92bc-2e2a447f4f68
+2025-06-15 11:26:54,115 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：7d9a2234-af2c-46c9-a20d-4e26bcb15a70
+2025-06-15 11:26:54,116 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：06e16436-f825-4c80-8a9e-bcc253f7511e
+2025-06-15 11:26:54,407 - celery_task.async_task - INFO - 评估任务id: 64694d4a-a464-4219-8b2a-3fcfeb7f27f2-1,风险评估结果：0.025
+2025-06-15 11:26:54,407 - celery_task.async_task - INFO - 评估任务id: 64694d4a-a464-4219-8b2a-3fcfeb7f27f2-1,统计推断攻击结果: 0
+2025-06-15 11:26:55,485 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:26:55,493 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:26:55,493 - celery_task.async_task - INFO - 数据合规性评估开始启动：64694d4a-a464-4219-8b2a-3fcfeb7f27f2-2
+2025-06-15 11:27:09,138 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:27:09,143 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:28:48,876 - celery_task.async_task - INFO - json评估任务启动，任务配置：9762e1f0-7404-40f4-a9a6-60bc81c8047a ['hotel_name']
+2025-06-15 11:28:48,909 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：a91ca929-9079-4bf1-bc3d-a0c39b21e625
+2025-06-15 11:28:48,911 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：256156d3-c33d-42d8-9713-5df6a11fe744
+2025-06-15 11:28:48,914 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：a8baa788-372f-4164-bec5-e24b6c9fbc93
+2025-06-15 11:28:48,915 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：8d18bec4-5c75-4806-b028-0f561b5bb4f2
+2025-06-15 11:28:48,917 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：e6c252d3-d5a8-4d7e-97e9-13f280c04332
+2025-06-15 11:28:49,207 - celery_task.async_task - INFO - 评估任务id: 9762e1f0-7404-40f4-a9a6-60bc81c8047a-1,风险评估结果：0.025
+2025-06-15 11:28:49,207 - celery_task.async_task - INFO - 评估任务id: 9762e1f0-7404-40f4-a9a6-60bc81c8047a-1,统计推断攻击结果: 0
+2025-06-15 11:28:50,282 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:28:50,289 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:28:50,290 - celery_task.async_task - INFO - 数据合规性评估开始启动：9762e1f0-7404-40f4-a9a6-60bc81c8047a-2
+2025-06-15 11:29:03,939 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:29:03,943 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:31:57,795 - celery_task.async_task - INFO - json评估任务启动，任务配置：c58653bf-9681-409e-a69a-b260b4b35237 ['hotel_name']
+2025-06-15 11:31:57,827 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：bb1f96e7-722f-4c73-938c-bcd38655586a
+2025-06-15 11:31:57,828 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：4371289f-cb16-4eef-8b59-635c1814b398
+2025-06-15 11:31:57,831 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：67623983-e11c-42be-96e0-5948e95de574
+2025-06-15 11:31:57,832 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：f10cc614-0f93-4b6b-9f14-9d7a38097395
+2025-06-15 11:31:57,834 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：872dd23b-0e98-418c-81ac-8991856546a8
+2025-06-15 11:31:58,122 - celery_task.async_task - INFO - 评估任务id: c58653bf-9681-409e-a69a-b260b4b35237-1,风险评估结果：0.025
+2025-06-15 11:31:58,122 - celery_task.async_task - INFO - 评估任务id: c58653bf-9681-409e-a69a-b260b4b35237-1,统计推断攻击结果: 0
+2025-06-15 11:31:59,184 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:31:59,192 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:31:59,193 - celery_task.async_task - INFO - 数据合规性评估开始启动：c58653bf-9681-409e-a69a-b260b4b35237-2
+2025-06-15 11:32:12,856 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:32:12,860 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:33:09,634 - celery_task.async_task - INFO - json评估任务启动，任务配置：94e593e8-53f9-44fc-9444-217a70aab2cb ['hotel_name']
+2025-06-15 11:33:09,666 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：cda2cdc5-f53f-4dda-9f97-c235370c3158
+2025-06-15 11:33:09,668 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：e7874f34-f8ba-44c6-a472-b957ac86c8c1
+2025-06-15 11:33:09,670 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：9ddc49c4-d2ab-4514-9fce-cf156d0f16ca
+2025-06-15 11:33:09,672 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：2f19c2b5-1850-4d51-a62d-817405d6fc98
+2025-06-15 11:33:09,673 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：cc7f3a1b-0148-4bcf-a1f6-49aac4944adc
+2025-06-15 11:33:09,963 - celery_task.async_task - INFO - 评估任务id: 94e593e8-53f9-44fc-9444-217a70aab2cb-1,风险评估结果：0.025
+2025-06-15 11:33:09,964 - celery_task.async_task - INFO - 评估任务id: 94e593e8-53f9-44fc-9444-217a70aab2cb-1,统计推断攻击结果: 0
+2025-06-15 11:33:11,034 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 11:33:11,042 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 11:33:11,042 - celery_task.async_task - INFO - 数据合规性评估开始启动：94e593e8-53f9-44fc-9444-217a70aab2cb-2
+2025-06-15 11:33:24,696 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 11:33:24,700 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 11:33:24,848 - celery_task.async_task - INFO - 94e593e8-53f9-44fc-9444-217a70aab2cb所有评估任务均已成功执行！
+2025-06-15 12:29:24,510 - celery_task.async_task - INFO - json评估任务启动，任务配置：9eb83ac2-608c-4733-bd71-ef6a0278c094 ['hotel_name']
+2025-06-15 12:29:24,541 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：38aeec68-1f98-4b68-bdfd-d915ee4b64aa
+2025-06-15 12:29:24,543 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：4c0e5bd2-6ae6-4bca-b485-e6de7df8a0ad
+2025-06-15 12:29:24,545 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：cece1255-33ff-4d22-8b30-a7a82a97c4e2
+2025-06-15 12:29:24,547 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：8dacd834-6b9f-448b-aa4e-a43ffa771837
+2025-06-15 12:29:24,548 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：24a4b445-b197-4336-bc62-0c786b224d48
+2025-06-15 12:29:24,834 - celery_task.async_task - INFO - 评估任务id: 9eb83ac2-608c-4733-bd71-ef6a0278c094-1,风险评估结果：0.025
+2025-06-15 12:29:24,835 - celery_task.async_task - INFO - 评估任务id: 9eb83ac2-608c-4733-bd71-ef6a0278c094-1,统计推断攻击结果: 0
+2025-06-15 12:29:25,851 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 12:29:25,856 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 12:29:25,856 - celery_task.async_task - INFO - 数据合规性评估开始启动：9eb83ac2-608c-4733-bd71-ef6a0278c094-2
+2025-06-15 12:29:39,571 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 12:29:39,576 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 12:29:39,700 - celery_task.async_task - INFO - 可用性指标融合完成，结果：0.271155
+2025-06-15 12:29:39,703 - celery_task.async_task - INFO - 数据特征融合完成，结果：0.937509
+2025-06-15 12:29:39,708 - celery_task.async_task - INFO - 安全性融合完成，结果：0.982777
+2025-06-15 12:29:39,710 - celery_task.async_task - INFO - 合规性结果1.0
+2025-06-15 12:29:39,713 - celery_task.async_task - INFO - 9eb83ac2-608c-4733-bd71-ef6a0278c094所有评估任务均已成功执行！
+2025-06-15 13:01:07,516 - celery_task.async_task - INFO - json评估任务启动，任务配置：090808b6-4b1f-49c0-86f7-370d43049ec2 ['account_balance']
+2025-06-15 13:01:07,520 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：daf5b302-0bf2-4c4b-82a9-07c4f3563c61
+2025-06-15 13:01:07,522 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：ed468d88-f809-4b89-9d05-f60ebd799700
+2025-06-15 13:01:07,524 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：ba3bbd31-1484-462f-912a-c23e21766caa
+2025-06-15 13:01:07,525 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：39d11fdd-69bc-4680-b9f0-fe97d24e6c5a
+2025-06-15 13:01:07,526 - celery_task.async_task - INFO - 评估任务id: 090808b6-4b1f-49c0-86f7-370d43049ec2-1,风险评估结果：0.025
+2025-06-15 13:01:07,526 - celery_task.async_task - INFO - 评估任务id: 090808b6-4b1f-49c0-86f7-370d43049ec2-1,统计推断攻击结果: 0
+2025-06-15 13:01:07,527 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：4875f770-0c10-4375-b618-6f63e05b4b3d
+2025-06-15 13:01:09,892 - celery_task.async_task - INFO - Deserialized series_quasi: (庄**, 20, 42**************17, 1999**15)    1
+(富**, 30, 15**************17, 1987**15)    1
+(巩*, 20, 21**************12, 2003**18)     1
+(华**, 30, 22**************14, 1990**03)    1
+(衡**, 50, 32**************26, 1973**05)    1
+dtype: int64
+2025-06-15 13:01:09,896 - celery_task.async_task - INFO - Deserialized tem_all:   user_name age           id_number  birthday account_balance
+0       水**  40  45**************21  1981**01           81.00
+1       宗**  30  11**************12  1989**15           72.50
+2       鄢**  50  61**************14  1967**24           51.50
+3      巫***  20  32**************11  2001**14           62.00
+4       农**  20  33**************15  1996**25           47.50
+2025-06-15 13:01:09,896 - celery_task.async_task - INFO - 数据合规性评估开始启动：090808b6-4b1f-49c0-86f7-370d43049ec2-2
+2025-06-15 13:05:37,833 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 13:05:37,836 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 13:05:37,873 - celery_task.async_task - INFO - 可用性指标融合完成，结果：0.900256
+2025-06-15 13:05:37,876 - celery_task.async_task - INFO - 数据特征融合完成，结果：1.0
+2025-06-15 13:05:37,880 - celery_task.async_task - INFO - 安全性融合完成，结果：0.06564
+2025-06-15 13:05:37,882 - celery_task.async_task - INFO - 合规性结果0.0
+2025-06-15 13:05:37,885 - celery_task.async_task - INFO - 090808b6-4b1f-49c0-86f7-370d43049ec2所有评估任务均已成功执行！
+2025-06-15 13:29:30,209 - celery_task.async_task - INFO - json评估任务启动，任务配置：bfff9b24-75d8-4cf9-ac8c-ba3cf7b05f88 ['hotel_name']
+2025-06-15 13:29:30,214 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：c8697331-8c30-47e9-9471-44f8065b1295
+2025-06-15 13:29:30,216 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：b768fcf0-f1b3-4b2f-a9ed-ecfc5f1104cc
+2025-06-15 13:29:30,217 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：21aa3106-b194-45c3-8cc3-c125a63e0930
+2025-06-15 13:29:30,219 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：4ff168c2-2aaf-4624-b7a2-4af35edd72b9
+2025-06-15 13:29:30,220 - celery_task.async_task - INFO - 评估任务id: bfff9b24-75d8-4cf9-ac8c-ba3cf7b05f88-1,风险评估结果：0.025
+2025-06-15 13:29:30,220 - celery_task.async_task - INFO - 评估任务id: bfff9b24-75d8-4cf9-ac8c-ba3cf7b05f88-1,统计推断攻击结果: 0
+2025-06-15 13:29:30,220 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：9f323d71-ee20-43e8-b0a0-e42818d264ef
+2025-06-15 13:29:31,442 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 13:29:31,446 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 13:29:31,447 - celery_task.async_task - INFO - 数据合规性评估开始启动：bfff9b24-75d8-4cf9-ac8c-ba3cf7b05f88-2
+2025-06-15 13:29:45,241 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 13:29:45,244 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 13:29:45,281 - celery_task.async_task - INFO - 可用性指标融合完成，结果：0.271155
+2025-06-15 13:29:45,283 - celery_task.async_task - INFO - 数据特征融合完成，结果：0.937509
+2025-06-15 13:29:45,287 - celery_task.async_task - INFO - 安全性融合完成，结果：0.982777
+2025-06-15 13:29:45,290 - celery_task.async_task - INFO - 合规性结果1.0
+2025-06-15 13:29:45,293 - celery_task.async_task - INFO - bfff9b24-75d8-4cf9-ac8c-ba3cf7b05f88所有评估任务均已成功执行！
+2025-06-15 13:31:36,902 - celery_task.async_task - INFO - json评估任务启动，任务配置：fe6af2cf-eb7c-4181-be24-c648d5dba468 ['hotel_name']
+2025-06-15 13:31:36,934 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：e85125ca-48f8-4256-87c4-7d36ac4ade5f
+2025-06-15 13:31:36,935 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：0cbb31f9-22bc-4db0-8687-923eb29a6fca
+2025-06-15 13:31:36,938 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：0e6e0e37-df9c-44f5-8613-63e1a09b147a
+2025-06-15 13:31:36,939 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：92cfd71f-e095-4b1b-958a-33edb3cbbbfe
+2025-06-15 13:31:36,941 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：c731b402-30c5-47d8-af76-c1c8fcc884bf
+2025-06-15 13:31:37,224 - celery_task.async_task - INFO - 评估任务id: fe6af2cf-eb7c-4181-be24-c648d5dba468-1,风险评估结果：0.025
+2025-06-15 13:31:37,225 - celery_task.async_task - INFO - 评估任务id: fe6af2cf-eb7c-4181-be24-c648d5dba468-1,统计推断攻击结果: 0
+2025-06-15 13:31:38,193 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 13:31:38,201 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 13:31:38,202 - celery_task.async_task - INFO - 数据合规性评估开始启动：fe6af2cf-eb7c-4181-be24-c648d5dba468-2
+2025-06-15 13:31:51,963 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 13:31:51,968 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 13:31:52,069 - celery_task.async_task - INFO - 可用性指标融合完成，结果：0.271155
+2025-06-15 13:31:52,072 - celery_task.async_task - INFO - 数据特征融合完成，结果：0.937509
+2025-06-15 13:31:52,077 - celery_task.async_task - INFO - 安全性融合完成，结果：0.982777
+2025-06-15 13:31:52,080 - celery_task.async_task - INFO - 合规性结果1.0
+2025-06-15 13:31:52,083 - celery_task.async_task - INFO - fe6af2cf-eb7c-4181-be24-c648d5dba468所有评估任务均已成功执行！
+2025-06-15 13:40:03,035 - celery_task.async_task - INFO - json评估任务启动，任务配置：3ee89c89-a7bb-467e-89d6-e749be279fa6 ['hotel_name']
+2025-06-15 13:40:03,067 - celery_task.async_task - INFO - 风险评估已启动，子进程id是：d4dec030-7478-4b77-b000-c49461634c4f
+2025-06-15 13:40:03,068 - celery_task.async_task - INFO - 合规性评估已启动，子进程id是：cbd5ce7c-7246-4fc7-9e31-0a05cd03e092
+2025-06-15 13:40:03,071 - celery_task.async_task - INFO - 可用性评估已启动，子进程id是：a96be0a2-619a-4675-ab03-6974839139fa
+2025-06-15 13:40:03,072 - celery_task.async_task - INFO - 匿名集数据特征评估已启动，子进程id是：540c2a3a-f13d-485a-a7aa-3cfceb88bd85
+2025-06-15 13:40:03,074 - celery_task.async_task - INFO - 隐私保护性度量评估已启动，子进程id是：e2cbd9f4-14c2-44d8-8aa9-e2442f9d02e8
+2025-06-15 13:40:03,357 - celery_task.async_task - INFO - 评估任务id: 3ee89c89-a7bb-467e-89d6-e749be279fa6-1,风险评估结果：0.025
+2025-06-15 13:40:03,358 - celery_task.async_task - INFO - 评估任务id: 3ee89c89-a7bb-467e-89d6-e749be279fa6-1,统计推断攻击结果: 0
+2025-06-15 13:40:04,303 - celery_task.async_task - INFO - Deserialized series_quasi: (女, 50-100, ***********, 14********)     685
+(男, 50-100, ***********, 14********)     704
+(女, 0-50, ***********, 14********)      1423
+(男, 0-50, ***********, 14********)      1498
+(男, 50-100, ***********, 18********)    2112
+dtype: int64
+2025-06-15 13:40:04,311 - celery_task.async_task - INFO - Deserialized tem_all:   sex     age    id_number       phone hotel_name
+0   男    0-50  ***********  13********       喆啡酒店
+1   男    0-50  ***********  13********    莫泰168酒店
+2   男    0-50  ***********  15********       铂爵酒店
+3   女    0-50  ***********  15********       巴黎酒店
+4   男  50-100  ***********  15********     七天优品酒店
+2025-06-15 13:40:04,312 - celery_task.async_task - INFO - 数据合规性评估开始启动：3ee89c89-a7bb-467e-89d6-e749be279fa6-2
+2025-06-15 13:40:18,096 - celery_task.async_task - INFO - 评估指标运算线程均已成功执行，开始更新任务状态
+2025-06-15 13:40:18,101 - celery_task.async_task - INFO - 任务状态已更新为完成，开始合并汇总任务结果
+2025-06-15 13:40:18,197 - celery_task.async_task - INFO - 可用性指标融合完成，结果：0.271155
+2025-06-15 13:40:18,200 - celery_task.async_task - INFO - 数据特征融合完成，结果：0.937509
+2025-06-15 13:40:18,203 - celery_task.async_task - INFO - 隐私风险度量融合完成，结果：0.9
+2025-06-15 13:40:18,206 - celery_task.async_task - INFO - 安全性融合完成，结果：0.982777
+2025-06-15 13:40:18,209 - celery_task.async_task - INFO - 合规性结果1.0
+2025-06-15 13:40:18,212 - celery_task.async_task - INFO - 3ee89c89-a7bb-467e-89d6-e749be279fa6所有评估任务均已成功执行！

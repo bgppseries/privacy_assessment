@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>隐私保护效果评估系统</title>
+<!--    <script type="text/javascript" src="../static/js/jquery.js"></script>-->
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+
+    <script type="text/javascript" src="../static/js/echart.js"></script>
+    <script type="text/javascript" src="../static/js/file.js"></script>
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/blueprint.css') }}">-->
+    <link rel="stylesheet" href="../static/css/blueprint.css">
+<!--    引入table的样式，用于表格展示任务运行情况-->
+    <style type="text/css">
+			table{
+				border-collapse: separate;/*让靠在一起的单元格只显示一个边框，边框不进行叠加*/
+				border-spacing:15px;
+			}
+
+			table tr th{
+				//border: solid 1px #ccc;
+				position:relative;
+				height: 16%;
+				//width: 25%;
+				//background-color: #eee;
+			}
+
+			table tr td{
+				//border: solid 1px #ccc;
+				//height: 100%;
+				text-align: center;
+			}
+
+			table tr:hover
+			{
+				background-color: red;/*hover:鼠标移上去就会变成红色*/
+			}
+		</style>
+</head>
+
+<script type="text/javascript" src="../static/js/loading.js"></script>
+
+
+<body>
+
+<!--这是一个动态的粒子效果图，设置了透明度为0.2-->
+<div class="canva" style="opacity: 0.9">
+    <iframe frameborder="0" src="../static/js/index.html" style="width: 100%; height: 100%"></iframe>
+</div>
+
+<!--这是一个在正式页面加载进来之前显示的加载小动画，文字可以修改-->
+<div class="loading">
+    <div class="loadbox"><img src="../static/picture/loading.gif"> 正在加载中...</div>
+</div>
+
+
+<!--            导航栏                     -->
+<div class="navigation">
+    <ul>
+          <li class="current"><a href="index.html">首页</a></li>
+          <li><a href="tmp.html">知识图谱</a></li>
+          <li><a href="#">服务介绍</a></li>
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">联系我们</a></li>
+          <div class="slider"></div>
+    </ul>
+</div>
+
+<div class="header">
+        隐私保护效果评估系统
+        <div class="weather">
+        <img src="../static/picture/weather.png"><span></span>
+        <span id="showTime"></span>
+    </div>
+
+    <script type="text/javascript" src="../static/js/showtime.js"></script>
+</div>
+<!--主体布局-->
+<div class="mainbox">
+
+    <div class="column">
+        <!--左侧栏-->
+        <div class="panel">
+<!--        左侧栏第一个区块：包含标题、图表、底部修饰三个区块-->
+            <div class="h">系统评估数变化趋势</div>
+            <div class="chart" id="first"></div>
+            <script type="text/javascript">
+                setTimeout(showl1,50);
+            </script>
+            <div class="panel-footer"></div>
+        </div>
+        <div class="panel">
+            <div class="h">隐私评估场景分类</div>
+                    <div class="chart" id="range"></div>
+                    <script type="text/javascript">
+                        setTimeout(show,50);
+                    </script>
+                    <div class="pannel-footer"></div>
+        </div>
+    </div>
+    <div class="column">
+<!--        中间模块-->
+        <div class="middle">
+            <div class="h2">系统评估总数</div>
+            <div class="num">
+                <lim>评估总数</lim>
+                <lim>0021</lim>
+            </div>
+            <div class="tch">
+                <lit>
+                    <ul style="list-style: none;">
+                        <div class="up">
+                            <div class="ll1">15min</div>
+                            <div class="hh">平均评估时间</div>
+                        </div>
+                        <div class="up">
+                            <li class="ll1">39</li>
+                            <li class="hh">评估场景覆盖</li>
+                        </div>
+                    </ul>
+                </lit>
+
+                <lit>
+                <div class="pannel">
+
+                </div>
+                </lit>
+<lit>
+    <ul style="list-style: none;">
+        <div class="up">
+            <div class="ll1">015</div>
+            <div class="hh">评估指标总数</div>
+        </div>
+        <div class="up">
+            <li class="ll1">39K</li>
+            <li class="hh">评估个人信息总数</li>
+        </div>
+    </ul>
+</lit>
+
+            </div>
+        </div>
+        <div class="md">
+            <!--中间往下的部分-->
+            <div class="mdp" style="display: table; width: 100%;">
+                <div style="display:table-cell;">
+                    <!--展示模块-->
+                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                        <tr><th>任务id</th><th>任务名称</th><th>数据场景</th><th>提交时间</th><th>运行状态</th></tr>
+                        <tr><td>5</td><td>aHRg4ycmawigY4jm</td><td>地图导航类</td><td>2023年12月1日18:11:42</td><td>已评估</td></tr>
+                        <tr><td>6</td><td>tP56YaxH4xkJDIHp</td><td>网上购物类</td><td>2023年12月3日12:57:11</td><td>已评估</td></tr>
+                        <tr><td>7</td><td>N6dkJUnbh777lrG3</td><td>地图导航类</td><td>2023年12月3日14:17:56</td><td>已评估</td></tr>
+                        <tr><td>8</td><td>qztUsfIz5yYcPAvy</td><td>医疗卫生类</td><td>2023年12月5日17:22:25</td><td>已评估</td></tr>
+                        <tr><td>9</td><td>tPTUzup9O1PEjXFK</td><td>酒店服务类</td><td>2023年12月5日17:41:34</td><td>已评估</td></tr>
+                        <tr><td>10</td><td>22e71c721b21PEj</td><td>酒店服务类</td><td>2023年12月8日15:07:26</td><td>已评估</td></tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="file">
+                <!--文件上传-->
+                <form id="upload" enctype="multipart/form-data" method="post" onsubmit="return submitForm();">
+                    <input type="file" name="file" value="隐私数据上传" class="input"/>
+                    <input type="submit" value="提交" class="submit"/>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <!--右侧栏-->
+        <div class="panel">
+<!--        右侧栏第一个区块：包含标题、图表、底部修饰三个区块-->
+            <div class="h">系统运行情况</div>
+            <div class="chart" id="CPU"></div>
+            <script type="text/javascript">
+                        setTimeout(show2,50);
+            </script>
+            <div class="panel-footer"></div>
+        </div>
+        <div class="panel">
+            <div class="h">echart title</div>
+            todo
+            <div class="panel-footer"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+2023-09-27 13:47:36,829 - 4768-MainThread - C:\Users\13374\PycharmProjects\pythonProject\log\test_log.py[line:8] - INFO: [info] 这条日志只会记录在MongoDB中
+2023-09-27 13:47:36,829 - 4768-MainThread - C:\Users\13374\PycharmProjects\pythonProject\log\test_log.py[line:9] - ERROR: [error] 这条日志会发送到WebHook机器人上
+2023-09-27 13:47:36,829 - 4768-MainThread - C:\Users\13374\PycharmProjects\pythonProject\log\test_log.py[line:10] - WARNING: [warning] 这条日志也会发送到WebHook
