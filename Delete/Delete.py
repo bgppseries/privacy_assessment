@@ -26,7 +26,7 @@ privacy_enhance_url="http://10.10.55.25:8082/common/desensitization/eTPSS"
 broker_url = "amqp://qwb:784512@127.0.0.1:5672/test"
 
 # 结果存储使用redis(默认数据库-零)。与celery实例化时backend参数意义相同
-result_backend = 'redis://:qwb@127.0.0.1:5678/1'
+result_backend = 'redis://:qwb@127.0.0.1:6379/1'
 
 # # LOG配置
 # worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
