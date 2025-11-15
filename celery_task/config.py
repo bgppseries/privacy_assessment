@@ -273,7 +273,8 @@ class Config:
         ##如果读取sql文件，将其转化为DataFrame格式
         # url='mysql+pymysql://root:784512@localhost:3306/local_test'
         columns = self.QIDs+self.SA
-        query = f"SELECT {', '.join(columns)}  FROM {self.json_address}"
+        ## query = f"SELECT {', '.join(columns)}  FROM {self.json_address}"
+        query = f"SELECT {', '.join([f'`{col}`' for col in columns])}  FROM {self.json_address}"
         # 创建SQLAlchemy的Engine对象
         engine = create_engine(self.src_url).connect()
         return pd.read_sql(sql=text(query),con=engine)
@@ -829,7 +830,7 @@ class Data_compliance(Config):
         10万条数据，耗时0.5秒
         '''
         if self.L_diversity == 1: ##若L多样性值为1，必定符合
-            return True
+            return True,-1
         length = len(Series_quasi_keys)
         # _TemAll = self._Function_Data()##获得文件所有数据，DataFrame格式
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组

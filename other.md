@@ -1,0 +1,14 @@
+- redis地址修改
+  - celery_task/config.py
+    - result_backend = 'redis://:qwb@127.0.0.1:5678/1'
+    - WORKER_ID_MAP_REDISPORT=5678
+  - celery_task\func\metic.py
+    - \# from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
+  - celery_task\func\network.py
+    - from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
+  - Delete\Delete.py
+    - result_backend = 'redis://:qwb@127.0.0.1:6379/1'
+
+- neo4j
+  - password : setting\set.config
+  - password=libra-gordon-python-episode-battery-1487

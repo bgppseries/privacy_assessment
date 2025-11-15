@@ -5,10 +5,7 @@ import pickle
 import numpy as np
 
 # 与写入函数保持一致的 Redis 连接常量
-WORKER_ID_MAP_REDISADDRESS = '192.168.1.107'
-WORKER_ID_MAP_REDISPORT   = 5678
-WORKER_ID_MAP_REDISDBNUM  = 5
-WORKER_ID_MAP_REDISPASSWORD = 'qwb'
+from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
 
 def getvalue(worker_id: str, key: str | None = None):
     """
@@ -236,6 +233,14 @@ def GetAvailability(worker_uuid: str):
     )
     score = round(score,6)
     # 将数据写入redis中
+    if score > 1 and score <=2:
+        score = 2 - score
+    elif score < 0 and score >= -1:
+        score = 1 + score
+    elif score > 0 and score <= 1:
+        score = score
+    else:
+        score = (score % 1 + 1) % 1
     sendvalue3(worker_uuid, "可用性综合结果", score, float)
     return score
 

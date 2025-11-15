@@ -1,22 +1,21 @@
-
-from flask import Flask,jsonify
+from flask import Flask, jsonify
 # from celery import Celery
-from mylog.logger import mylogger,set_logger
+from mylog.logger import mylogger, set_logger
 from logging import INFO
 from app.api.file import api_file
 from app.api.show import api_show
 from app.config.flask_config import config
 from app.api.test import api_test
+from app.api.show.garph_show import api_graph_show
 
 ###创建日志
-logger=mylogger(__name__,INFO)
+logger = mylogger(__name__, INFO)
 set_logger(logger)
-
 
 
 def make_app(config_name=None):
     logger.info('flask app 正在创建')
-    app=Flask('app')
+    app = Flask('app')
     app.config.from_object(config[config_name])
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
     register_errors(app)
@@ -34,9 +33,10 @@ def register_blueprints(app):
         test为测试所用
     """
     with app.app_context():
-        app.register_blueprint(api_test, url_prefix='/api/test')
-        app.register_blueprint(api_file,url_prefix='/api/file')
-        app.register_blueprint(api_show,url_prefix='/api/show')
+        app.register_blueprint(api_test, url_prefix='/api/test/')
+        app.register_blueprint(api_file, url_prefix='/api/file/')
+        app.register_blueprint(api_show, url_prefix='/api/show/')
+        app.register_blueprint(api_graph_show, url_prefix='/api/show/')
 
 
 def register_errors(app):

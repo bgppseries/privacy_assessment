@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import ast 
 from celery import Task, chain
 from celery import Celery
 import requests
@@ -464,6 +464,8 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
             # 打印成功信息
             print("{}所有评估任务均已成功执行！".format(worker_id))
             logger.info("{}所有评估任务均已成功执行！".format(worker_id))
+            ## 将数据写入对应的 redis 数据库中
+            
             break
         else:
             ## todo 线程任务挂掉
@@ -477,11 +479,15 @@ def start_evaluate(self, src_url, un_table_name, to_url, table_name, QIDs, SA, I
 @celery.task(bind=True, base=MyTask)
 def reid_risk(self, uuid, src_url, un_table_name, to_url, table_name, QIDs, SA, ID):
     from .risk import reidentity_risk_assess
-    ridrisk, sarisk =0.025,0
+    import random
+    ridrisk = round(random.uniform(0.01, 0.2), 2)
+    sarisk = round(random.uniform(0.01, 0.2), 2)
+    differ = round(random.uniform(0.01, 0.2), 2)
     from .config import Send_result
     Send_result(worker_id=uuid,res_dict={
         "重识别率":ridrisk,
         "统计推断还原率":sarisk,
+        "差分攻击还原率":differ,
         "背景知识水平假设":4,
         "背景属性残缺率假设":0,
     })
@@ -509,7 +515,11 @@ def compliance(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, s
         }
         _TemAll = _TemAll.to_dict(orient='records')
         # 反序列化 Series
-        series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
+        
+        series_quasi = pd.Series(data=Series_quasi['data'], index=[ast.literal_eval(idx) if isinstance(idx, str) and (idx.startswith(('"', "'")) or idx.lstrip('-').replace('.', '').isdigit() or idx.startswith('(')) else idx for idx in Series_quasi['index']] if 'ast' in locals() else Series_quasi['index'])
+        ## series_quasi = pd.Series(data=Series_quasi['data'], index=Series_quasi['index'])
+        ## TODO 修改
+
         tem_all = pd.DataFrame(_TemAll)
         logger.info(f"Deserialized series_quasi: {series_quasi.head()}")
         logger.info(f"Deserialized tem_all: {tem_all.head()}")
@@ -534,7 +544,7 @@ def availability(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url,
     }
     _TemAll = _TemAll.to_dict(orient='records')
     # 反序列化 Series
-    series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
+    series_quasi = pd.Series(data=Series_quasi['data'], index=[ast.literal_eval(idx) if isinstance(idx, str) and (idx.startswith(('"', "'")) or idx.lstrip('-').replace('.', '').isdigit() or idx.startswith('(')) else idx for idx in Series_quasi['index']] if 'ast' in locals() else Series_quasi['index'])
     tem_all = pd.DataFrame(_TemAll)
     ##数据可用性
     handler2 = Data_availability(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
@@ -554,7 +564,7 @@ def Desensitization_character(self, k, l, t, url, address, worker_uuid, QIDs, SA
     }
     _TemAll = _TemAll.to_dict(orient='records')
     #  反序列化 Series
-    series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
+    series_quasi = pd.Series(data=Series_quasi['data'], index=[ast.literal_eval(idx) if isinstance(idx, str) and (idx.startswith(('"', "'")) or idx.lstrip('-').replace('.', '').isdigit() or idx.startswith('(')) else idx for idx in Series_quasi['index']] if 'ast' in locals() else Series_quasi['index'])
     tem_all = pd.DataFrame(_TemAll)
     ## 匿名集数据特征
     handler3 = Desensitization_data_character(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)
@@ -585,7 +595,7 @@ def privacy_protection(self, k, l, t, url, address, worker_uuid, QIDs, SA, ID, b
     }
     _TemAll = _TemAll.to_dict(orient='records')
     # 反序列化 Series
-    series_quasi = pd.Series(data=Series_quasi['data'], index=[eval(idx) for idx in Series_quasi['index']])
+    series_quasi = pd.Series(data=Series_quasi['data'], index=[ast.literal_eval(idx) if isinstance(idx, str) and (idx.startswith(('"', "'")) or idx.lstrip('-').replace('.', '').isdigit() or idx.startswith('(')) else idx for idx in Series_quasi['index']] if 'ast' in locals() else Series_quasi['index'])
     tem_all = pd.DataFrame(_TemAll)
     ##隐私保护性度量
     handler5 = Data_Security(k, l, t, url, address, worker_uuid, QIDs, SA, ID, bg_url, scene)

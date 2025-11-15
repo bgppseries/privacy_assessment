@@ -317,7 +317,7 @@ body {
         });
         var option1;
         myChartd.showLoading();
-        $.get('http://127.0.0.1:5000/api/show/data', function (graph) {
+        $.get('http://192.168.121.6:5000/api/show/data', function (graph) {
           myChartd.hideLoading();
           graph.nodes.forEach(function (node) {
             node.symbolSize = 15;
@@ -443,7 +443,7 @@ body {
         });
         var option2;
         myChart.showLoading();
-        $.get('http://127.0.0.1:5000/api/show/metric', function (data) {
+        $.get('http://192.168.121.6:5000/api/show/metric', function (data) {
             myChart.hideLoading();
             data.children.forEach(function (datum, index) {
                 index % 2 === 0 && (datum.collapsed = true);

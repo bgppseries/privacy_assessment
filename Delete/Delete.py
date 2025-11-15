@@ -26,7 +26,7 @@ privacy_enhance_url="http://10.10.55.25:8082/common/desensitization/eTPSS"
 broker_url = "amqp://qwb:784512@127.0.0.1:5672/test"
 
 # 结果存储使用redis(默认数据库-零)。与celery实例化时backend参数意义相同
-result_backend = 'redis://:qwb@127.0.0.1:5678/1'
+result_backend = 'redis://:qwb@127.0.0.1:6379/1'
 
 # # LOG配置
 # worker_log_format = "[%(asctime)s] [%(levelname)s] %(message)s"
@@ -36,11 +36,7 @@ timezone = "Asia/Shanghai"
 
 #有警告CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer
 broker_connection_retry_on_startup = True
-
-WORKER_ID_MAP_REDISADDRESS='localhost'
-WORKER_ID_MAP_REDISPORT=5678
-WORKER_ID_MAP_REDISDBNUM=6
-WORKER_ID_MAP_REDISPASSWORD='qwb'
+from celery_task.config import WORKER_ID_MAP_REDISADDRESS,WORKER_ID_MAP_REDISDBNUM,WORKER_ID_MAP_REDISPASSWORD,WORKER_ID_MAP_REDISPORT
 
 import redis
 
@@ -675,7 +671,7 @@ class Data_compliance(Config):
         10万条数据，耗时0.5秒
         '''
         if self.L_diversity == 1: ##若L多样性值为1，必定符合
-            return True
+            return True, -1
         length = len(Series_quasi_keys)
         _TemAll = self._Function_Data()##获得文件所有数据，DataFrame格式
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组

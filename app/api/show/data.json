@@ -1,0 +1,400 @@
+{
+  "nodes": [
+    {
+      "category": "user_id",
+      "id": 657231,
+      "name": "3139*****",
+      "scene": "phone",
+      "symbolSize": 42
+    },
+    {
+      "category": "user_id",
+      "id": 55284,
+      "name": "5419*****",
+      "scene": "phone",
+      "symbolSize": 42
+    },
+    {
+      "category": "user_id",
+      "id": 959039,
+      "name": "5737*****",
+      "scene": "phone",
+      "symbolSize": 42
+    },
+    {
+      "category": "user_id",
+      "id": 191666,
+      "name": "6627*****",
+      "scene": "phone",
+      "symbolSize": 42
+    },
+    {
+      "category": "user_id",
+      "id": 5087,
+      "name": "3321*****",
+      "scene": "phone",
+      "symbolSize": 42
+    },
+    {
+      "category": "user_id",
+      "id": 952992,
+      "name": "7805*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 203582,
+      "name": "1363*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 818959,
+      "name": "8133*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 325273,
+      "name": "3617*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 110648,
+      "name": "8996*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 665851,
+      "name": "8971*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 108328,
+      "name": "2516*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 903020,
+      "name": "5814*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 991207,
+      "name": "7633*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 146436,
+      "name": "4624*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 668805,
+      "name": "1184*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 366936,
+      "name": "4881*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 15966,
+      "name": "3487*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 152294,
+      "name": "5393*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "user_id",
+      "id": 754850,
+      "name": "9385*****",
+      "scene": "phone",
+      "symbolSize": 41
+    },
+    {
+      "category": "sex",
+      "id": 963582,
+      "name": "女性",
+      "scene": "phone",
+      "symbolSize": 20
+    },
+    {
+      "category": "sex",
+      "id": 146823,
+      "name": "男性",
+      "scene": "phone",
+      "symbolSize": 20
+    }
+  ],
+  "links": [
+    {
+      "scene": "phone",
+      "source": 668805,
+      "target": 963582,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 668805,
+      "target": 146823,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 203582,
+      "target": 963582,
+      "value": "14"
+    },
+    {
+      "scene": "phone",
+      "source": 203582,
+      "target": 146823,
+      "value": "9"
+    },
+    {
+      "scene": "phone",
+      "source": 108328,
+      "target": 963582,
+      "value": "8"
+    },
+    {
+      "scene": "phone",
+      "source": 108328,
+      "target": 146823,
+      "value": "15"
+    },
+    {
+      "scene": "phone",
+      "source": 657231,
+      "target": 963582,
+      "value": "13"
+    },
+    {
+      "scene": "phone",
+      "source": 657231,
+      "target": 146823,
+      "value": "12"
+    },
+    {
+      "scene": "phone",
+      "source": 5087,
+      "target": 963582,
+      "value": "15"
+    },
+    {
+      "scene": "phone",
+      "source": 5087,
+      "target": 146823,
+      "value": "9"
+    },
+    {
+      "scene": "phone",
+      "source": 15966,
+      "target": 963582,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 15966,
+      "target": 146823,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 325273,
+      "target": 963582,
+      "value": "14"
+    },
+    {
+      "scene": "phone",
+      "source": 325273,
+      "target": 146823,
+      "value": "9"
+    },
+    {
+      "scene": "phone",
+      "source": 146436,
+      "target": 963582,
+      "value": "8"
+    },
+    {
+      "scene": "phone",
+      "source": 146436,
+      "target": 146823,
+      "value": "14"
+    },
+    {
+      "scene": "phone",
+      "source": 366936,
+      "target": 963582,
+      "value": "12"
+    },
+    {
+      "scene": "phone",
+      "source": 366936,
+      "target": 146823,
+      "value": "10"
+    },
+    {
+      "scene": "phone",
+      "source": 152294,
+      "target": 963582,
+      "value": "10"
+    },
+    {
+      "scene": "phone",
+      "source": 152294,
+      "target": 146823,
+      "value": "12"
+    },
+    {
+      "scene": "phone",
+      "source": 55284,
+      "target": 963582,
+      "value": "10"
+    },
+    {
+      "scene": "phone",
+      "source": 55284,
+      "target": 146823,
+      "value": "14"
+    },
+    {
+      "scene": "phone",
+      "source": 959039,
+      "target": 963582,
+      "value": "7"
+    },
+    {
+      "scene": "phone",
+      "source": 959039,
+      "target": 146823,
+      "value": "17"
+    },
+    {
+      "scene": "phone",
+      "source": 903020,
+      "target": 963582,
+      "value": "14"
+    },
+    {
+      "scene": "phone",
+      "source": 903020,
+      "target": 146823,
+      "value": "9"
+    },
+    {
+      "scene": "phone",
+      "source": 191666,
+      "target": 963582,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 191666,
+      "target": 146823,
+      "value": "13"
+    },
+    {
+      "scene": "phone",
+      "source": 991207,
+      "target": 963582,
+      "value": "8"
+    },
+    {
+      "scene": "phone",
+      "source": 991207,
+      "target": 146823,
+      "value": "15"
+    },
+    {
+      "scene": "phone",
+      "source": 952992,
+      "target": 963582,
+      "value": "11"
+    },
+    {
+      "scene": "phone",
+      "source": 952992,
+      "target": 146823,
+      "value": "12"
+    },
+    {
+      "scene": "phone",
+      "source": 818959,
+      "target": 963582,
+      "value": "8"
+    },
+    {
+      "scene": "phone",
+      "source": 818959,
+      "target": 146823,
+      "value": "15"
+    },
+    {
+      "scene": "phone",
+      "source": 665851,
+      "target": 963582,
+      "value": "13"
+    },
+    {
+      "scene": "phone",
+      "source": 665851,
+      "target": 146823,
+      "value": "10"
+    },
+    {
+      "scene": "phone",
+      "source": 110648,
+      "target": 963582,
+      "value": "15"
+    },
+    {
+      "scene": "phone",
+      "source": 110648,
+      "target": 146823,
+      "value": "8"
+    },
+    {
+      "scene": "phone",
+      "source": 754850,
+      "target": 963582,
+      "value": "13"
+    },
+    {
+      "scene": "phone",
+      "source": 754850,
+      "target": 146823,
+      "value": "9"
+    }
+  ]
+}

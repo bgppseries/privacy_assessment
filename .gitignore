@@ -1,0 +1,11 @@
+*.log
+data/
+begin.sh
+celery.log
+flask_web.log
+celery.log
+flask_web.log
+app/__pycache__/__init__.cpython-38.pyc
+app/__pycache__/__init__.cpython-310.pyc
+app/__pycache__/__init__.cpython-310.pyc
+app/__pycache__/__init__.cpython-310.pyc

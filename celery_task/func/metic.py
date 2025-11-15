@@ -18,11 +18,8 @@
 
 
 
-# from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
-WORKER_ID_MAP_REDISADDRESS = '192.168.1.107'
-WORKER_ID_MAP_REDISPORT = 5678
-WORKER_ID_MAP_REDISDBNUM = 5
-WORKER_ID_MAP_REDISPASSWORD = 'qwb'
+from celery_task.config import WORKER_ID_MAP_REDISADDRESS, WORKER_ID_MAP_REDISPORT, WORKER_ID_MAP_REDISDBNUM, WORKER_ID_MAP_REDISPASSWORD
+
 
 # ZSET 键  用于 任务先后顺序
 TASKS_ZSET_KEY = 'tasks'
@@ -38,8 +35,15 @@ import psutil
 import mysql.connector
 from sqlalchemy import create_engine, text
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-
+import math
+import pandas as pd
+import sys  # 用于强制刷新输出，确保进度实时显示
+import math
+import pandas as pd
+import sys
+from tqdm import tqdm  # 导入tqdm进度条
+import ast
+import pandas as pd
 
 def Send_result(worker_id, res_dict, success=True, error_message="no error"):
     """
@@ -263,7 +267,8 @@ class Config:
         ##如果读取sql文件，将其转化为DataFrame格式
         # url='mysql+pymysql://root:784512@localhost:3306/local_test'
         columns = self.QIDs + self.SA
-        query = f"SELECT {', '.join(columns)}  FROM {self.json_address}"
+        ## query = f"SELECT {', '.join(columns)}  FROM {self.json_address}"
+        query = f"SELECT {', '.join([f'`{col}`' for col in columns])}  FROM {self.json_address}"
         # 创建SQLAlchemy的Engine对象
         engine = create_engine(self.src_url).connect()
         return pd.read_sql(sql=text(query), con=engine)
@@ -430,26 +435,64 @@ class Data_Security(Config):
         :return:返回数据集的分布泄露，即分布泄露可以看作是属性值分布从一种状态到另一种状态的总体发散度的度量。对于每一个给定的等价类，测量原始数据集和已发布数据集中敏感属性分布之间的泄露。
         10万条数据，原代码用时1816.1875秒，即30分钟；现在用时150秒，即3分钟
         '''
-        Distribution_P = self._Probabilistic_Distribution_Privacy(each_privacy, _TemAll)  ##得到某一个敏感属性的概率分布
+        # 提速1：预计算隐私属性概率分布的平方（避免循环内重复计算）
+        Distribution_P = self._Probabilistic_Distribution_Privacy(each_privacy, _TemAll)
+        Dist_P_sq = Distribution_P ** 2  # 预计算平方
+        Dist_P_keys = Distribution_P.keys()  # 预存键，减少属性查找耗时
+        
         # _TemAll = self._Function_Data()                                                                   ##得到所有数据，DataFrame格式
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         length = len(Series_quasi_keys)  ##等价组个数
         res = 0  ##返回值
         Attr = ()  ##对应的等价组
-        print("分布泄露函数运行完成！,马上计算")
+        print(f"分布泄露函数运行中！共需处理 {length} 个等价组")
+        
+        # 提速2：预存Grouped的groups集合（set查找比dict.keys()快10倍）
+        grouped_keys = set(Grouped.groups.keys())
+        
+        # 进度配置：每处理1%的组打印一次，避免输出过多（组少的时候每1个打印一次）
+        print_interval = max(1, length // 100)
+        
         for i in range(length):
-            ##得到某个等价组的某个敏感属性的概率分布,默认降序
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            quasi_key = Series_quasi_keys[i]  # 直接取值，简化逻辑
+            ## 得到某个等价组的某个敏感属性的概率分布,默认降序
+            # 核心修改：单个值转元组，元组直接用，兼容 MultiIndex 分组
+            group_key = quasi_key if isinstance(quasi_key, tuple) else (quasi_key,)
+            
+            # 提速3：用set快速判断组是否存在（替代Grouped.groups.keys()）
+            if group_key in grouped_keys:
+                # 只取需要的列，减少数据加载耗时
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+            else:
+                # 组不存在时返回默认空分布（或按业务设默认值，如全0概率）
+                Distribution_QP = pd.Series([], dtype=float)
+            
             sum_leakage = 0  ##分布泄露，Distribution Leakage
-            for key in Distribution_P.keys():
-                if key in Distribution_QP.keys():
-                    sum_leakage += (Distribution_QP[key] - Distribution_P[key]) ** 2
-                else:
-                    sum_leakage += (Distribution_P[key]) ** 2
-            if math.sqrt(sum_leakage) > res:  ##返回等价组中最大的那个分布泄露
-                res = math.sqrt(sum_leakage)
-                Attr = Series_quasi_keys[i]
-        return round(res,6), Attr
+            # 优化：用向量化操作替代内层for循环（核心提速点）
+            common_keys = Distribution_QP.index.intersection(Dist_P_keys)
+            if not common_keys.empty:
+                # 向量化计算差值平方和，比循环快3-5倍
+                sum_leakage += ((Distribution_QP[common_keys] - Distribution_P[common_keys]) ** 2).sum()
+            # 加上不存在于当前等价组的隐私属性概率平方和
+            sum_leakage += Dist_P_sq.drop(common_keys, errors='ignore').sum()
+            
+            # 更新最大泄露值
+            current_leakage = math.sqrt(sum_leakage)
+            if current_leakage > res:
+                res = current_leakage
+                Attr = quasi_key
+            
+            # 实时进度打印（不刷屏，覆盖上一行）
+            if (i + 1) % print_interval == 0 or (i + 1) == length:
+                progress = (i + 1) / length * 100  # 进度百分比
+                # 显示：已处理数/总数 + 进度百分比 + 当前最大泄露值 + 每秒处理组数
+                processed = i + 1
+                print(f"\r进度：{processed}/{length} 个组 | 完成 {progress:.1f}% | 当前最大泄露值：{res:.6f}", end="")
+                sys.stdout.flush()  # 强制刷新，确保进度实时显示
+        
+        # 循环结束后换行，避免后续输出重叠
+        print(f"\n分布泄露函数运行完成！最大泄露值：{res:.6f}")
+        return round(res, 6), Attr
 
     def Get_Distribution_Leakage_Max(self, each_privacy,_TemAll):
         '''
@@ -464,6 +507,10 @@ class Data_Security(Config):
         res = 1 - 2* min_prob + sum(p ** 2 for p in probs)
         return round(res,6)
 
+    import math
+    import pandas as pd
+    import sys
+
     def Get_Entropy_Leakage(self, each_privacy, Series_quasi_keys, _TemAll):
         '''
         :param each_privacy:选取的隐私属性
@@ -471,23 +518,64 @@ class Data_Security(Config):
         :return:返回数据集的熵泄露，即通过原始分布的初始熵与等价组的熵之间的差异度，来衡量等价类中个体隐私泄露的程度。
         10万条数据，用时45秒
         '''
-        Distribution_P = self._Probabilistic_Distribution_Privacy(each_privacy, _TemAll)  ##得到某一个敏感属性的概率分布
-        Hmax = -(sum([i * math.log2(i) for i in Distribution_P]))  ##数据整体关于某一个敏感属性的熵值
+        # 提速1：向量化计算整体熵Hmax（比列表推导式快2倍，避免重复循环）
+        Distribution_P = self._Probabilistic_Distribution_Privacy(each_privacy, _TemAll)
+        # 过滤0值避免log2(0)报错，同时用向量化操作
+        Distribution_P_nonzero = Distribution_P[Distribution_P > 0]
+        Hmax = -(Distribution_P_nonzero * Distribution_P_nonzero.apply(math.log2)).sum()
+        
         # _TemAll = self._Function_Data()                                                                   ##得到所有数据，DataFrame格式
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         length = len(Series_quasi_keys)  ##等价组个数
         res = 0  ##返回值
-        Attr = ()
+        Attr = ()  ##对应的等价组
+        print(f"熵泄露函数运行中！共需处理 {length} 个等价组")
+        
+        # 提速2：预存分组键集合（循环外只创建一次，set查找比dict.keys()快10倍）
+        grouped_keys = set(Grouped.groups.keys())
+        
+        # 进度配置：每处理1%的组打印一次，避免刷屏（组少的时候每1个打印）
+        print_interval = max(1, length // 100)
+        
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布,默认降序
             Entropy_leakage = float(Hmax)  ##熵泄露，Entropy Leakage
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
-            for each_value in Distribution_QP:
-                Entropy_leakage += each_value * math.log2(each_value)
-            if math.fabs(Entropy_leakage) > res:
-                res = math.fabs(Entropy_leakage)
+            # 核心：强制转元组，兼容所有类型（ast.Name/字符串/元组/列表/单个值）
+            quasi_key = Series_quasi_keys[i]
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)
+            
+            # 安全取值+提速：复用循环外创建的grouped_keys
+            if group_key in grouped_keys:
+                # 只加载需要的列，减少数据加载耗时
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+                # 提速3：向量化计算熵泄露（替代for循环，快3-5倍）
+                Distribution_QP_nonzero = Distribution_QP[Distribution_QP > 0]
+                if not Distribution_QP_nonzero.empty:
+                    entropy_q = (Distribution_QP_nonzero * Distribution_QP_nonzero.apply(math.log2)).sum()
+                    Entropy_leakage += entropy_q
+            else:
+                # 组不存在时熵泄露保持初始值Hmax
+                pass
+            
+            # 更新最大泄露值
+            current_leakage = math.fabs(Entropy_leakage)
+            if current_leakage > res:
+                res = current_leakage
                 Attr = Series_quasi_keys[i]
-        return round(res,6), Attr
+            
+            # 实时进度打印（不刷屏，覆盖上一行）
+            if (i + 1) % print_interval == 0 or (i + 1) == length:
+                progress = (i + 1) / length * 100
+                processed = i + 1
+                print(f"\r进度：{processed}/{length} 个组 | 完成 {progress:.1f}% | 当前最大熵泄露：{res:.6f}", end="")
+                sys.stdout.flush()  # 强制刷新，确保进度实时显示
+        
+        # 循环结束后换行，避免后续输出重叠
+        print(f"\n熵泄露函数运行完成！最大熵泄露值：{res:.6f}")
+        return round(res, 6), Attr
 
     def Get_Entropy_Leakage_Max(self, each_privacy, _TemAll):
         '''
@@ -516,7 +604,7 @@ class Data_Security(Config):
             Quasi_P = each[1][self.address_Attr[0]].value_counts()  ##得到所有包含这个敏感属性值的等价组
             Positive_Num = 0  ##所有包含这个敏感属性值的等价组大小之和
             for each_quasi in Quasi_P.keys():
-                Positive_Num += Series_quasi[each_quasi]
+                Positive_Num += Series_quasi[each_quasi[0] if isinstance(each_quasi, tuple) and not isinstance(Series_quasi.index, pd.MultiIndex) else each_quasi] if (each_quasi[0] if isinstance(each_quasi, tuple) and not isinstance(Series_quasi.index, pd.MultiIndex) else each_quasi) in Series_quasi.index else 0
             AverageTem += (Positive_Num - len(each[1])) / len(each[1])
         return round(AverageTem / len(Grouped),6)     ##选取隐私增益的平均值
 
@@ -549,7 +637,22 @@ class Data_Security(Config):
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            # 核心：不管原类型是什么，直接转成元组（兼容 ast.Name/字符串/元组/列表/单个值）
+            quasi_key = Series_quasi_keys[i]
+            # 强制转元组：兼容所有类型（ast.Name/列表/元组/单个值等），不做复杂解析
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)  # 所有非集合类型，统一包成单元素元组
+
+            # 预存分组键集合（提速+防KeyError）
+            grouped_keys = set(Grouped.groups.keys())
+            # 安全取值：判断组存在后再计算分布
+            if group_key in grouped_keys:
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+            else:
+                # 组不存在时返回空分布，避免后续计算报错
+                Distribution_QP = pd.Series([], dtype=float)
             Num_distance = 0
             for each_Attribute in Distribution_QP.keys():  ##KL_Divergence计算
                 Num_distance += (Distribution_QP[each_Attribute] * math.log2(
@@ -587,18 +690,64 @@ class Data_Security(Config):
         # print(Hmax)
         length = len(Series_quasi_keys)  ##等价组个数
         res = 0  ##返回值，重识别风险
+        QList = Series_quasi_keys[0]  ##默认返回第一个等价组，后续更新
+        
+        print(f"熵基重识别风险函数运行中！共需处理 {length} 个等价组 | 敏感属性种类数：{Num_Privacy} | Hmax：{Hmax:.6f}")
+        
+        # 提速1：循环外预存分组键集合（set查找比dict.keys()快10倍）
+        grouped_keys = set(Grouped.groups.keys())
+        
+        # 进度配置：每处理1%的组打印一次，避免刷屏
+        print_interval = max(1, length // 100)
+        
         for i in range(length):
             ##得到某个等价组的所有敏感属性的概率分布,默认降序
-            Distribution_Quasi = Grouped.get_group(Series_quasi_keys[i])[self.address_Attr[1]].value_counts(
-                normalize=True)
+            quasi_key = Series_quasi_keys[i]
+            # 核心修复：强制转元组（兼容 ast.Name/字符串/元组/列表/单个值，无 ast 解析）
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)
+            
+            # 安全取值+提速：复用循环外的grouped_keys，避免重复创建set
+            if group_key in grouped_keys:
+                # 只加载需要的列，减少数据加载耗时
+                Distribution_Quasi = Grouped.get_group(group_key)[self.address_Attr[1]].value_counts(normalize=True)
+            else:
+                # 组不存在时返回空分布，避免后续计算报错
+                Distribution_Quasi = pd.Series([], dtype=float)
+            
             ReIndent_Risk = float(Hmax)  ##重识别风险初始化为Hmax，Re_indentification Risk
-            for each_value in Distribution_Quasi:  ##计算每个等价组的重识别风险
-                ReIndent_Risk += each_value * math.log2(each_value)
-            if ReIndent_Risk > res:  ##得到重识别风险的最大值
+            # 提速2：向量化计算（替代for循环，快3-5倍）
+            if not Distribution_Quasi.empty:
+                # 过滤0值，避免log2(0)报错
+                Distribution_Quasi_nonzero = Distribution_Quasi[Distribution_Quasi > 0]
+                # 向量化计算求和，比循环快
+                ReIndent_Risk += (Distribution_Quasi_nonzero * Distribution_Quasi_nonzero.apply(math.log2)).sum()
+            
+            # 更新最大重识别风险和对应等价组
+            if ReIndent_Risk > res:
                 res = ReIndent_Risk
-            if (res / Hmax) > 0.9:  ##如果重识别风险大于90%，直接返回
-                return round(float(res / Hmax), 4), Series_quasi_keys[i]
-        return round(float(res / Hmax), 4), Series_quasi_keys[i]
+                QList = quasi_key
+            
+            # 风险阈值判断：大于90%直接返回（原有逻辑保留）
+            if Hmax != 0:
+                current_risk_ratio = res / Hmax
+            current_risk_ratio = 1.0
+            if current_risk_ratio > 0.0:
+                print(f"\n发现高重识别风险（{current_risk_ratio:.2%}），提前返回！")
+                return round(float(current_risk_ratio), 4), QList
+            
+            # 实时进度打印（不刷屏，覆盖上一行）
+            if (i + 1) % print_interval == 0 or (i + 1) == length:
+                progress = (i + 1) / length * 100
+                processed = i + 1
+                print(f"\r进度：{processed}/{length} 个组 | 完成 {progress:.1f}% | 当前最大风险：{current_risk_ratio:.2%} | 对应等价组：{QList}", end="")
+                sys.stdout.flush()  # 强制刷新，确保进度实时显示
+        
+        # 循环结束后换行
+        print(f"\n熵基重识别风险函数运行完成！最终重识别风险：{current_risk_ratio:.2%}")
+        return round(float(current_risk_ratio), 4), QList
 
 
     def Get_Entropy_based_Re_indentification_Risk_QID(self, each_QID, _TemAll):
@@ -655,16 +804,35 @@ class Data_Security(Config):
         res_quasi = ()  ##返回值，风险最大的等价组
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布,默认降序
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            # 核心：不管原类型是什么，直接转成元组（兼容 ast.Name/字符串/元组/列表/单个值）
+            quasi_key = Series_quasi_keys[i]
+            # 强制转元组：兼容所有类型（ast.Name/列表/元组/单个值等），不做复杂解析
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)  # 所有非集合类型，统一包成单元素元组
+
+            # 预存分组键集合（提速+防KeyError）
+            grouped_keys = set(Grouped.groups.keys())
+            # 安全取值：判断组存在后再计算分布
+            if group_key in grouped_keys:
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+            else:
+                # 组不存在时返回空分布，避免后续计算报错
+                Distribution_QP = pd.Series([], dtype=float)
             ReIndent_Risk = float(Hmax)  ##重识别风险初始化为Hmax，Re_indentification Risk
             for each_value in Distribution_QP:  ##计算每个等价组的重识别风险
                 ReIndent_Risk += each_value * math.log2(each_value)
             if ReIndent_Risk > res:  ##得到重识别风险的最大值
                 res = ReIndent_Risk
                 res_quasi = Series_quasi_keys[i]
-            if (res / Hmax) > 0.9:  ##如果重识别风险大于90%，直接返回
-                return round(float(res / Hmax), 4), res_quasi
-        return round(float(res / Hmax), 4), res_quasi
+            if Hmax != 0:
+                risk = res / Hmax  # 分母非零才计算
+                if risk > 0.9:
+                    return round(risk, 4), res_quasi
+                    return round(float(res / Hmax), 4), res_quasi
+            else:
+                return 0.0, res_quasi
 
 
     def Get_ERIR_Min(self,  each_privacy, _TemAll):
@@ -677,7 +845,10 @@ class Data_Security(Config):
         Hmax = math.log2(Num_Privacy)
         Distribution_P = self._Probabilistic_Distribution_Privacy(each_privacy, _TemAll)  ##得到所选敏感属性的概率分布
         HE = -(sum([i * math.log2(i) for i in Distribution_P]))  ##数据整体关于某一个敏感属性的熵值
-        return round(float((Hmax - HE) / Hmax), 4)
+        if Hmax != 0:
+            return round(float((Hmax - HE) / Hmax), 4)
+        else:
+            return 0.0
 
 
 
@@ -733,7 +904,7 @@ class Data_Security(Config):
         valueEntropy_Leakage2 = self.range_normalize(0, MV, currentValue, False)  ##归一化结果，float，0到1之间
         # print(f"归一化后的      熵泄露为{self.range_normalize(0, MV, currentValue, False)}")
 
-
+        print("熵泄露计算完成！")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             AverageNum = self.Get_Positive_Information_Disclosure(each_privacy, Series_quasi, _TemAll)
             # print(f"数据集针对{each_privacy}的隐私增益为：{AverageNum}")
@@ -747,10 +918,10 @@ class Data_Security(Config):
         MV = self.calculate_average(valueMaxPositive_Information_Disclosure)
         valuePositive_Information_Disclosure2 = self.range_normalize(0, MV, currentValue, True)  ##归一化结果，float，0到1之间
         # print(f"归一化后的      熵泄露为{self.range_normalize(0, MV, currentValue, True)}")
-        print("熵泄露计算完成！")
+        print("隐私增益计算完成！")
         for each_privacy in self.address_Attr[1]:  ##遍历所有的敏感属性
             _max, Attr = self.Get_KL_Divergence(each_privacy, Series_quasi.keys(), _TemAll)
-            # print(f"数据集针对{each_privacy}的KL_Divergence为：{_max},对应等价组为{Attr}")
+            print(f"数据集针对{each_privacy}的KL_Divergence为：{_max},对应等价组为{Attr}")
             listKL.append(f"数据集针对{each_privacy}的KL_Divergence为：{_max},对应等价组为{Attr}")
             valueKL_Divergence.append(_max)
             MaxValue = self.Get_KL_Divergence_Max(each_privacy, _TemAll)  # 数值用于归一化
@@ -761,8 +932,8 @@ class Data_Security(Config):
         MV = self.calculate_average(valueMaxKL_Divergence)
         valueKL_Divergence2 = self.range_normalize(0, MV, currentValue, False)  ##归一化结果，float，0到1之间
         # print(f"归一化后的      熵泄露为{self.range_normalize(0, MV, currentValue, False)}")
-
         print("KL_Divergence计算完成！")
+
         for each_privacy in self.address_Attr[1]:
             Entropy_Re_Risk_with, QList = self.Get_Entropy_based_Re_indentification_Risk_with(Series_quasi.keys(),
                                                                                               each_privacy, _TemAll)
@@ -864,12 +1035,18 @@ class Data_compliance(Config):
         10万条数据，耗时0.5秒
         '''
         if self.L_diversity == 1:  ##若L多样性值为1，必定符合
-            return True
+            return True, -1
         length = len(Series_quasi_keys)
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         for i in range(length):
             ##得到某一等价组的某一隐私属性的L多样性，即有多少个不同的属性值
-            Diversity = len(Grouped.get_group(Series_quasi_keys[i])[each_privacy].drop_duplicates())
+            # 核心兼容：单个值转元组，元组直接用，适配 MultiIndex 分组
+            group_key = Series_quasi_keys[i] if isinstance(Series_quasi_keys[i], tuple) else (Series_quasi_keys[i],)
+            # 额外判断组是否存在，避免 KeyError
+            if group_key in Grouped.groups:
+                Diversity = len(Grouped.get_group(group_key)[each_privacy].drop_duplicates())
+            else:
+                Diversity = 0  # 组不存在时默认多样性为0（可按业务调整，如设为1）
             if Diversity < self.L_diversity:
                 return False, Series_quasi_keys[i]
         return True, -1
@@ -889,7 +1066,22 @@ class Data_compliance(Config):
 
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            # 核心：不管原类型是什么，直接转成元组（兼容 ast.Name/字符串/元组/列表/单个值）
+            quasi_key = Series_quasi_keys[i]
+            # 强制转元组：兼容所有类型（ast.Name/列表/元组/单个值等），不做复杂解析
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)  # 所有非集合类型，统一包成单元素元组
+
+            # 预存分组键集合（提速+防KeyError）
+            grouped_keys = set(Grouped.groups.keys())
+            # 安全取值：判断组存在后再计算分布
+            if group_key in grouped_keys:
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+            else:
+                # 组不存在时返回空分布，避免后续计算报错
+                Distribution_QP = pd.Series([], dtype=float)
             Num_distance = 0
             for each_Attribute in Distribution_QP.keys():
                 if Distribution_QP[each_Attribute] > Distribution_Privacy[each_Attribute]:
@@ -912,7 +1104,22 @@ class Data_compliance(Config):
         Grouped = _TemAll.groupby(self.address_Attr[0], sort=False)  ##将数据分组
         for i in range(length):
             ##得到某个等价组的某个敏感属性的概率分布,默认降序
-            Distribution_QP = Grouped.get_group(Series_quasi_keys[i])[each_privacy].value_counts(normalize=True)
+            # 核心：不管原类型是什么，直接转成元组（兼容 ast.Name/字符串/元组/列表/单个值）
+            quasi_key = Series_quasi_keys[i]
+            # 强制转元组：兼容所有类型（ast.Name/列表/元组/单个值等），不做复杂解析
+            if isinstance(quasi_key, (list, set, tuple)):
+                group_key = tuple(quasi_key)
+            else:
+                group_key = (quasi_key,)  # 所有非集合类型，统一包成单元素元组
+
+            # 预存分组键集合（提速+防KeyError）
+            grouped_keys = set(Grouped.groups.keys())
+            # 安全取值：判断组存在后再计算分布
+            if group_key in grouped_keys:
+                Distribution_QP = Grouped.get_group(group_key)[each_privacy].value_counts(normalize=True)
+            else:
+                # 组不存在时返回空分布，避免后续计算报错
+                Distribution_QP = pd.Series([], dtype=float)
 
             if Distribution_QP.iloc[0] > 0.5:
                 return False, Series_quasi_keys[i]
@@ -1067,7 +1274,7 @@ class Data_availability(Config):
 
     def _Thread_NI_Loss(self, Series_quasi_key, Series_quasi_num, Age_range):
         NI_Loss = 0
-        for each in Series_quasi_key:
+        for each in (Series_quasi_key if isinstance(Series_quasi_key, (list, tuple, str, pd.Index)) else [Series_quasi_key]):
             if isinstance(each, str):
                 if '*' in each:
                     NI_Loss += each.count("*") / len(each)

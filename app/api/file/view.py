@@ -9,7 +9,7 @@ import traceback
 from celery_task.async_task import start_evaluate
 from . import api_file
 from .module import allowed_file, start_handle
-from mylog.logger import mylogger,set_logger
+from mylog.logger import mylogger, set_logger
 from logging import INFO
 from celery_task.config import Config
 import uuid
@@ -115,14 +115,32 @@ def upload_file():
 # api：处理收到的数据，先评估
 @api_file.route('/privacy_assess',methods=["POST"])
 def json_test():
-    data = request.json
+    try:
+        data = request.json
+        # 验证必需字段
+        required_fields = [
+            'Quasi_identifiers', 'Sensitive_attributes',
+            'k-anonymity', 'l-diversity', 't-closeness'
+        ]
+        missing = [field for field in required_fields if field not in data]
+        if missing:
+            return jsonify({
+                "error": "Missing fields",
+                "missing_fields": missing
+            }), 400
+    except (TypeError, ValueError) as e:
+        return jsonify({
+            "error": "Type conversion error",
+            "details": str(e)
+        }), 400
+
     # 处理接收到的 JSON 报文
     q=data['Quasi_identifiers']
     idd=data['Direct_identifiers']
     sa=data['Sensitive_attributes']
     src_url=data['private_data_url']
     un_table_name=data['private_data_table']
-    scene=data['data_scene']
+    scene=data['data_scene0']
     description=data['description']
     k=data['k-anonymity']
     l=data['l-diversity']
