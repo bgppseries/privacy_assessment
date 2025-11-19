@@ -12,6 +12,13 @@ import configparser
 from pandas.io.formats import string
 import redis
 
+from mylog.logger import mylogger,set_logger
+from logging import INFO
+
+###创建日志
+logger=mylogger(__name__,INFO)
+set_logger(logger)
+
 api_show = Blueprint('api_show', __name__)
 
 ##根据关系名得到属性节点的categories值
