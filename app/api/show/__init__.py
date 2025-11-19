@@ -3277,3 +3277,94 @@ def handle(dict, child_dict):
         'children': l
     }
     return a
+
+@api_show.route('/scene_statistics', methods=['GET'])
+def get_scene_statistics():
+    try:
+        # 目标格式数据（可替换为数据库查询、业务逻辑计算结果）
+        scene_data = [
+            {"value": 1048, "name": "电信业务类"},
+            {"value": 735, "name": "地图导航类"},
+            {"value": 580, "name": "网上购物类"},
+            {"value": 484, "name": "远程诊疗类"},
+            {"value": 300, "name": "酒店服务类"}
+        ]
+        scenes_response = all_scenes()
+        
+        # 校验 all_scenes() 响应是否正常，提取场景列表
+        if not hasattr(scenes_response, 'json'):
+            return jsonify({
+                "code": 400,
+                "msg": "场景列表响应格式错误",
+                "data": []
+            }), 400
+        if scenes_response.status_code != 200:
+            return jsonify({
+                "code": 500,
+                "msg": f"获取场景列表失败：{scenes_response.json.get('msg', '未知错误')}",
+                "data": []
+            }), 500
+        scene_list = scenes_response.json
+        
+        # 2. 初始化 Redis 客户端（只创建一次，提升性能）
+        redis_client = redis.StrictRedis(
+            port=WORKER_ID_MAP_REDISPORT,
+            host=WORKER_ID_MAP_REDISADDRESS,
+            db=WORKER_ID_MAP_REDISDBNUM,
+            password=WORKER_ID_MAP_REDISPASSWORD,
+            decode_responses=False  # 保持字节类型，后续手动解码
+        )
+        
+        # 3. 存储最终统计结果（目标格式）
+        scene_statistics = []
+        
+        # 4. 遍历每个场景，校验并统计任务数量
+        for scene in scene_list:
+            # 校验场景名称是否为空
+            if not scene or scene.strip() == "":
+                continue  # 跳过空场景，不影响整体结果
+            
+            # 构建 Redis 键
+            key = f'scene:{scene}'
+            
+            # 校验 Redis 中是否存在该键（捕获 Redis 操作异常）
+            try:
+                if not redis_client.exists(key):
+                    continue  # 跳过不存在的场景
+            except redis.exceptions.RedisError:
+                continue
+            
+            # 获取该场景下的任务ID并统计数量
+            try:
+                task_ids = list(redis_client.hkeys(key))
+                task_count = len(task_ids)  # 统计任务数量（value值）
+                
+                # 添加到统计结果（严格匹配目标格式）
+                scene_statistics.append({
+                    "name": scene,
+                    "value": task_count
+                })
+            except redis.exceptions.RedisError:
+                continue
+        
+        # 新增：按 value 降序排序，取Top10，剩余归为 Other
+        # 1. 按任务数量降序排序
+        scene_statistics_sorted = sorted(scene_statistics, key=lambda x: x["value"], reverse=True)
+        # 2. 取前10个
+        top10_scenes = scene_statistics_sorted[:10]
+        # 3. 计算剩余场景的总数量
+        other_total = sum([scene["value"] for scene in scene_statistics_sorted[10:]]) if len(scene_statistics_sorted) > 10 else 0
+        # 4. 若有剩余数据，添加 Other 项
+        if other_total > 0:
+            top10_scenes.append({"name": "其他", "value": other_total})
+        
+        # 5. 返回处理后的结果（纯数组格式，符合目标要求）
+        return jsonify(top10_scenes)
+    
+    except Exception as e:
+        # 捕获所有异常，返回友好提示
+        return jsonify({
+            "code": 500,
+            "msg": f"场景统计查询失败：{str(e)}",
+            "data": []
+        }), 500
