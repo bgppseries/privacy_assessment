@@ -24,6 +24,12 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, 
 from io import BytesIO
 from pathlib import Path
 import builtins
+from logging import INFO
+from mylog.logger import mylogger, set_logger
+
+
+logger = mylogger(__name__, INFO)
+set_logger(logger)
 
 api_show = Blueprint('api_show', __name__)
 
@@ -473,13 +479,13 @@ def generate_pdf():
                                          db=WORKER_ID_MAP_REDISDBNUM, password=WORKER_ID_MAP_REDISPASSWORD)
         # 检查连接是否成功
         redis_client.ping()
-        print("Connected to Redis server.")
+        logger.info("Connected to Redis server.")
     except redis.ConnectionError as e:
         # 处理连接错误
-        print("Failed to connect to Redis server:", e)
+        logger.info("Failed to connect to Redis server:", e)
     except Exception as e:
         # 处理其他异常
-        print("An error occurred:", e)
+        logger.info("An error occurred:", e)
 
     # 连接建立后，根据workerid取数据
     try:
@@ -488,7 +494,7 @@ def generate_pdf():
         # 存储结果的字典
         results = {}
         # 遍历结果并获取任务结果
-        print("Fetched result")
+        logger.info("Fetched result")
         for key in keys:
             # 提取子线程ID
             child_process_id = key.decode('utf-8')
